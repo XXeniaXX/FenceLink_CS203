@@ -13,10 +13,11 @@ public class PlayerController {
     private PlayerService playerService;
 
     @PutMapping("/{id}/edit")
-    public ResponseEntity<String> editPlayerDetails(@PathVariable("id") String playerId, @RequestBody Player player) {
+    public ResponseEntity<?> editPlayerDetails(@PathVariable("id") String playerId, @RequestBody Player player) {
         try {
             playerService.editPlayerDetails(playerId, player);
-            return new ResponseEntity<>("Player details updated successfully", HttpStatus.OK);
+            Player updatedPlayer = playerService.findById(playerId); // Fetch the updated player
+            return new ResponseEntity<>(updatedPlayer, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

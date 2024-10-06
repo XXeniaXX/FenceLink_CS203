@@ -33,6 +33,7 @@ public class PlayerService {
         return playerRepository.addPlayer(player);
     }
 
+    // Admin
     public int updatePlayer(Player player) {
         // Ensures player actually exists
         if (!playerRepository.findById(player.getId()).isPresent()) {
@@ -59,6 +60,7 @@ public class PlayerService {
         return playerRepository.updatePlayer(player);
     }
 
+    // Admin only (should this be deleted?)
     public int deletePlayer(Player player) {
         // Ensures player actually exists
         if (!(playerRepository.findById(player.getId()).isPresent())) {
@@ -71,12 +73,26 @@ public class PlayerService {
         return playerRepository.findById(id).isPresent();
     }
 
+    // For users
     public int editPlayerDetails(String id, Player updatedPlayer) {
         // Find existing player by ID
         Player existingPlayer = playerRepository.findById(id).orElse(null);
         
         if (existingPlayer == null) {
             throw new IllegalArgumentException("Player not found!");
+        }
+
+        if (updatedPlayer.getName() == null || updatedPlayer.getName().isEmpty()) {
+            throw new IllegalArgumentException("Player name is required");
+        }
+    
+        if (updatedPlayer.getBirthdate() == null || updatedPlayer.getBirthdate().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Invalid birthdate. It cannot be in the future.");
+        }
+    
+        int age = Period.between(updatedPlayer.getBirthdate(), LocalDate.now()).getYears();
+        if (age < 14) {
+            throw new IllegalArgumentException("Player must be at least 14 years old.");
         }
 
         // Update the player's details (only editable fields)
