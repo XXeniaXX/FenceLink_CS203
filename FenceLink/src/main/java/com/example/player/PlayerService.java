@@ -70,4 +70,25 @@ public class PlayerService {
     public boolean playerExists(String id) {
         return playerRepository.findById(id).isPresent();
     }
+
+    public int editPlayerDetails(String id, Player updatedPlayer) {
+        // Find existing player by ID
+        Player existingPlayer = playerRepository.findById(id).orElse(null);
+        
+        if (existingPlayer == null) {
+            throw new IllegalArgumentException("Player not found!");
+        }
+
+        // Update the player's details (only editable fields)
+        existingPlayer.setName(updatedPlayer.getName());
+        existingPlayer.setGender(updatedPlayer.getGender());
+        existingPlayer.setCountry(updatedPlayer.getCountry());
+        existingPlayer.setBirthdate(updatedPlayer.getBirthdate());
+        existingPlayer.setLocation(updatedPlayer.getLocation());
+        existingPlayer.setFencingWeapon(updatedPlayer.getFencingWeapon());
+        existingPlayer.setBio(updatedPlayer.getBio());
+
+        // Save updated player details
+        return playerRepository.updatePlayer(existingPlayer);
+    }
 }
