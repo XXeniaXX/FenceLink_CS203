@@ -54,7 +54,7 @@ public class PlayerService {
         }
 
         if (age < 14) {
-            throw new IllegalArgumentException("Player must be at least 14 years old.")
+            throw new IllegalArgumentException("Player must be at least 14 years old.");
         }
 
         return playerRepository.updatePlayer(player);
