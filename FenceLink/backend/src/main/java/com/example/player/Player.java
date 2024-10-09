@@ -12,22 +12,17 @@ public class Player {
     
     @Id
     private String id;
+
     private String name;
+    private String gender;
+    private String country;
+    private LocalDate birthdate;
+    private String location;
+    private String fencingWeapon;
+    private String bio;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    private int wins;
+    private int losses;
+    private int points;
+    private int ranking;
 }
