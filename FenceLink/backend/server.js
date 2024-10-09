@@ -15,7 +15,7 @@ app.use(cors()); // Enable CORS
 app.use(express.json()); // Parse incoming JSON requests
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect('mongodb+srv://FenceLink:yFyjObV9c7nG1Svs@cluster0.5sbov.mongodb.net/FenceLink-api-db', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('MongoDB connected successfully!');
   })
