@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './page/home'
+import Registration from './page/registration';
 import './App.css'
 import { useEffect, useState } from 'react'
 
@@ -8,11 +9,15 @@ function App() {
   const [email, setEmail] = useState('')
 
   return (
-    <div className="App">
-       {/* Render the Home component */}
-       <Home />
-    </div>
-  )
+    <BrowserRouter>
+      <div className="App">
+        <Routes>
+          <Route path="/home" element={<Home />} />
+          <Route path="/register" element={<Registration />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
 }
 
 export default App
