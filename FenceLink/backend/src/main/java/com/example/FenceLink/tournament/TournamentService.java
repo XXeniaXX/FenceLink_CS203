@@ -1,4 +1,4 @@
-package com.example.tournament;
+package com.example.FenceLink.tournament;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

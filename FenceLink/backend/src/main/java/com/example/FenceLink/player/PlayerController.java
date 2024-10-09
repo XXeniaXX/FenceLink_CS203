@@ -1,4 +1,4 @@
-package com.example.player;
+package com.example.FenceLink.player;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,7 +46,7 @@ public class PlayerController {
     public ResponseEntity<String> updatePlayer(@PathVariable String id, @RequestBody Player player) {
         player.setId(id);  // Ensure player ID is set
         try {
-            playerService.updatePlayer(player);
+            playerService.updatePlayer(id, player);
             return new ResponseEntity<>("Player updated successfully", HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -60,7 +60,7 @@ public class PlayerController {
         if (player == null) {
             return new ResponseEntity<>("Player not found", HttpStatus.NOT_FOUND);
         }
-        playerService.deletePlayer(player);
+        playerService.deletePlayer(id);
         return new ResponseEntity<>("Player deleted successfully", HttpStatus.OK);
     }
 

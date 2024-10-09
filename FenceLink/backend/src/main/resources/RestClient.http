@@ -1,0 +1,76 @@
+### Get all players
+GET http://localhost:8080/players
+Accept: application/json
+
+###
+
+### Get player by ID
+GET http://localhost:8080/players/{id}
+Accept: application/json
+
+###
+
+### Add a new player
+POST http://localhost:8080/players
+Content-Type: application/json
+
+{
+  "id": "1",
+  "name": "John Doe",
+  "gender": "Male",
+  "country": "USA",
+  "birthdate": "1990-01-01",
+  "location": "New York",
+  "fencingWeapon": "Foil",
+  "bio": "Experienced fencer.",
+  "wins": 10,
+  "losses": 5,
+  "points": 100,
+  "ranking": 3
+}
+
+###
+
+### Update a player's details (ADMIN)
+PUT http://localhost:8080/players/{id}
+Content-Type: application/json
+
+{
+  "name": "John Smith",
+  "gender": "Male",
+  "country": "USA",
+  "birthdate": "1990-01-01",
+  "location": "Los Angeles",
+  "fencingWeapon": "Epee",
+  "bio": "Champion fencer.",
+  "wins": 15,
+  "losses": 3,
+  "points": 120,
+  "ranking": 1
+}
+
+###
+
+### Delete a player (ADMIN)
+DELETE http://localhost:8080/players/{id}
+Accept: application/json
+
+###
+
+### Edit a player's details (for USERS)
+PUT http://localhost:8080/players/{id}/edit
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "gender": "Male",
+  "country": "USA",
+  "birthdate": "1990-01-01",
+  "location": "San Francisco",
+  "fencingWeapon": "Sabre",
+  "bio": "Updated bio for John Doe.",
+  "wins": 12,
+  "losses": 6,
+  "points": 110,
+  "ranking": 2
+}

@@ -1,4 +1,4 @@
-package com.example.tournament;
+package com.example.FenceLink.tournament;
 
 import java.util.Date;
 
