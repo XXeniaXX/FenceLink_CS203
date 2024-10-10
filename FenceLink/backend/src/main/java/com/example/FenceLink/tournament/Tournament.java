@@ -3,17 +3,17 @@ package com.example.FenceLink.tournament;
 import java.util.Date;
 
 public class Tournament {
-    private String id;
+    private Long id;
     private String name;
     private String location;
     private Date date;
 
     // Getters and setters
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
