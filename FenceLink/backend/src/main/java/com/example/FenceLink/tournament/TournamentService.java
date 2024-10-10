@@ -1,4 +1,5 @@
-package com.example.tournament;
+package com.example.FenceLink.tournament;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,5 +26,9 @@ public class TournamentService {
 
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.getAllTournaments();
+    }
+
+    public Tournament getTournamentById(Long id) {
+        return tournamentRepository.getTournamentById(id);
     }
 }

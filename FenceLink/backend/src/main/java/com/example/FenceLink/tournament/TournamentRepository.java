@@ -1,4 +1,4 @@
-package com.example.tournament;
+package com.example.FenceLink.tournament;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,11 +35,24 @@ public class TournamentRepository {
         String sql = "SELECT * FROM tournaments";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Tournament t = new Tournament();
-            t.setId(rs.getString("id"));
+            t.setId(rs.getLong("id"));
             t.setName(rs.getString("name"));
             t.setLocation(rs.getString("location"));
             t.setDate(rs.getDate("date"));
             return t;
         });
     }
+    // Get tournament by ID
+    public Tournament getTournamentById(Long id) {
+        String sql = "SELECT * FROM tournaments WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+            Tournament t = new Tournament();
+            t.setId(rs.getLong("id"));
+            t.setName(rs.getString("name"));
+            t.setLocation(rs.getString("location"));
+            t.setDate(rs.getDate("date"));
+            return t;
+        }, id); // Passing the id as the argument
+    }
+
 }

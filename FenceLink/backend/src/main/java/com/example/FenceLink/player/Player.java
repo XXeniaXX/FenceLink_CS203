@@ -1,15 +1,15 @@
-package com.example.player;
+package com.example.FenceLink.player;
 
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Document("player")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
 public class Player {
     
     @Id
@@ -27,4 +27,5 @@ public class Player {
     private int losses;
     private int points;
     private int ranking;
+    
 }

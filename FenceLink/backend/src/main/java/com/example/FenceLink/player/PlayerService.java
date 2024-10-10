@@ -1,4 +1,4 @@
-package com.example.player;
+package com.example.FenceLink.player;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,28 +20,28 @@ public class PlayerService {
         return playerRepository.findById(id).orElse(null);
     }
 
-    public int addPlayer(Player player) {
+    public String addPlayer(Player player) {
+        Player pl = Player.builder()
+                    .id(player.getId())
+                    .name(player.getName())
+                    .bio(player.getBio())
+                    .birthdate(player.getBirthdate())
+                    .country(player.getCountry())
+                    .fencingWeapon(player.getFencingWeapon())
+                    .gender(player.getGender())
+                    .losses(player.getLosses())
+                    .wins(player.getWins())
+                    .ranking(player.getRanking())
+                    .points(player.getPoints())
+                    .location(player.getLocation())
+                    .build();
+
         if (player.getName() == null || player.getName().isEmpty()) {
             throw new IllegalArgumentException("Player name is required");
         }
 
         if (player.getId() == null || player.getId().isEmpty()) {
             throw new IllegalArgumentException("Player ID is required");
-        }
-
-        return playerRepository.addPlayer(player);
-    }
-
-    // Admin
-    public int updatePlayer(Player player) {
-        // Ensures player actually exists
-        if (!playerRepository.findById(player.getId()).isPresent()) {
-            throw new IllegalArgumentException("Player not found!");
-        }
-
-        // Wins, losses, points cannot be negative
-        if (player.getWins() < 0 || player.getLosses() < 0 || player.getPoints() < 0) {
-            throw new IllegalArgumentException("Data Invalid: value cannot be negative!");
         }
 
         LocalDate currentDate = LocalDate.now();
@@ -56,16 +56,44 @@ public class PlayerService {
             throw new IllegalArgumentException("Player must be at least 14 years old.");
         }
 
-        return playerRepository.updatePlayer(player);
+        playerRepository.save(pl);
+        return "Player added successfully";
+    }
+
+    // Admin
+    public Player updatePlayer(String id, Player updatedPlayer) {
+        // Ensures player actually exists
+        if (!playerRepository.findById(id).isPresent()) {
+            throw new IllegalArgumentException("Player not found!");
+        }
+
+        // Wins, losses, points cannot be negative
+        if (updatedPlayer.getWins() < 0 || updatedPlayer.getLosses() < 0 || updatedPlayer.getPoints() < 0) {
+            throw new IllegalArgumentException("Data Invalid: value cannot be negative!");
+        }
+
+        LocalDate currentDate = LocalDate.now();
+        int age = Period.between(updatedPlayer.getBirthdate(), currentDate).getYears();
+
+        // Birthdate should not be in the future, should be >= 14?
+        if (updatedPlayer.getBirthdate().isAfter(currentDate)) {
+            throw new IllegalArgumentException("Birthdate cannot be in te future.");
+        }
+
+        if (age < 14) {
+            throw new IllegalArgumentException("Player must be at least 14 years old.");
+        }
+
+        return playerRepository.save(updatedPlayer);
     }
 
     // Admin only (should this be deleted?)
-    public int deletePlayer(Player player) {
+    public void deletePlayer(String id) {
         // Ensures player actually exists
-        if (!(playerRepository.findById(player.getId()).isPresent())) {
+        if (!(playerRepository.findById(id).isPresent())) {
             throw new IllegalArgumentException("Player not found!");
         }
-        return playerRepository.deletePlayer(player.getId());
+        playerRepository.deleteById(id);
     }
     
     public boolean playerExists(String id) {
@@ -73,7 +101,7 @@ public class PlayerService {
     }
 
     // For users
-    public int editPlayerDetails(String id, Player updatedPlayer) {
+    public Player editPlayerDetails(String id, Player updatedPlayer) {
         // Find existing player by ID
         Player existingPlayer = playerRepository.findById(id).orElse(null);
         
@@ -104,6 +132,6 @@ public class PlayerService {
         existingPlayer.setBio(updatedPlayer.getBio());
 
         // Save updated player details
-        return playerRepository.updatePlayer(existingPlayer);
+        return playerRepository.save(existingPlayer);
     }
 }
