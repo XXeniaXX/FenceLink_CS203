@@ -1,4 +1,4 @@
-package com.example.player;
+package com.example.FenceLink.player;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/players")
+@RequestMapping("/api/players")
 public class PlayerController {
 
     @Autowired
@@ -31,14 +31,10 @@ public class PlayerController {
     }
 
     // Add new player
-    @PostMapping
-    public ResponseEntity<String> addPlayer(@RequestBody Player player) {
-        try {
-            playerService.addPlayer(player);
-            return new ResponseEntity<>("Player added successfully", HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    @PostMapping("/add")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String addPlayer(@RequestBody Player player) {
+        return playerService.addPlayer(player);
     }
 
     // Update player details for ADMIN
@@ -46,7 +42,7 @@ public class PlayerController {
     public ResponseEntity<String> updatePlayer(@PathVariable String id, @RequestBody Player player) {
         player.setId(id);  // Ensure player ID is set
         try {
-            playerService.updatePlayer(player);
+            playerService.updatePlayer(id, player);
             return new ResponseEntity<>("Player updated successfully", HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -60,7 +56,7 @@ public class PlayerController {
         if (player == null) {
             return new ResponseEntity<>("Player not found", HttpStatus.NOT_FOUND);
         }
-        playerService.deletePlayer(player);
+        playerService.deletePlayer(id);
         return new ResponseEntity<>("Player deleted successfully", HttpStatus.OK);
     }
 
