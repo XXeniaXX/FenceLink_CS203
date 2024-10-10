@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './home.css'; // Import the CSS file
 
 const Home = () => {
@@ -37,10 +38,10 @@ const Home = () => {
 
   return (
     <div className="container">
-      <h1 className="header">Login</h1>
+      <h1 className="header">LOGIN</h1>
       <form onSubmit={handleSubmit} className="form">
         <label className="label">
-          Username:
+          Username
           <input
             type="text"
             value={username}
@@ -51,7 +52,7 @@ const Home = () => {
           />
         </label>
         <label className="label">
-          Password:
+          Password
           <input
             type="password"
             value={password}
@@ -64,7 +65,12 @@ const Home = () => {
         <button type="submit" className="button">
           Login
         </button>
+        <footer classname= "footer">
+          Don't have an account? <Link to="/register">Register here</Link>
+        </footer>
       </form>
+      
+      
     </div>
   );
 };
