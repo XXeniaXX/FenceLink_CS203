@@ -20,7 +20,22 @@ public class PlayerService {
         return playerRepository.findById(id).orElse(null);
     }
 
-    public Player addPlayer(Player player) {
+    public String addPlayer(Player player) {
+        Player pl = Player.builder()
+                    .id(player.getId())
+                    .name(player.getName())
+                    .bio(player.getBio())
+                    .birthdate(player.getBirthdate())
+                    .country(player.getCountry())
+                    .fencingWeapon(player.getFencingWeapon())
+                    .gender(player.getGender())
+                    .losses(player.getLosses())
+                    .wins(player.getWins())
+                    .ranking(player.getRanking())
+                    .points(player.getPoints())
+                    .location(player.getLocation())
+                    .build();
+
         if (player.getName() == null || player.getName().isEmpty()) {
             throw new IllegalArgumentException("Player name is required");
         }
@@ -29,7 +44,20 @@ public class PlayerService {
             throw new IllegalArgumentException("Player ID is required");
         }
 
-        return playerRepository.save(player);
+        LocalDate currentDate = LocalDate.now();
+        int age = Period.between(player.getBirthdate(), currentDate).getYears();
+
+        // Birthdate should not be in the future, should be >= 14?
+        if (player.getBirthdate().isAfter(currentDate)) {
+            throw new IllegalArgumentException("Birthdate cannot be in te future.");
+        }
+
+        if (age < 14) {
+            throw new IllegalArgumentException("Player must be at least 14 years old.");
+        }
+
+        playerRepository.save(pl);
+        return "Player added successfully";
     }
 
     // Admin
