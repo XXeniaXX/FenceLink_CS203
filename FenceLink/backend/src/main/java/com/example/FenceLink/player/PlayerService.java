@@ -15,23 +15,13 @@ public class PlayerService {
     // @Autowired
     // private ApplicationEventPublisher eventPublisher;
 
-    public List<Player> findAllPlayers() {
-        return playerRepository.findAll();
-    }
-
-    public Player findById(String id) {
-        return playerRepository.findById(id).orElse(null);
-    }
-
-    public Player addPlayer(Player player) {
-        // Wins and losses 0 since new player hasn't joined anything
-        player.setWins(0);
-        player.setLosses(0);
-
+    public void checkPlayer (Player player) throws IllegalArgumentException {
+        // Name cannot be empty
         if (player.getName() == null || player.getName().isEmpty()) {
             throw new IllegalArgumentException("Player name is required!");
         }
 
+        // Id cannot be empty
         if (player.getId() == null || player.getId().isEmpty()) {
             throw new IllegalArgumentException("Player ID is required!");
         }
@@ -48,10 +38,31 @@ public class PlayerService {
             throw new IllegalArgumentException("Player must be at least 14 years old!");
         }
 
+         // Wins, losses, points cannot be negative
+         if (player.getWins() < 0 || player.getLosses() < 0) {
+            throw new IllegalArgumentException("Data Invalid: value cannot be negative!");
+        }
+    }
+
+    public List<Player> findAllPlayers() {
+        return playerRepository.findAll();
+    }
+
+    public Player findById(String id) {
+        return playerRepository.findById(id).orElse(null);
+    }
+
+    public Player addPlayer(Player player) throws IllegalArgumentException {
+        // Wins and losses 0 since new player hasn't joined anything
+        player.setWins(0);
+        player.setLosses(0);
+
         // If player with same ID exists, cannot be added
         if (playerExists(player.getId())) {
             throw new IllegalArgumentException("Player with same ID already exists!");
         }
+
+        checkPlayer(player);
 
         Player.PlayerBuilder playerBuilder = Player.builder()
                     .id(player.getId())
@@ -89,42 +100,27 @@ public class PlayerService {
     }
 
     // Admin
-    public Player updatePlayer(String id, Player updatedPlayer) {
+    public Player updatePlayer(String id, Player updatedPlayer) throws IllegalArgumentException {
         // Ensures player actually exists
-        if (!playerRepository.findById(id).isPresent()) {
+        if (!playerExists(id)) {
             throw new IllegalArgumentException("Player not found!");
         }
 
-        // Wins, losses, points cannot be negative
-        if (updatedPlayer.getWins() < 0 || updatedPlayer.getLosses() < 0) {
-            throw new IllegalArgumentException("Data Invalid: value cannot be negative!");
-        }
-
-        LocalDate currentDate = LocalDate.now();
-        int age = Period.between(updatedPlayer.getBirthdate(), currentDate).getYears();
-
-        // Birthdate should not be in the future, should be >= 14?
-        if (updatedPlayer.getBirthdate().isAfter(currentDate)) {
-            throw new IllegalArgumentException("Birthdate cannot be in the future!");
-        }
-
-        if (age < 14) {
-            throw new IllegalArgumentException("Player must be at least 14 years old!");
-        }
+        checkPlayer(updatedPlayer);
 
         return playerRepository.save(updatedPlayer);
     }
 
     // Admin only
-    public void deletePlayer(String id) {
+    public void deletePlayer(String id) throws IllegalArgumentException {
         // Ensures player actually exists
-        if (!(playerRepository.findById(id).isPresent())) {
+        if (!playerExists(id)) {
             throw new IllegalArgumentException("Player not found!");
         }
         playerRepository.deleteById(id);
     }
     
-    public boolean playerExists(String id) {
+    public boolean playerExists(String id) throws IllegalArgumentException {
         return playerRepository.findById(id).isPresent();
     }
 
@@ -147,21 +143,10 @@ public class PlayerService {
         }
 
         if (existingPlayer.getLosses() != updatedPlayer.getLosses()) {
-            throw new IllegalArgumentException("You cannot change number of Losses!");
+            throw new IllegalArgumentException("You cannot change number of losses!");
         }
 
-        if (updatedPlayer.getName() == null || updatedPlayer.getName().isEmpty()) {
-            throw new IllegalArgumentException("Player name is required!");
-        }
-    
-        if (updatedPlayer.getBirthdate() == null || updatedPlayer.getBirthdate().isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Invalid birthdate. It cannot be in the future!");
-        }
-    
-        int age = Period.between(updatedPlayer.getBirthdate(), LocalDate.now()).getYears();
-        if (age < 14) {
-            throw new IllegalArgumentException("Player must be at least 14 years old!");
-        }
+        checkPlayer(updatedPlayer);
 
         // Update the player's details (only editable fields)
         existingPlayer.setName(updatedPlayer.getName());
