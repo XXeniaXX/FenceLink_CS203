@@ -25,7 +25,7 @@ public class Player {
 
     private int wins;
     private int losses;
-    private int points;
-    private int ranking;
+    // private int points;
+    // private int ranking;
     
 }

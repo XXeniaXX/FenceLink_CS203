@@ -14,6 +14,9 @@ public class PlayerController {
     @Autowired
     private PlayerService playerService;
 
+    // @Autowired
+    // private RankingService rankingService;
+
     // Get all players
     @GetMapping
     public List<Player> getAllPlayers() {
@@ -33,8 +36,9 @@ public class PlayerController {
     // Add new player
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public String addPlayer(@RequestBody Player player) {
-        return playerService.addPlayer(player);
+    public ResponseEntity<Player> addPlayer(@RequestBody Player player) {
+        Player savedPlayer = playerService.addPlayer(player);
+        return new ResponseEntity<>(savedPlayer, HttpStatus.OK);
     }
 
     // Update player details for ADMIN
