@@ -1,26 +1,50 @@
-import React, { useState } from 'react';
-import { confirmSignUp } from 'aws-amplify/auth';
+import React, { useState, useEffect } from 'react';
+import { confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
 import { useNavigate } from "react-router-dom";
 import './otp.css'; // Import the CSS file
 
 const OtpCheck = () => {
-  const [username, setUsername] = useState(''); // State to hold the username
+  const navigate = useNavigate();
+  
+  const [username, setUsername] = useState('');
   const [confirmationCode, setConfirmationCode] = useState(''); // State to hold OTP
   const [errorMessage, setErrorMessage] = useState(''); // State to hold errors
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername); 
+    } else {
+      console.log('No username found in local storage.'); // Debug log
+    }
+  }, []);
+ 
 
   // Function to handle OTP confirmation
-  const handleSignUpConfirmation = async (e) => {
+  async function handleSignUpConfirmation(e) {
     e.preventDefault();
+
     try {
-      await confirmSignUp(username, confirmationCode); // Confirm sign-up with AWS Amplify
-      alert('OTP confirmation successful!');
-      navigate('/mainpage'); // Redirect user to home page upon success
+      await confirmSignUp({
+        username: username,
+        confirmationCode: confirmationCode
+      });
+      navigate("/mainpage");
     } catch (error) {
-      setErrorMessage('Error confirming sign up: ' + error.message); // Display error message
-      console.error('Error confirming sign up', error);
+      console.log('error confirming sign up', error);
+      setErrorMessage('Failed to confirm sign-up. Please check the confirmation code.');
     }
-  };
+  } 
+
+  async function resendConfirmationCode() {
+    try {
+      console.log(username);
+      await resendSignUpCode({username: username});
+      console.log('Confirmation code resent successfully');
+    } catch (error) {
+      console.log('Error resending confirmation code: ', error);
+    }
+  }
 
   return (
     <div className="otp-container">
@@ -49,6 +73,7 @@ const OtpCheck = () => {
         {errorMessage && <p className="error-message">{errorMessage}</p>}
         <button type="submit">Confirm Sign Up</button>
       </form>
+      <button onClick={resendConfirmationCode}>Resend Confirmation Code</button>
     </div>
   );
 };

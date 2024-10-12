@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './login.css'; // Import the CSS file
 
 const Login = () => {
+  const navigate = useNavigate();
+
   // State variables to hold username and password
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -27,6 +29,7 @@ const Login = () => {
       // Handle successful login (e.g., redirect user)
       alert('Login successful!'); // Display success message
       console.log('Login successful');
+      navigate("/mainpage");
       // You can redirect or perform other actions here
     } else {
       // Handle error

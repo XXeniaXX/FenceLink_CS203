@@ -2,11 +2,10 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 import Login from './page/login'
 import Registration from './page/registration';
 import OtpCheck from './page/otpcheck';
+import Main from './page/mainpage';
 import './App.css'
 import { useEffect, useState } from 'react'
-import { Amplify } from 'aws-amplify';
-import config from './setup/amplifyconfiguration.json';
-Amplify.configure(config);
+
 
 function App() {
 
@@ -24,11 +23,13 @@ function App() {
 
           <Route path="/register" element={<Registration />} />
           <Route path="/otpcheck" element={<OtpCheck />} />
+          <Route path="/mainpage" element={<Main />} />
           {/* Fallback route to redirect unknown paths */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </BrowserRouter>
+    
   );
 }
 

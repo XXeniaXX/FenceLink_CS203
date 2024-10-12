@@ -39,11 +39,11 @@ const Registration = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, email, password, confirmPassword}),
+      body: JSON.stringify({ username, email, password}),
     });
 
     if (response.ok) {
-      alert('Registration successful!'); 
+       
       console.log('Registration successful');
 
       await handleSignUp()
@@ -94,27 +94,35 @@ const Registration = () => {
   }
 
   async function handleSignUp() {
+    
     try {
 
       if (password !== confirmPassword) {
         throw new Error('Passwords do not match');
       }
-      const { user } = await signUp({
-        username: username,
+     
+      await signUp({
+        username: email,
         password: password,
         options: {
           userAttributes: {
             email: email
-          }}
+          }
+        }
       });
-  
-      console.log(user);
-      console.log("Navigating to OTP check");
-      navigate("/otpcheck");
-    } catch (error) {
-      console.log('error signing up:', error);
-    }
+      
+        console.log(username);
+        localStorage.setItem('username', email);
+    
+        alert('Registration successful!');
+        navigate("/otpcheck");
+      } catch (error) {
+         console.log('error signing up:', error);
+      }
+    
   }
+
+  
 
   return (
     <div className="container">
@@ -179,7 +187,7 @@ const Registration = () => {
         <button type="submit" className="button">
           Register
         </button>
-        <footer classname= "footer">
+        <footer className= "footer">
             Already have an account? <Link to="/login">Log in here</Link>
         </footer>
       </form>
