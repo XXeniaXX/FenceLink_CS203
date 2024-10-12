@@ -18,7 +18,7 @@ public class PlayerServiceImpl implements PlayerService {
     public void checkPlayer(Player player) throws IllegalArgumentException {
         // Name cannot be empty
         if (player.getName() == null || player.getName().isEmpty()) {
-            throw new IllegalArgumentException("Player name is required!");
+            throw new IllegalArgumentException("Name cannot be empty!");
         }
 
         LocalDate currentDate = LocalDate.now();
@@ -110,7 +110,7 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
         playerRepository.saveAndFlush(updatedPlayer);
-        return playerRepository.findById(id).get();
+        return updatedPlayer;
     }
 
     // Admin only
@@ -126,50 +126,5 @@ public class PlayerServiceImpl implements PlayerService {
 
     public boolean playerExists(String id) throws IllegalArgumentException {
         return playerRepository.findById(id).isPresent();
-    }
-
-    // For users
-    @Override
-    @Transactional
-    public Player editPlayerDetails(String id, Player updatedPlayer) {
-        // Find existing player by ID
-        Player existingPlayer = playerRepository.findById(id).orElse(null);
-
-        if (existingPlayer == null) {
-            throw new IllegalArgumentException("Player not found!");
-        }
-
-        // Cannot change ID, wins, losses
-        if (!(updatedPlayer.getId().equals(id))) {
-            throw new IllegalArgumentException("ID cannot be changed!");
-        }
-
-        if (existingPlayer.getWins() != updatedPlayer.getWins()) {
-            throw new IllegalArgumentException("You cannot change number of wins!");
-        }
-
-        if (existingPlayer.getLosses() != updatedPlayer.getLosses()) {
-            throw new IllegalArgumentException("You cannot change number of losses!");
-        }
-
-        checkPlayer(updatedPlayer);
-
-        // Id cannot be empty
-        if (updatedPlayer.getId() == null || updatedPlayer.getId().isEmpty()) {
-            throw new IllegalArgumentException("Player ID is required!");
-        }
-
-        // Update the player's details (only editable fields)
-        existingPlayer.setName(updatedPlayer.getName());
-        existingPlayer.setGender(updatedPlayer.getGender());
-        existingPlayer.setCountry(updatedPlayer.getCountry());
-        existingPlayer.setBirthdate(updatedPlayer.getBirthdate());
-        existingPlayer.setLocation(updatedPlayer.getLocation());
-        existingPlayer.setFencingWeapon(updatedPlayer.getFencingWeapon());
-        existingPlayer.setBio(updatedPlayer.getBio());
-
-        // Save updated player details
-        playerRepository.saveAndFlush(existingPlayer);
-        return playerRepository.findById(id).get();
     }
 }

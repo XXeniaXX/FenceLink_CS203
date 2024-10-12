@@ -63,16 +63,4 @@ public class PlayerController {
         playerService.deletePlayerById(id);
         return new ResponseEntity<>("Player deleted successfully", HttpStatus.OK);
     }
-
-    // Edit player details for USERS
-    @PutMapping("/{id}/edit")
-    public ResponseEntity<?> editPlayerDetails(@PathVariable("id") String playerId, @RequestBody Player player) {
-        try {
-            playerService.editPlayerDetails(playerId, player);
-            Player updatedPlayer = playerService.findById(playerId); // Fetch the updated player
-            return new ResponseEntity<>(updatedPlayer, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
 }

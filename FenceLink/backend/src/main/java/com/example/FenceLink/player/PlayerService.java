@@ -8,5 +8,4 @@ public interface PlayerService {
     Player insertPlayer(Player player);
     Player updatePlayer(String id, Player player);
     void deletePlayerById(String id);
-    Player editPlayerDetails(String id, Player player);
 }
