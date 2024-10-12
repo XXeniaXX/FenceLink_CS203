@@ -12,7 +12,7 @@ import java.util.*;
 public class PlayerController {
 
     @Autowired
-    private PlayerService playerService;
+    private PlayerServiceImpl playerService;
 
     // @Autowired
     // private RankingService rankingService;
@@ -20,7 +20,7 @@ public class PlayerController {
     // Get all players
     @GetMapping
     public List<Player> getAllPlayers() {
-        return playerService.findAllPlayers();
+        return playerService.findAll();
     }
 
     // Get player by ID
@@ -34,11 +34,11 @@ public class PlayerController {
     }
 
     // Add new player
-    @PostMapping("/add")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Player> addPlayer(@RequestBody Player player) {
-        Player savedPlayer = playerService.addPlayer(player);
-        return new ResponseEntity<>(savedPlayer, HttpStatus.OK);
+        Player savedPlayer = playerService.insertPlayer(player);
+        return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
     }
 
     // Update player details for ADMIN
@@ -60,7 +60,7 @@ public class PlayerController {
         if (player == null) {
             return new ResponseEntity<>("Player not found", HttpStatus.NOT_FOUND);
         }
-        playerService.deletePlayer(id);
+        playerService.deletePlayerById(id);
         return new ResponseEntity<>("Player deleted successfully", HttpStatus.OK);
     }
 

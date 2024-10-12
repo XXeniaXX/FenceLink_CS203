@@ -1,4 +1,4 @@
-package com.example.FenceLink;
+package com.example.FenceLink.player;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,8 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.example.FenceLink.player.*;
-
 @ExtendWith(MockitoExtension.class)
 public class PlayerServiceTest {
 
@@ -24,7 +22,7 @@ public class PlayerServiceTest {
     private PlayerRepository players;
 
     @InjectMocks
-    private PlayerService playerService;
+    private PlayerServiceImpl playerService;
 
     @Test
     void addPlayer_newName_returnSavedPlayer() {
@@ -34,17 +32,14 @@ public class PlayerServiceTest {
                     .name("This is my new Name!")
                     .birthdate(LocalDate.parse("2001-01-01"))
                     .build();
-
-        // Mock the save operation
-        when(players.save(any(Player.class))).thenReturn(player);
     
         // Act
-        Player savedPlayer = playerService.addPlayer(player);
+        Player savedPlayer = playerService.insertPlayer(player);
 
         // Assert
         assertNotNull(savedPlayer);
         verify(players).findById(player.getId());
-        verify(players).save(player);
+        verify(players).saveAndFlush(player);
     }
 
     @Test
@@ -89,11 +84,11 @@ public class PlayerServiceTest {
                     .build();
 
         // Act    
-        playerService.addPlayer(p1);
+        playerService.insertPlayer(p1);
         when(players.findById("11")).thenReturn(Optional.of(p1));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            playerService.addPlayer(p2);
+            playerService.insertPlayer(p2);
         });
 
         String expectedMessage = "Player with same ID already exists!";
@@ -114,7 +109,7 @@ public class PlayerServiceTest {
 
         // Act
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            playerService.addPlayer(player);
+            playerService.insertPlayer(player);
         });
        
         String expectedMessage = "Birthdate cannot be in the future!";
@@ -134,14 +129,14 @@ public class PlayerServiceTest {
                         .build();
 
         // Simulate the player exists
-        playerService.addPlayer(player);
+        playerService.insertPlayer(player);
         when(players.findById("1")).thenReturn(Optional.of(player));
 
         // Act
-        playerService.deletePlayer(player.getId());
+        playerService.deletePlayerById(player.getId());
 
         // Assert
-        verify(players, times(1)).deleteById(player.getId());
+        verify(players, times(1)).deletePlayerById(player.getId());
     }
 
     @Test
@@ -160,13 +155,12 @@ public class PlayerServiceTest {
 
         
     when(players.findById(existingPlayer.getId())).thenReturn(Optional.of(existingPlayer));
-    when(players.save(any(Player.class))).thenReturn(updatedPlayer);
 
     // Act
     Player result = playerService.editPlayerDetails(existingPlayer.getId(), updatedPlayer);
 
     // Assert
     assertEquals("New Susie", result.getName());
-    verify(players, times(1)).save(any(Player.class));
+    verify(players, times(1)).saveAndFlush(any(Player.class));
     }
 }
