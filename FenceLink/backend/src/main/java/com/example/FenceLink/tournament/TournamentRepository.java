@@ -1,58 +1,17 @@
 package com.example.FenceLink.tournament;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public class TournamentRepository {
+public interface TournamentRepository extends JpaRepository<Tournament, Long> {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    // No need to define standard CRUD methods like save, delete, findAll, findById
+    // Spring Data JPA automatically provides them
 
-    // Add tournament
-    public void addTournament(Tournament tournament) {
-        String sql = "INSERT INTO tournaments (name, location, date) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, tournament.getName(), tournament.getLocation(), tournament.getDate());
-    }
-
-    // Update tournament
-    public void updateTournament(Tournament tournament) {
-        String sql = "UPDATE tournaments SET name = ?, location = ?, date = ? WHERE id = ?";
-        jdbcTemplate.update(sql, tournament.getName(), tournament.getLocation(), tournament.getDate(), tournament.getId());
-    }
-
-    // Delete tournament
-    public void deleteTournament(Long id) {
-        String sql = "DELETE FROM tournaments WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    // Get all tournaments
-    public List<Tournament> getAllTournaments() {
-        String sql = "SELECT * FROM tournaments";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Tournament t = new Tournament();
-            t.setId(rs.getLong("id"));
-            t.setName(rs.getString("name"));
-            t.setLocation(rs.getString("location"));
-            t.setDate(rs.getDate("date"));
-            return t;
-        });
-    }
-    // Get tournament by ID
-    public Tournament getTournamentById(Long id) {
-        String sql = "SELECT * FROM tournaments WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-            Tournament t = new Tournament();
-            t.setId(rs.getLong("id"));
-            t.setName(rs.getString("name"));
-            t.setLocation(rs.getString("location"));
-            t.setDate(rs.getDate("date"));
-            return t;
-        }, id); // Passing the id as the argument
-    }
-
+    // If you want custom queries, you can use @Query annotation here
+    // Example: Fetch all tournaments by name
+    List<Tournament> findByName(String name);
 }

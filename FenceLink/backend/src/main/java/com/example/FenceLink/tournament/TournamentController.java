@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("/api/tournaments")
 public class TournamentController {
@@ -18,7 +19,6 @@ public class TournamentController {
         return tournamentService.getAllTournaments();
     }
 
-    // Get tournament by ID
     @GetMapping("/{id}")
     public ResponseEntity<Tournament> getTournamentById(@PathVariable Long id) {
         Tournament tournament = tournamentService.getTournamentById(id);
@@ -29,27 +29,33 @@ public class TournamentController {
         }
     }
 
-    // Add a new tournament
     @PostMapping
-    public ResponseEntity<String> addTournament(@RequestBody Tournament tournament) {
-        tournamentService.addTournament(tournament);
-        return new ResponseEntity<>("Tournament added successfully", HttpStatus.CREATED);
+    public ResponseEntity<Tournament> addTournament(@RequestBody Tournament tournament) {
+        Tournament createdTournament = tournamentService.addTournament(tournament);
+        return new ResponseEntity<>(createdTournament, HttpStatus.CREATED);
     }
 
-    // Update a tournament
     @PutMapping("/{id}")
     public ResponseEntity<String> updateTournament(@PathVariable Long id, @RequestBody Tournament tournament) {
-        tournament.setId(id);
-        tournamentService.updateTournament(tournament);
-        return new ResponseEntity<>("Tournament updated successfully", HttpStatus.OK);
+        if (tournamentService.getTournamentById(id) != null) {
+            tournament.setId(id);
+            tournamentService.updateTournament(tournament);
+            return new ResponseEntity<>("Tournament updated successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Tournament not found", HttpStatus.NOT_FOUND);
+        }
     }
 
-    // Delete a tournament
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTournament(@PathVariable Long id) {
-        tournamentService.deleteTournament(id);
-        return new ResponseEntity<>("Tournament deleted successfully", HttpStatus.OK);
+        if (tournamentService.getTournamentById(id) != null) {
+            tournamentService.deleteTournament(id);
+            return new ResponseEntity<>("Tournament deleted successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Tournament not found", HttpStatus.NOT_FOUND);
+        }
     }
 }
+
 
 
