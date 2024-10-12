@@ -84,6 +84,10 @@ public class PlayerServiceImpl implements PlayerService {
             playerBuilder.location(player.getLocation());
         }
 
+        if (player.getTournamentsRegistered() != null) {
+            playerBuilder.tournamentsRegistered(player.getTournamentsRegistered());
+        }
+
         // .ranking(player.getRanking())
         // .points(player.getPoints())
 
@@ -99,7 +103,7 @@ public class PlayerServiceImpl implements PlayerService {
     public Player updatePlayer(Long id, Player updatedPlayer) throws IllegalArgumentException {
         // Ensures player actually exists
         if (!playerExists(id)) {
-            throw new IllegalArgumentException("Player not found!");
+            throw new IllegalArgumentException("Player with ID: " + id + " not found!");
         }
 
         checkPlayer(updatedPlayer);

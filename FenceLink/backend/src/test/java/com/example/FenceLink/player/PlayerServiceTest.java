@@ -80,7 +80,7 @@ public class PlayerServiceTest {
     }
     
     @Test
-    void updatePlayerBio_Success() {
+    void addPlayer_updateBio_Success() {
         // Arrange
         Player player = Player.builder()
                         .id((long)123)
@@ -109,7 +109,7 @@ public class PlayerServiceTest {
     }
 
     @Test
-    void updatePlayerBio_NotFound_ReturnException() {
+    void addPlayer_updateBio_NotFound_ReturnException() {
         // Arrange
         Player player = Player.builder()
                         .name("myName")
@@ -125,7 +125,7 @@ public class PlayerServiceTest {
             playerService.updatePlayer(id, player);
         });
        
-        String expectedMessage = "Player not found!";
+        String expectedMessage = "Player with ID: " + id + " not found!";
         String actualMessage = exception.getMessage();
 
         // Assert

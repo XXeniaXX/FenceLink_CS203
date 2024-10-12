@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.FenceLink.tournament.*;
+
 import java.util.*;
 
 @RestController
@@ -14,8 +16,8 @@ public class PlayerController {
     @Autowired
     private PlayerServiceImpl playerService;
 
-    // @Autowired
-    // private RankingService rankingService;
+    @Autowired
+    private TournamentRepository tournamentRepository;
 
     // Get all players
     @GetMapping
@@ -63,4 +65,5 @@ public class PlayerController {
         playerService.deletePlayerById(id);
         return new ResponseEntity<>("Player deleted successfully", HttpStatus.OK);
     }
+
 }

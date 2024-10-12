@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
+
+import com.example.FenceLink.player.Player;
 
 
 @Data
@@ -26,6 +29,11 @@ public class Tournament {
     @Temporal(TemporalType.DATE) // Specify the type of the date
     @Column(name = "date") // Specify the column name and constraints
     private Date date;
+
+    // @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+    // @JoinTable(name = "tournament_registered", joinColumns = @JoinColumn(name = "tournament_id"), 
+    //     inverseJoinColumns = @JoinColumn(name = "player_id"))
+    // private List<Player> players;
 
     // Getters and setters
     public Long getId() {
