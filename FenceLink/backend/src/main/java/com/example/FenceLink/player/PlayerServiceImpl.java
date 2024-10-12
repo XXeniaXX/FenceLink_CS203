@@ -45,7 +45,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Player findById(String id) {
+    public Player findById(Long id) {
         return playerRepository.findById(id).orElse(null);
     }
 
@@ -96,7 +96,7 @@ public class PlayerServiceImpl implements PlayerService {
     // Admin only
     @Override
     @Transactional
-    public Player updatePlayer(String id, Player updatedPlayer) throws IllegalArgumentException {
+    public Player updatePlayer(Long id, Player updatedPlayer) throws IllegalArgumentException {
         // Ensures player actually exists
         if (!playerExists(id)) {
             throw new IllegalArgumentException("Player not found!");
@@ -105,7 +105,7 @@ public class PlayerServiceImpl implements PlayerService {
         checkPlayer(updatedPlayer);
 
         // Id cannot be empty
-        if (updatedPlayer.getId() == null || updatedPlayer.getId().isEmpty()) {
+        if (updatedPlayer.getId() == null) {
             throw new IllegalArgumentException("Player ID is required!");
         }
 
@@ -116,7 +116,7 @@ public class PlayerServiceImpl implements PlayerService {
     // Admin only
     @Override
     @Transactional
-    public void deletePlayerById(String id) throws IllegalArgumentException {
+    public void deletePlayerById(Long id) throws IllegalArgumentException {
         // Ensures player actually exists
         if (!playerExists(id)) {
             throw new IllegalArgumentException("Player not found!");
@@ -124,7 +124,7 @@ public class PlayerServiceImpl implements PlayerService {
         playerRepository.deletePlayerById(id);
     }
 
-    public boolean playerExists(String id) throws IllegalArgumentException {
+    public boolean playerExists(Long id) throws IllegalArgumentException {
         return playerRepository.findById(id).isPresent();
     }
 }

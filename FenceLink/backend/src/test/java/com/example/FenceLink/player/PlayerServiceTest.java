@@ -83,14 +83,14 @@ public class PlayerServiceTest {
     void updatePlayerBio_Success() {
         // Arrange
         Player player = Player.builder()
-                        .id("myId")
+                        .id((long)123)
                         .name("myName")
                         .birthdate(LocalDate.parse("1999-09-09"))
                         .bio("Live Laugh Love")
                         .build();
                         
         Player updatedPlayer = Player.builder()
-                                .id("myId")
+                                .id((long)123)
                                 .name("myName")
                                 .birthdate(LocalDate.parse("1999-09-09"))
                                 .bio(":(")
@@ -116,7 +116,7 @@ public class PlayerServiceTest {
                         .birthdate(LocalDate.parse("1999-09-09"))
                         .bio("Live Laugh Love")
                         .build();
-        String id = "nonexistent";
+        Long id = (long)123;
 
         when(players.findById(id)).thenReturn(Optional.empty());
 

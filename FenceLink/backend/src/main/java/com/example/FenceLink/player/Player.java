@@ -3,8 +3,6 @@ package com.example.FenceLink.player;
 import jakarta.persistence.*;
 import java.time.*;
 
-import org.hibernate.annotations.UuidGenerator;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Player {
     
-    public Player(String id, String name, String gender, String country, LocalDate birthdate, String location,
+    public Player(Long id, String name, String gender, String country, LocalDate birthdate, String location,
             String fencingWeapon, String bio, int wins, int losses) {
         this.id = id;
         this.name = name;
@@ -31,10 +29,9 @@ public class Player {
     }
 
     @Id
-    @UuidGenerator
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
-    private String id;
+    private Long id;
 
     @Column(name = "name")
     private String name;

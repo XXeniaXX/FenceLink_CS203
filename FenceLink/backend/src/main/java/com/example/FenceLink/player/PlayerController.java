@@ -25,7 +25,7 @@ public class PlayerController {
 
     // Get player by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Player> getPlayerById(@PathVariable String id) {
+    public ResponseEntity<Player> getPlayerById(@PathVariable Long id) {
         Player player = playerService.findById(id);
         if (player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -43,7 +43,7 @@ public class PlayerController {
 
     // Update player details for ADMIN
     @PutMapping("/{id}")
-    public ResponseEntity<String> updatePlayer(@PathVariable String id, @RequestBody Player player) {
+    public ResponseEntity<String> updatePlayer(@PathVariable Long id, @RequestBody Player player) {
         player.setId(id);  // Ensure player ID is set
         try {
             playerService.updatePlayer(id, player);
@@ -55,7 +55,7 @@ public class PlayerController {
 
     // Delete player for ADMIN
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePlayer(@PathVariable String id) {
+    public ResponseEntity<String> deletePlayer(@PathVariable Long id) {
         Player player = playerService.findById(id);
         if (player == null) {
             return new ResponseEntity<>("Player not found", HttpStatus.NOT_FOUND);
