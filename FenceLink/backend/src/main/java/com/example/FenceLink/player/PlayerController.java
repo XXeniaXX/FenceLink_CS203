@@ -12,17 +12,20 @@ import java.util.*;
 public class PlayerController {
 
     @Autowired
-    private PlayerService playerService;
+    private PlayerServiceImpl playerService;
+
+    // @Autowired
+    // private RankingService rankingService;
 
     // Get all players
     @GetMapping
     public List<Player> getAllPlayers() {
-        return playerService.findAllPlayers();
+        return playerService.findAll();
     }
 
     // Get player by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Player> getPlayerById(@PathVariable String id) {
+    public ResponseEntity<Player> getPlayerById(@PathVariable Long id) {
         Player player = playerService.findById(id);
         if (player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -31,15 +34,16 @@ public class PlayerController {
     }
 
     // Add new player
-    @PostMapping("/add")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String addPlayer(@RequestBody Player player) {
-        return playerService.addPlayer(player);
+    public ResponseEntity<Player> addPlayer(@RequestBody Player player) {
+        Player savedPlayer = playerService.insertPlayer(player);
+        return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
     }
 
     // Update player details for ADMIN
     @PutMapping("/{id}")
-    public ResponseEntity<String> updatePlayer(@PathVariable String id, @RequestBody Player player) {
+    public ResponseEntity<String> updatePlayer(@PathVariable Long id, @RequestBody Player player) {
         player.setId(id);  // Ensure player ID is set
         try {
             playerService.updatePlayer(id, player);
@@ -51,24 +55,12 @@ public class PlayerController {
 
     // Delete player for ADMIN
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePlayer(@PathVariable String id) {
+    public ResponseEntity<String> deletePlayer(@PathVariable Long id) {
         Player player = playerService.findById(id);
         if (player == null) {
             return new ResponseEntity<>("Player not found", HttpStatus.NOT_FOUND);
         }
-        playerService.deletePlayer(id);
+        playerService.deletePlayerById(id);
         return new ResponseEntity<>("Player deleted successfully", HttpStatus.OK);
-    }
-
-    // Edit player details for USERS
-    @PutMapping("/{id}/edit")
-    public ResponseEntity<?> editPlayerDetails(@PathVariable("id") String playerId, @RequestBody Player player) {
-        try {
-            playerService.editPlayerDetails(playerId, player);
-            Player updatedPlayer = playerService.findById(playerId); // Fetch the updated player
-            return new ResponseEntity<>(updatedPlayer, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
     }
 }

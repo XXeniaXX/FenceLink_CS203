@@ -1,11 +1,15 @@
 package com.example.FenceLink.player;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
-public interface PlayerRepository extends MongoRepository<Player, String> {
-    
+public interface PlayerRepository extends JpaRepository<Player, Long> {
+    Optional<Player> findById(Long id);
+    List<Player> findAll();
+    void deletePlayerById(Long id);
 }
 

@@ -70,7 +70,6 @@ const Home = () => {
         </footer>
       </form>
       
-      
     </div>
   );
 };
