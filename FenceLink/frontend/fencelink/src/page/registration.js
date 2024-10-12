@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './home.css'; // Import the CSS file
+import React, { useEffect,useState } from 'react';
+import { signUp } from 'aws-amplify/auth';
+import { Link, useNavigate } from "react-router-dom";
+import './login.css'; // Import the CSS file
 
 const Registration = () => {
+  const navigate = useNavigate();
+  
   // State variables to hold username and password
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -42,12 +45,15 @@ const Registration = () => {
     if (response.ok) {
       alert('Registration successful!'); 
       console.log('Registration successful');
+
+      await handleSignUp()
     } else {
       // Handle error
       const errorText = await response.text();
       alert('Registration failed: ' + errorText); 
       console.error('Registration failed');
     }
+    
   };
 
   function validatePassword(password) {
@@ -57,7 +63,7 @@ const Registration = () => {
     const hasNumber = /[0-9]/.test(password);
 
     if (password.length < minLength) {
-      return "Password is too short. It must be at least 8 characters.";
+      return "Password must be at least 8 characters.";
     } else if (!hasSpecialCharacter) {
       return "Password must contain at least one special character.";
     } else if (!hasUppercase) {
@@ -84,6 +90,29 @@ const Registration = () => {
       return "Please enter a valid email address.";
     } else {
       return "";
+    }
+  }
+
+  async function handleSignUp() {
+    try {
+
+      if (password !== confirmPassword) {
+        throw new Error('Passwords do not match');
+      }
+      const { user } = await signUp({
+        username: username,
+        password: password,
+        options: {
+          userAttributes: {
+            email: email
+          }}
+      });
+  
+      console.log(user);
+      console.log("Navigating to OTP check");
+      navigate("/otpcheck");
+    } catch (error) {
+      console.log('error signing up:', error);
     }
   }
 
@@ -151,7 +180,7 @@ const Registration = () => {
           Register
         </button>
         <footer classname= "footer">
-            Already have an account? <Link to="/home">Log in here</Link>
+            Already have an account? <Link to="/login">Log in here</Link>
         </footer>
       </form>
       

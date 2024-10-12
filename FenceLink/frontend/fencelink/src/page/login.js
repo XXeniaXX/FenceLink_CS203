@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './home.css'; // Import the CSS file
+import './login.css'; // Import the CSS file
 
-const Home = () => {
+const Login = () => {
   // State variables to hold username and password
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -74,4 +74,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Login;

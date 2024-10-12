@@ -1,0 +1,11 @@
+.otp-container {
+    flex: justify-between gap-2;
+    color: #1C1E53;
+    font: inter;
+    
+  }
+  .otp-container input {
+    flex: flex-1 py-5 outline-none;
+    background-color: #f0f0f0;
+  
+  }
