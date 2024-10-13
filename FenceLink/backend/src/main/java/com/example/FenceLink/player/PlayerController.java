@@ -20,8 +20,9 @@ public class PlayerController {
     private TournamentRepository tournamentRepository;
 
     // Get all players
-    @GetMapping
+    @GetMapping("/all")
     public List<Player> getAllPlayers() {
+        System.out.println("hii");
         return playerService.findAll();
     }
 
