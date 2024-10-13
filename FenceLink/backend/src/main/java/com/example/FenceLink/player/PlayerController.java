@@ -66,4 +66,17 @@ public class PlayerController {
         return new ResponseEntity<>("Player deleted successfully", HttpStatus.OK);
     }
 
+    // Register a player for a tournament
+    @PostMapping("/{playerId}/register/{tournamentId}")
+    public ResponseEntity<String> registerForTournament(@PathVariable Long playerId, @PathVariable Long tournamentId) {
+        try {
+            String successMessage = playerService.registerPlayerForTournament(playerId, tournamentId);
+            return new ResponseEntity<>(successMessage, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    
+
 }

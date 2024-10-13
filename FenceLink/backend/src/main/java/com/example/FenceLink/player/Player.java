@@ -70,8 +70,8 @@ public class Player {
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinTable(
         name = "tournament_registered",
-        joinColumns = @JoinColumn(name = "player_id"),
-        inverseJoinColumns = @JoinColumn(name = "tournament_id")
+        joinColumns = @JoinColumn(name = "player_id",referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id")
     )
     private List<Tournament> tournamentsRegistered;
     

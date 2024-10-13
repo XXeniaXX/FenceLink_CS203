@@ -3,6 +3,9 @@ package com.example.FenceLink.player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.FenceLink.tournament.Tournament;
+import com.example.FenceLink.tournament.TournamentRepository;
+
 import jakarta.transaction.Transactional;
 
 import java.time.*;
@@ -13,6 +16,10 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    //new for join table
+    @Autowired
+    private TournamentRepository tournamentRepository;
 
     // Check player info validity
     public void checkPlayer(Player player) throws IllegalArgumentException {
@@ -130,5 +137,25 @@ public class PlayerServiceImpl implements PlayerService {
 
     public boolean playerExists(Long id) throws IllegalArgumentException {
         return playerRepository.findById(id).isPresent();
+    }
+
+    // Method to register a player for a tournament and return a success message
+    @Transactional
+    public String registerPlayerForTournament(Long playerId, Long tournamentId) {
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> 
+            new IllegalArgumentException("Player with ID " + playerId + " not found!")
+        );
+        Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> 
+            new IllegalArgumentException("Tournament with ID " + tournamentId + " not found!")
+        );
+
+        // Add the tournament to the player's list if not already registered
+        if (!player.getTournamentsRegistered().contains(tournament)) {
+            player.getTournamentsRegistered().add(tournament);
+            playerRepository.save(player);  // Save updated player
+        }
+
+        // Return success message
+        return player.getName() + " successfully registered for " + tournament.getName() + ".";
     }
 }

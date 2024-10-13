@@ -30,10 +30,10 @@ public class Tournament {
     @Column(name = "date") // Specify the column name and constraints
     private Date date;
 
-    // @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
-    // @JoinTable(name = "tournament_registered", joinColumns = @JoinColumn(name = "tournament_id"), 
-    //     inverseJoinColumns = @JoinColumn(name = "player_id"))
-    // private List<Player> players;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+    @JoinTable(name = "tournament_registered", joinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id"), 
+        inverseJoinColumns = @JoinColumn(name = "player_id",referencedColumnName = "id"))
+    private List<Player> players;
 
     // Getters and setters
     public Long getId() {
