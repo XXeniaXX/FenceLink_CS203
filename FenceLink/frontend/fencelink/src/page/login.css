@@ -30,6 +30,14 @@
     color: #555;
     transform: translateX(-7px);
   }
+
+  .label2 {
+    margin-bottom: 0.5rem; 
+    font-size: 1rem; 
+    color: #1C1E53;
+    transform: translateX(-7px);
+    margin-bottom: 10px;
+  }
   
   .input {
     padding: 10px;
@@ -41,13 +49,23 @@
   }
   
   .button {
-    padding: 10px;
+    padding: 10px 20px;
     border-radius: 5px;
     background-color: #1C1E53;
     color: #fff;
     font-size: 1rem;
     border: none;
     cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .underline-button {
+    text-decoration: underline;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #1C1E53;
   }
   
   .button:hover {

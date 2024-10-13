@@ -1,7 +1,8 @@
 import React, { useEffect,useState } from 'react';
 import { signUp } from 'aws-amplify/auth';
 import { Link, useNavigate } from "react-router-dom";
-import './login.css'; // Import the CSS file
+import './login.css';
+import './otp.css'; // Import the CSS file
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -94,7 +95,6 @@ const Registration = () => {
   }
 
   async function handleSignUp() {
-    
     try {
 
       if (password !== confirmPassword) {

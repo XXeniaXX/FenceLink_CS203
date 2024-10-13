@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { signIn } from 'aws-amplify/auth';
 import './login.css'; // Import the CSS file
 
 const Login = () => {
   const navigate = useNavigate();
 
   // State variables to hold username and password
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent the default form submission
-    console.log('Username:', username);
+    console.log('Email:', email);
     console.log('Password:', password);
     await handleLogin(); // Call the login function here
   };
@@ -22,13 +23,14 @@ const Login = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({email, password }),
     });
 
     if (response.ok) {
       // Handle successful login (e.g., redirect user)
       alert('Login successful!'); // Display success message
       console.log('Login successful');
+      localStorage.setItem('username', email);
       navigate("/mainpage");
       // You can redirect or perform other actions here
     } else {
@@ -39,18 +41,39 @@ const Login = () => {
     }
   };
 
+  //don't delete this, im trying to figure this out
+  // async function handleSignIn() {
+  //   try {
+  //     const user = await signIn({ 
+  //       username : email, 
+  //       password : password });
+
+  //       if (user.challengeName === 'EMAIL_OTP') {
+  //         // Store the user object to be used in the OTP confirmation step
+  //         localStorage.setItem('username', JSON.stringify(user));
+  //         navigate("/otpcheck2");
+  //       } else {
+  //         // If no OTP challenge, go straight to main page
+  //         navigate("/mainpage");
+  //       }
+
+  //   } catch (error) {
+  //     console.log('error signing in', error);
+  //   }
+  // }
+
   return (
     <div className="container">
       <h1 className="header">LOGIN</h1>
       <form onSubmit={handleSubmit} className="form">
         <label className="label">
-          Username
+          Email
           <input
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="input"
-            placeholder="Enter your username"
+            placeholder="Enter your email"
             required
           />
         </label>
@@ -64,6 +87,9 @@ const Login = () => {
             placeholder="Enter your password"
             required
           />
+        </label>
+        <label className = "label2">
+          <Link to="/forgotpassword">Forgot Password?</Link>
         </label>
         <button type="submit" className="button">
           Login

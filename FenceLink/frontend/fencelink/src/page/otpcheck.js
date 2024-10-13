@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
 import { useNavigate } from "react-router-dom";
-import './otp.css'; // Import the CSS file
+import OtpInput from "otp-input-react";
+import './otp.css'
+import './login.css'; // Import the CSS file
 
 const OtpCheck = () => {
   const navigate = useNavigate();
@@ -47,33 +49,29 @@ const OtpCheck = () => {
   }
 
   return (
-    <div className="otp-container">
-      <h1>OTP Confirmation</h1>
-      <form onSubmit={handleSignUpConfirmation}>
-        <label>
-          Username
-          <input 
-            type="text" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
-            placeholder="Enter your username" 
-            required 
-          />
-        </label>
-        <label>
-          Confirmation Code (OTP)
-          <input 
-            type="text" 
-            value={confirmationCode} 
-            onChange={(e) => setConfirmationCode(e.target.value)} 
-            placeholder="Enter your confirmation code" 
-            required 
-          />
-        </label>
+    <div className="container">
+      <h1 className = "header">OTP Verification</h1>
+      <form onSubmit={handleSignUpConfirmation} className = "form">  
+        <div>
+          <label>
+            Enter the 6-digit verification code that was sent to your email
+          </label>
+            <OtpInput 
+                className="otp-container"
+                type="text" 
+                value={confirmationCode} 
+                onChange={(value) => setConfirmationCode(value)} 
+                OTPLength={6}
+                otpType="number"
+                autoFocus
+              />
+          </div>
         {errorMessage && <p className="error-message">{errorMessage}</p>}
-        <button type="submit">Confirm Sign Up</button>
+        <button type="submit" className = "button">Verify Account</button>
       </form>
-      <button onClick={resendConfirmationCode}>Resend Confirmation Code</button>
+      <footer className= "footer">
+            Didn't receive code?<button onClick={resendConfirmationCode} className = "underline-button">Resend</button>
+      </footer>
     </div>
   );
 };
