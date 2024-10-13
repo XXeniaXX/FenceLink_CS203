@@ -77,6 +77,38 @@ public class PlayerController {
         }
     }
 
-    
+    // Withdraw a player from a tournament
+    @DeleteMapping("/{playerId}/withdraw/{tournamentId}")
+    public ResponseEntity<String> withdrawFromTournament(@PathVariable Long playerId, @PathVariable Long tournamentId) {
+        try {
+            String successMessage = playerService.withdrawPlayerFromTournament(playerId, tournamentId);
+            return new ResponseEntity<>(successMessage, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Player view a list of upcoming tournaments they can register for
+    @GetMapping("/{playerId}/upcoming-tournaments")
+    public ResponseEntity<List<Tournament>> viewUpcomingTournaments(@PathVariable Long playerId) {
+        Player player = playerService.findById(playerId);
+        if (player == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        List<Tournament> upcomingTournaments = playerService.findUpcomingTournaments(playerId);
+        return new ResponseEntity<>(upcomingTournaments, HttpStatus.OK);
+    }
+
+    // Get player's registered upcoming tournaments
+    @GetMapping("/{playerId}/upcoming-registered-tournaments")
+    public ResponseEntity<List<Tournament>> getUpcomingRegisteredTournaments(@PathVariable Long playerId) {
+        try {
+            List<Tournament> upcomingTournaments = playerService.findUpcomingTournamentsForPlayer(playerId);
+            return new ResponseEntity<>(upcomingTournaments, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 
 }
