@@ -18,8 +18,9 @@ public class PlayerController {
     // private RankingService rankingService;
 
     // Get all players
-    @GetMapping
+    @GetMapping("/all")
     public List<Player> getAllPlayers() {
+        System.out.println("hii");
         return playerService.findAll();
     }
 
