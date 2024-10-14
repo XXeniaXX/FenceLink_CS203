@@ -27,7 +27,7 @@ mongoose.connect('mongodb+srv://FenceLink:yFyjObV9c7nG1Svs@cluster0.5sbov.mongod
   const bcrypt = require('bcrypt'); // Import bcrypt for password hashing
 
   // route to handle user login
-app.post('/login', async (req, res) => {
+  app.post('/login', async (req, res) => {
     try {
       const { email, password } = req.body;
       console.log('Attempting to log in with email:', email); 
