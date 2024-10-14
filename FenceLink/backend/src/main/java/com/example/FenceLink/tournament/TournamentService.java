@@ -30,8 +30,11 @@ public class TournamentService {
 
     // Delete tournament by ID
     public void deleteTournament(Long id) {
+        tournamentRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Tournament not found for id: " + id));
         tournamentRepository.deleteById(id);
     }
+    
 
     // Get all tournaments
     public List<Tournament> getAllTournaments() {
