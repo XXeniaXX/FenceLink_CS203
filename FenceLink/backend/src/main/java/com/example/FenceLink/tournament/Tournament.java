@@ -27,6 +27,12 @@ public class Tournament {
     @Column(name = "date") // Specify the column name and constraints
     private Date date;
 
+    public Tournament(String name, String location, Date date) {
+        this.name = name;
+        this.location = location;
+        this.date = date;
+    }
+
     // Getters and setters
     public Long getId() {
         return id;
