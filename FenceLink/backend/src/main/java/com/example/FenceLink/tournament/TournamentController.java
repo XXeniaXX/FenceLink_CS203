@@ -1,4 +1,4 @@
-package com.example.tournament;
+package com.example.FenceLink.tournament;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/tournaments")
 public class TournamentController {
@@ -14,10 +13,20 @@ public class TournamentController {
     @Autowired
     private TournamentService tournamentService;
 
-    // Get all tournaments
     @GetMapping
     public List<Tournament> getAllTournaments() {
         return tournamentService.getAllTournaments();
+    }
+
+    // Get tournament by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Tournament> getTournamentById(@PathVariable Long id) {
+        Tournament tournament = tournamentService.getTournamentById(id);
+        if (tournament != null) {
+            return new ResponseEntity<>(tournament, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     // Add a new tournament
@@ -29,7 +38,7 @@ public class TournamentController {
 
     // Update a tournament
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTournament(@PathVariable String id, @RequestBody Tournament tournament) {
+    public ResponseEntity<String> updateTournament(@PathVariable Long id, @RequestBody Tournament tournament) {
         tournament.setId(id);
         tournamentService.updateTournament(tournament);
         return new ResponseEntity<>("Tournament updated successfully", HttpStatus.OK);
@@ -42,4 +51,5 @@ public class TournamentController {
         return new ResponseEntity<>("Tournament deleted successfully", HttpStatus.OK);
     }
 }
+
 

@@ -29,11 +29,11 @@ mongoose.connect('mongodb+srv://FenceLink:yFyjObV9c7nG1Svs@cluster0.5sbov.mongod
   // route to handle user login
 app.post('/login', async (req, res) => {
     try {
-      const { username, password } = req.body;
-      console.log('Attempting to log in with username:', username); // Log the username
+      const { email, password } = req.body;
+      console.log('Attempting to log in with email:', email); 
       
-      // Find the user by username
-    const user = await User.findOne({ username });
+      // Find the user by email
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).send('User not found');
     }
