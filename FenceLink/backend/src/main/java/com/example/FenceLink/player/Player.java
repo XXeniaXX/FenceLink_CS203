@@ -7,6 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.*;
+
+import com.example.FenceLink.tournament.*;
+
 @Data
 @Builder
 @Entity
@@ -15,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class Player {
     
     public Player(Long id, String name, String gender, String country, LocalDate birthdate, String location,
-            String fencingWeapon, String bio, int wins, int losses) {
+            String fencingWeapon, String bio, int wins, int losses, List<Tournament> tournamentsRegistered) {
         this.id = id;
         this.name = name;
         this.gender = gender;
@@ -26,6 +30,7 @@ public class Player {
         this.bio = bio;
         this.wins = wins;
         this.losses = losses;
+        this.tournamentsRegistered = tournamentsRegistered;
     }
 
     @Id
@@ -61,5 +66,13 @@ public class Player {
     private int losses;
     // private int points;
     // private int ranking;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+    @JoinTable(
+        name = "tournament_registered",
+        joinColumns = @JoinColumn(name = "player_id",referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id")
+    )
+    private List<Tournament> tournamentsRegistered;
     
 }

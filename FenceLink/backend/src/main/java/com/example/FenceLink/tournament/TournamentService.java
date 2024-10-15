@@ -3,8 +3,11 @@ package com.example.FenceLink.tournament;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TournamentService {
@@ -29,7 +32,7 @@ public class TournamentService {
     }
 
     // Delete tournament by ID
-    public void deleteTournament(Long id) {
+ public void deleteTournament(Long id) {
         tournamentRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Tournament not found for id: " + id));
         tournamentRepository.deleteById(id);

@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
+import com.example.FenceLink.player.Player;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @Entity
@@ -32,6 +35,11 @@ public class Tournament {
         this.location = location;
         this.date = date;
     }
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+    @JoinTable(name = "tournament_registered", joinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id"), 
+        inverseJoinColumns = @JoinColumn(name = "player_id",referencedColumnName = "id"))
+    @JsonIgnore  // Prevent infinite recursion
+    private List<Player> players;
 
     // Getters and setters
     public Long getId() {
