@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.example.FenceLink.player.Player;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Data
@@ -38,6 +39,7 @@ public class Tournament {
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinTable(name = "tournament_registered", joinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id"), 
         inverseJoinColumns = @JoinColumn(name = "player_id",referencedColumnName = "id"))
+    @JsonIgnore  // Prevent infinite recursion
     private List<Player> players;
 
     // Getters and setters

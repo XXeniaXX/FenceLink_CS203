@@ -10,6 +10,9 @@ import jakarta.transaction.Transactional;
 
 import java.time.*;
 import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class PlayerServiceImpl implements PlayerService {
@@ -158,4 +161,58 @@ public class PlayerServiceImpl implements PlayerService {
         // Return success message
         return player.getName() + " successfully registered for " + tournament.getName() + ".";
     }
+
+    // Method to withdraw player from tournament
+    @Transactional
+    public String withdrawPlayerFromTournament(Long playerId, Long tournamentId) {
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> 
+            new IllegalArgumentException("Player with ID " + playerId + " not found!")
+        );
+        Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> 
+            new IllegalArgumentException("Tournament with ID " + tournamentId + " not found!")
+        );
+
+        // Remove the tournament from the player's registered list if present
+        if (player.getTournamentsRegistered().contains(tournament)) {
+            player.getTournamentsRegistered().remove(tournament);
+            playerRepository.save(player);  // Save updated player
+            return player.getName() + " successfully withdrawn from " + tournament.getName() + ".";
+        } else {
+            throw new IllegalArgumentException("Player was not registered for this tournament!");
+        }
+    }
+
+    // Method to get a list of upcoming tournaments that player can register for
+    @Override
+    public List<Tournament> findUpcomingTournaments(Long playerId) {
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> 
+            new IllegalArgumentException("Player with ID " + playerId + " not found!")
+        );
+
+        List<Tournament> registeredTournaments = player.getTournamentsRegistered();
+        
+        LocalDate today = LocalDate.now();
+
+        // Fetch all tournaments and filter based on the current date, exclude the ones the player is already registered for
+        return tournamentRepository.findAll().stream()
+                .filter(tournament -> !tournament.getDate().before(java.sql.Date.valueOf(today)) && 
+                                      !registeredTournaments.contains(tournament))
+                .collect(Collectors.toList());
+    }
+
+    // Method for a Player to get upcoming tournaments that they have registered for
+    @Override
+    public List<Tournament> findUpcomingTournamentsForPlayer(Long playerId) {
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> 
+            new IllegalArgumentException("Player with ID " + playerId + " not found!")
+        );
+
+        LocalDate today = LocalDate.now();
+
+        // Filter tournaments that are scheduled after today
+        return player.getTournamentsRegistered().stream()
+                .filter(tournament -> tournament.getDate().after(java.sql.Date.valueOf(today)))
+                .collect(Collectors.toList());
+    }
+
 }
