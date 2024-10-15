@@ -10,7 +10,6 @@ import java.util.List;
 import com.example.FenceLink.player.Player;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
 @Data
 @Entity
 @Table(name = "tournaments")
