@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.FenceLink.tournament.*;
+
 import java.util.*;
 
 @RestController
@@ -14,8 +16,8 @@ public class PlayerController {
     @Autowired
     private PlayerServiceImpl playerService;
 
-    // @Autowired
-    // private RankingService rankingService;
+    @Autowired
+    private TournamentRepository tournamentRepository;
 
     // Get all players
     @GetMapping("/all")
@@ -64,4 +66,18 @@ public class PlayerController {
         playerService.deletePlayerById(id);
         return new ResponseEntity<>("Player deleted successfully", HttpStatus.OK);
     }
+
+    // Register a player for a tournament
+    @PostMapping("/{playerId}/register/{tournamentId}")
+    public ResponseEntity<String> registerForTournament(@PathVariable Long playerId, @PathVariable Long tournamentId) {
+        try {
+            String successMessage = playerService.registerPlayerForTournament(playerId, tournamentId);
+            return new ResponseEntity<>(successMessage, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    
+
 }

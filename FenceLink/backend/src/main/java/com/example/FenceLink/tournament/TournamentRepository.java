@@ -14,4 +14,5 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     // If you want custom queries, you can use @Query annotation here
     // Example: Fetch all tournaments by name
     List<Tournament> findByName(String name);
+
 }
