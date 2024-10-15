@@ -11,6 +11,7 @@ const OtpCheck = () => {
   const [username, setUsername] = useState('');
   const [confirmationCode, setConfirmationCode] = useState(''); // State to hold OTP
   const [errorMessage, setErrorMessage] = useState(''); // State to hold errors
+  const [timeLeft, setTimeLeft] = useState(300);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -34,7 +35,13 @@ const OtpCheck = () => {
       navigate("/mainpage");
     } catch (error) {
       console.log('error confirming sign up', error);
-      setErrorMessage('Failed to confirm sign-up. Please check the confirmation code.');
+      if (error.name === "CodeMismatchException") {
+        setErrorMessage ("The verification code you entered is incorrect. Please try again.");
+      } else if (error.name === "ExpiredCodeException") {
+        setErrorMessage ("Your verification code has expired. Please request a new code.");
+      } else if (error.name === "LimitExceededException") {
+        setErrorMessage ("Too many failed attempts. Please try again after some time.");
+      }
     }
   } 
 
