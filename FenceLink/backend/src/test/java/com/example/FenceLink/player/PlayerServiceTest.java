@@ -217,4 +217,118 @@ public class PlayerServiceTest {
         assertTrue(actualMessage.contains(expectedMessage));
         verify(tournaments).findById(tournamentId);
     }
+
+    @Test
+    void withdrawPlayerFromTournament_success() {
+        // Arrange
+        Long playerId = 1L;  //indictes number 1 is of type long
+        Long tournamentId = 1L;
+
+        // Create a player and tournament
+        Player player = Player.builder()
+                .id(playerId)
+                .name("John Tan")
+                .tournamentsRegistered(new ArrayList<>())
+                .build();
+
+        Tournament tournament = new Tournament();
+        tournament.setId(tournamentId);
+        tournament.setName("Summer Tournament");
+
+        // Add tournament to player's registered tournaments
+        player.getTournamentsRegistered().add(tournament);
+
+        // Mock repository responses
+        when(players.findById(playerId)).thenReturn(Optional.of(player));
+        when(tournaments.findById(tournamentId)).thenReturn(Optional.of(tournament));
+
+        // Act
+        String result = playerService.withdrawPlayerFromTournament(playerId, tournamentId);
+
+        // Assert
+        assertEquals("John Tan successfully withdrawn from Summer Tournament.", result);
+        assertFalse(player.getTournamentsRegistered().contains(tournament)); // Ensure tournament was removed
+        verify(players).save(player); // Ensure player is saved
+    }
+
+    @Test
+    void withdrawPlayerFromTournament_playerNotFound() {
+        // Arrange
+        Long playerId = 1L;
+        Long tournamentId = 1L;
+
+        when(players.findById(playerId)).thenReturn(Optional.empty());
+
+        // Act
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            playerService.withdrawPlayerFromTournament(playerId, tournamentId);
+        });
+
+        // Assert
+        String expectedMessage = "Player with ID " + playerId + " not found!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+        verify(players).findById(playerId);
+    }
+
+    @Test
+    void withdrawPlayerFromTournament_tournamentNotFound() {
+        // Arrange
+        Long playerId = 1L;
+        Long tournamentId = 1L;
+
+        Player player = Player.builder()
+                .id(playerId)
+                .name("John Tan")
+                .tournamentsRegistered(new ArrayList<>())
+                .build();
+
+        when(players.findById(playerId)).thenReturn(Optional.of(player));
+        when(tournaments.findById(tournamentId)).thenReturn(Optional.empty());
+
+        // Act
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            playerService.withdrawPlayerFromTournament(playerId, tournamentId);
+        });
+
+        // Assert
+        String expectedMessage = "Tournament with ID " + tournamentId + " not found!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+        verify(tournaments).findById(tournamentId);
+    }
+
+    @Test
+    void withdrawPlayerFromTournament_playerNotRegisteredForTournament() {
+        // Arrange
+        Long playerId = 1L;
+        Long tournamentId = 1L;
+
+        // Create player and tournament but not register the player
+        Player player = Player.builder()
+                .id(playerId)
+                .name("John Tan")
+                .tournamentsRegistered(new ArrayList<>()) // No tournaments registered
+                .build();
+
+        Tournament tournament = new Tournament();
+        tournament.setId(tournamentId);
+        tournament.setName("Summer Tournament");
+
+        // Mock repository responses
+        when(players.findById(playerId)).thenReturn(Optional.of(player));
+        when(tournaments.findById(tournamentId)).thenReturn(Optional.of(tournament));
+
+        // Act
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            playerService.withdrawPlayerFromTournament(playerId, tournamentId); // This should throw an exception
+        });
+
+        // Assert
+        String expectedMessage = "John Tan is not registered for Summer Tournament.";
+        String actualMessage = exception.getMessage(); // Get the message from the thrown exception
+        assertTrue(actualMessage.contains(expectedMessage)); // Check if the actual message contains the expected message
+        verify(players).findById(playerId); // Ensure that the findById method was called
+    }
+
 }

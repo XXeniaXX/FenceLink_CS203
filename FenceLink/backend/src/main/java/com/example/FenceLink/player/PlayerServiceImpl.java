@@ -178,7 +178,7 @@ public class PlayerServiceImpl implements PlayerService {
             playerRepository.save(player);  // Save updated player
             return player.getName() + " successfully withdrawn from " + tournament.getName() + ".";
         } else {
-            throw new IllegalArgumentException("Player was not registered for this tournament!");
+            throw new IllegalArgumentException(player.getName() + " is not registered for " + tournament.getName() + ".");
         }
     }
 
