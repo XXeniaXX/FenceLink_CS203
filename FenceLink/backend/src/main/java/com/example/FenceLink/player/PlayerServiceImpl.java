@@ -189,7 +189,7 @@ public class PlayerServiceImpl implements PlayerService {
 
         // Fetch all tournaments and filter based on the current date, exclude the ones the player is already registered for
         return tournamentRepository.findAll().stream()
-                .filter(tournament -> !tournament.getDate().before(java.sql.Date.valueOf(today)) && 
+                .filter(tournament -> !tournament.getRegistrationDate().before(java.sql.Date.valueOf(today)) && 
                                       !registeredTournaments.contains(tournament))
                 .collect(Collectors.toList());
     }
@@ -205,7 +205,7 @@ public class PlayerServiceImpl implements PlayerService {
 
         // Filter tournaments that are scheduled after today
         return player.getTournamentsRegistered().stream()
-                .filter(tournament -> tournament.getDate().after(java.sql.Date.valueOf(today)))
+                .filter(tournament -> tournament.getRegistrationDate().after(java.sql.Date.valueOf(today)))
                 .collect(Collectors.toList());
     }
 

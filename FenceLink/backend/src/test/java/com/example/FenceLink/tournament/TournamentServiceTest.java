@@ -25,7 +25,9 @@ public class TournamentServiceTest {
     @Test
     void addTournament_returnSavedTournament() {
         // Arrange
-        Tournament tournament = new Tournament("Summer Cup", "New York", new Date());
+        Tournament tournament = new Tournament("Summer Cup", "New York", new Date(), 
+                "An exciting summer tournament", "Knockout", "Professional", 
+                "Male", "18+", new Date(), new Date(), 100);
 
         when(tournamentRepository.save(any(Tournament.class))).thenReturn(tournament);
 
@@ -40,7 +42,9 @@ public class TournamentServiceTest {
     @Test
     void getTournamentById_existingId_returnTournament() {
         // Arrange
-        Tournament tournament = new Tournament("Winter Cup", "Los Angeles", new Date());
+        Tournament tournament = new Tournament("Winter Cup", "Los Angeles", new Date(), 
+                "Winter tournament in LA", "Round Robin", "Amateur", 
+                "Female", "18+", new Date(), new Date(), 50);
         tournament.setId(1L);
 
         when(tournamentRepository.findById(1L)).thenReturn(Optional.of(tournament));
@@ -72,7 +76,9 @@ public class TournamentServiceTest {
     @Test
     void updateTournament_existingId_returnUpdatedTournament() {
         // Arrange
-        Tournament tournament = new Tournament("Spring Cup", "Chicago", new Date());
+        Tournament tournament = new Tournament("Spring Cup", "Chicago", new Date(), 
+                "Spring tournament in Chicago", "Knockout", "Professional", 
+                "Male", "18+", new Date(), new Date(), 75);
         tournament.setId(1L);
 
         when(tournamentRepository.findById(1L)).thenReturn(Optional.of(tournament));
@@ -90,7 +96,9 @@ public class TournamentServiceTest {
     @Test
     void updateTournament_nonExistingId_throwException() {
         // Arrange
-        Tournament tournament = new Tournament("Autumn Cup", "Miami", new Date());
+        Tournament tournament = new Tournament("Autumn Cup", "Miami", new Date(), 
+                "Autumn tournament in Miami", "League", "Amateur", 
+                "Female", "18+", new Date(), new Date(), 60);
         tournament.setId(99L);
 
         when(tournamentRepository.findById(99L)).thenReturn(Optional.empty());
@@ -107,7 +115,9 @@ public class TournamentServiceTest {
     @Test
     void deleteTournament_existingId_success() {
         // Arrange
-        Tournament tournament = new Tournament("Championship", "Boston", new Date());
+        Tournament tournament = new Tournament("Championship", "Boston", new Date(), 
+                "Championship event in Boston", "Knockout", "Professional", 
+                "Male", "18+", new Date(), new Date(), 100);
         tournament.setId(1L);
 
         when(tournamentRepository.findById(1L)).thenReturn(Optional.of(tournament));
@@ -134,4 +144,6 @@ public class TournamentServiceTest {
         assertEquals(expectedMessage, exception.getMessage());
     }
 }
+
+
 

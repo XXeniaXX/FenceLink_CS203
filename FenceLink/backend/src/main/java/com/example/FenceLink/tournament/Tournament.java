@@ -27,13 +27,49 @@ public class Tournament {
     private String location;
 
     @Temporal(TemporalType.DATE) // Specify the type of the date
-    @Column(name = "date") // Specify the column name and constraints
-    private Date date;
+    @Column(name = "RegistrationDate") // Specify the column name and constraints
+    private Date RegistrationDate;
 
-    public Tournament(String name, String location, Date date) {
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "tournamentType")
+    private String tournamentType;
+
+    @Column(name = "category")
+    private String category;
+
+    @Column(name = "genderType")
+    private String genderType;
+
+    @Column(name = "ageGroup")
+    private String ageGroup;
+
+    @Temporal(TemporalType.DATE) // Specify the type of the date
+    @Column(name = "startDate") // Specify the column name and constraints
+    private Date startDate;
+
+    @Temporal(TemporalType.DATE) // Specify the type of the date
+    @Column(name = "endDate") // Specify the column name and constraints
+    private Date endDate;
+
+    @Column(name = "vacancy") // Specify the column name and constraints
+    private int vancany;
+
+    public Tournament(String name, String location, Date RegistrationDate, String description, String tournamentType, 
+                    String category, String genderType, String ageGroup, Date startDate, Date endDate, int vacancy) {
         this.name = name;
         this.location = location;
-        this.date = date;
+        this.RegistrationDate = RegistrationDate;
+        this.description = description; 
+        this.tournamentType = tournamentType;
+        this.category = category; 
+        this.genderType = genderType; 
+        this.ageGroup = ageGroup; 
+        this.startDate = startDate; 
+        this.endDate = endDate; 
+        this.vancany = vacancy;
+
     }
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinTable(name = "tournament_registered", joinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id"), 
@@ -66,12 +102,12 @@ public class Tournament {
         this.location = location;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getRegistrationDate() {
+        return RegistrationDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate(Date RegistrationDate) {
+        this.RegistrationDate = RegistrationDate;
     }
 }
 
