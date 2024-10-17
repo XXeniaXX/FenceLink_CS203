@@ -16,9 +16,6 @@ public class PlayerController {
     @Autowired
     private PlayerServiceImpl playerService;
 
-    @Autowired
-    private TournamentRepository tournamentRepository;
-
     // Get all players
     @GetMapping("/all")
     public List<Player> getAllPlayers() {

@@ -19,7 +19,7 @@ import com.example.FenceLink.tournament.*;
 public class Player {
     
     public Player(Long id, String name, String gender, String country, LocalDate birthdate, String location,
-            String fencingWeapon, String bio, int wins, int losses, List<Tournament> tournamentsRegistered) {
+            String fencingWeapon, String bio, Integer points, List<Tournament> tournamentsRegistered) {
         this.id = id;
         this.name = name;
         this.gender = gender;
@@ -28,8 +28,7 @@ public class Player {
         this.location = location;
         this.fencingWeapon = fencingWeapon;
         this.bio = bio;
-        this.wins = wins;
-        this.losses = losses;
+        this.points = points;
         this.tournamentsRegistered = tournamentsRegistered;
     }
 
@@ -59,13 +58,8 @@ public class Player {
     @Column(name = "bio")
     private String bio;
 
-    @Column(name = "wins")
-    private int wins;
-
-    @Column(name = "losses")
-    private int losses;
-    // private int points;
-    // private int ranking;
+    @Column(name = "points")
+    private int points;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinTable(

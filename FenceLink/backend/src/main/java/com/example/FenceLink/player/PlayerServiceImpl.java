@@ -9,7 +9,6 @@ import com.example.FenceLink.tournament.TournamentRepository;
 import jakarta.transaction.Transactional;
 
 import java.time.*;
-import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,9 +42,9 @@ public class PlayerServiceImpl implements PlayerService {
             throw new IllegalArgumentException("Player must be at least 14 years old!");
         }
 
-        // Wins, losses, points cannot be negative
-        if (player.getWins() < 0 || player.getLosses() < 0) {
-            throw new IllegalArgumentException("Data Invalid: value cannot be negative!");
+        // Points cannot be negative
+        if (player.getPoints() < 0) {
+            throw new IllegalArgumentException("Data Invalid: points cannot be negative!");
         }
     }
 
@@ -62,17 +61,15 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     @Transactional
     public Player insertPlayer(Player player) throws IllegalArgumentException {
-        // Wins and losses 0 since new player hasn't joined anything
-        player.setWins(0);
-        player.setLosses(0);
+        // Points 0 since new player hasn't joined anything
+        player.setPoints(0);
 
         checkPlayer(player);
 
         Player.PlayerBuilder playerBuilder = Player.builder()
                 .name(player.getName())
                 .birthdate(player.getBirthdate())
-                .wins(player.getWins())
-                .losses(player.getLosses());
+                .points(player.getPoints());
 
         if (player.getGender() != null) {
             playerBuilder.bio(player.getGender());
@@ -97,9 +94,6 @@ public class PlayerServiceImpl implements PlayerService {
         if (player.getTournamentsRegistered() != null) {
             playerBuilder.tournamentsRegistered(player.getTournamentsRegistered());
         }
-
-        // .ranking(player.getRanking())
-        // .points(player.getPoints())
 
         playerBuilder.build();
 
