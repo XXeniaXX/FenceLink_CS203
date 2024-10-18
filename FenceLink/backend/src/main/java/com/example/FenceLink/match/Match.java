@@ -3,15 +3,7 @@ package com.example.FenceLink.match;
 import java.sql.Time;
 import java.util.Date;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Data
@@ -44,7 +36,7 @@ public class Match {
     private Date date;
 
     @Temporal(TemporalType.TIME) // Specify the type of the date
-    @Column(name = "Date") // Specify the column name and constraints
+    @Column(name = "StartTime") // Specify the column name and constraints
     private Time startTime;
 
     @Temporal(TemporalType.TIME)
