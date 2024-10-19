@@ -8,12 +8,12 @@ import lombok.*;
 
 @Data
 @Entity
-@Table(name = "match")
+@Table(name = "matches")
+@IdClass(MatchId.class) // Define the composite key class
 @NoArgsConstructor
 public class Match {
-    
-    @Id // Specifies the primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generate the ID
+
+    @Id
     @Column(name = "matchId")
     private Long matchId;
 
@@ -25,31 +25,32 @@ public class Match {
     @Column(name = "TournamentID")
     private Long tournamentId;
 
-    @JoinColumn(name = "Player1Id" )
+    @JoinColumn(name = "Player1Id")
     private Long player1Id; 
 
     @JoinColumn(name = "Player2Id")
     private Long player2Id;
 
-    @Temporal(TemporalType.DATE) // Specify the type of the date
-    @Column(name = "Date") // Specify the column name and constraints
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Date")
     private Date date;
 
-    @Temporal(TemporalType.TIME) // Specify the type of the date
-    @Column(name = "StartTime") // Specify the column name and constraints
+    @Temporal(TemporalType.TIME)
+    @Column(name = "StartTime")
     private Time startTime;
 
     @Temporal(TemporalType.TIME)
-    @Column(name = "EndTime") 
+    @Column(name = "EndTime")
     private Time endTime;
 
-    @Column (name = "Winner")
-    private String winner; 
+    @Column(name = "Winner")
+    private String winner;
 
-    public Match(Long matchId, int roundNo, Long tournamentId, Long player1Id, Long player2Id ,Date date, Time startTime, Time endTime, String winner){
+    // Constructor
+    public Match(Long matchId, int roundNo, Long tournamentId, Long player1Id, Long player2Id, Date date, Time startTime, Time endTime, String winner) {
         this.matchId = matchId;
         this.roundNo = roundNo;
-        this.tournamentId = tournamentId; 
+        this.tournamentId = tournamentId;
         this.player1Id = player1Id;
         this.player2Id = player2Id;
         this.date = date;
