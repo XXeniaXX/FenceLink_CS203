@@ -71,7 +71,7 @@ public class PlayerController {
             String successMessage = playerService.registerPlayerForTournament(playerId, tournamentId);
             return new ResponseEntity<>(successMessage, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
