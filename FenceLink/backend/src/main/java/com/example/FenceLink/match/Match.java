@@ -2,14 +2,13 @@ package com.example.FenceLink.match;
 
 import java.sql.Time;
 import java.util.Date;
-
 import jakarta.persistence.*;
 import lombok.*;
 
 @Data
 @Entity
 @Table(name = "matches")
-@IdClass(MatchId.class) // Define the composite key class
+@IdClass(MatchId.class)  // Using MatchId as the composite key class
 @NoArgsConstructor
 public class Match {
 
@@ -19,14 +18,14 @@ public class Match {
 
     @Id
     @Column(name = "roundNo")
-    private int roundNo; 
+    private int roundNo;
 
     @Id
     @Column(name = "TournamentID")
     private Long tournamentId;
 
     @JoinColumn(name = "Player1Id")
-    private Long player1Id; 
+    private Long player1Id;
 
     @JoinColumn(name = "Player2Id")
     private Long player2Id;
@@ -35,11 +34,9 @@ public class Match {
     @Column(name = "Date")
     private Date date;
 
-    @Temporal(TemporalType.TIME)
     @Column(name = "StartTime")
     private Time startTime;
 
-    @Temporal(TemporalType.TIME)
     @Column(name = "EndTime")
     private Time endTime;
 

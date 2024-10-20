@@ -30,14 +30,32 @@ public class MatchController {
         return match.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/tournament/{tournamentId}")
-    public List<Match> getMatchesByTournamentId(@PathVariable Long tournamentId) {
-        return matchService.getMatchesByTournamentId(tournamentId);
-    }
-
     @PostMapping
     public Match createMatch(@RequestBody Match match) {
+        // Creating the MatchId manually from the fields
+        MatchId id = new MatchId(match.getMatchId(), match.getRoundNo(), match.getTournamentId());
+        match.setMatchId(id.getMatchId());
         return matchService.createMatch(match);
+    }
+
+    @PutMapping("/{matchId}/{roundNo}/{tournamentId}/result/update")
+    public ResponseEntity<Match> updateRoundResult(
+            @PathVariable Long matchId,
+            @PathVariable int roundNo,
+            @PathVariable Long tournamentId,
+            @RequestBody String updatedWinner) {
+
+        MatchId id = new MatchId(matchId, roundNo, tournamentId);
+        Optional<Match> matchOptional = matchService.getMatchById(id);
+
+        if (matchOptional.isPresent()) {
+            Match match = matchOptional.get();
+            match.setWinner(updatedWinner);
+            matchService.updateMatch(match);
+            return ResponseEntity.ok(match);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{matchId}/{roundNo}/{tournamentId}")
@@ -68,3 +86,5 @@ public class MatchController {
         return ResponseEntity.noContent().build();
     }
 }
+
+
