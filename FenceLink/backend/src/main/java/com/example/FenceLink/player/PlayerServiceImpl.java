@@ -30,6 +30,10 @@ public class PlayerServiceImpl implements PlayerService {
             throw new IllegalArgumentException("Name cannot be empty!");
         }
 
+        if (!player.getGender().equalsIgnoreCase("M") && !player.getGender().equalsIgnoreCase("F")) {
+            throw new IllegalArgumentException("Gender can only be M or F!");
+        }
+
         LocalDate currentDate = LocalDate.now();
         int age = Period.between(player.getBirthdate(), currentDate).getYears();
 
@@ -101,7 +105,6 @@ public class PlayerServiceImpl implements PlayerService {
         return player;
     }
 
-    // Admin only
     @Override
     @Transactional
     public Player updatePlayer(Long id, Player updatedPlayer) throws IllegalArgumentException {
