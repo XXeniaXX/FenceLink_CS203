@@ -139,24 +139,32 @@ public class PlayerServiceTest {
         assertTrue(actualMessage.contains(expectedMessage));
         verify(players).findById(id);
     }
+    
+    //Unit testing for tournament registrtaion
 
     @Test
-    void registerPlayerForTournament_alreadyRegistered() {
+    void registerPlayerForTournament_successfulRegistration() {
         // Arrange
         Long playerId = 1L;
         Long tournamentId = 1L;
 
-        // Initialize the player and tournament
+        // Initialize the player
         Player player = new Player();
         player.setId(playerId);
         player.setName("John Doe");
+        player.setBirthdate(LocalDate.of(2008, 1, 1)); // Example birthdate for a teen
+        player.setGender("Male");
         player.setTournamentsRegistered(new ArrayList<>()); // Initialize the list
 
-        // Simulate that the player is already registered for the tournament
+        // Initialize the tournament
         Tournament tournament = new Tournament();
         tournament.setId(tournamentId);
         tournament.setName("Spring Tournament");
-        player.getTournamentsRegistered().add(tournament); // Add the tournament to the player's list
+        // Set the registration date to a future date
+        tournament.setRegistrationDate(LocalDate.of(2025, 11, 11));
+        tournament.setAgeGroup("Teen"); // Set the tournament age group to Teen
+        tournament.setGenderType("Male"); // Set the tournament gender type
+        tournament.setVacancy(1); // Ensure there is at least one vacancy
 
         // Mock the repository responses
         when(players.findById(playerId)).thenReturn(Optional.of(player));
@@ -166,11 +174,60 @@ public class PlayerServiceTest {
         String result = playerService.registerPlayerForTournament(playerId, tournamentId);
 
         // Assert
-        assertEquals("John Doe successfully registered for Spring Tournament.", result);
-        assertEquals(1, player.getTournamentsRegistered().size()); // Ensure no duplicates added
-        verify(players, times(0)).saveAndFlush(player); // No save should occur
+        String expectedMessage = "John Doe successfully registered for Spring Tournament.";
+        assertEquals(expectedMessage, result);
+        assertEquals(1, player.getTournamentsRegistered().size()); // Check that the player is registered
+        assertTrue(player.getTournamentsRegistered().contains(tournament)); // Ensure the tournament is in the player's list
+        assertEquals(0, tournament.getVacancy()); // Check that the vacancy is reduced by 1
+        verify(players).save(player); // Verify that the player was saved
+        verify(tournaments).save(tournament); // Verify that the tournament was updated
     }
+    
+    @Test
+    void registerPlayerForTournament_alreadyRegistered() {
+        // Arrange
+        Long playerId = 1L;
+        Long tournamentId = 1L;
 
+        // Initialize the player
+        Player player = new Player();
+        player.setId(playerId);
+        player.setName("John Doe");
+        player.setBirthdate(LocalDate.of(2008, 1, 1)); // Example birthdate for a teen
+        player.setGender("Male");
+        player.setTournamentsRegistered(new ArrayList<>()); // Initialize the list
+
+        // Initialize the tournament
+        Tournament tournament = new Tournament();
+        tournament.setId(tournamentId);
+        tournament.setName("Spring Tournament");
+        tournament.setRegistrationDate(LocalDate.of(2025, 11, 11));
+        tournament.setAgeGroup("Teen"); // Set the tournament age group to Teen
+        tournament.setGenderType("Male"); // Set the tournament gender type
+        tournament.setVacancy(1); // Ensure there is at least one vacancy
+
+        // Add the tournament to the player's registered tournaments to simulate that they're already registered
+        player.getTournamentsRegistered().add(tournament); 
+
+        // Mock the repository responses
+        when(players.findById(playerId)).thenReturn(Optional.of(player));
+        when(tournaments.findById(tournamentId)).thenReturn(Optional.of(tournament));
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            playerService.registerPlayerForTournament(playerId, tournamentId);
+        });
+
+        // Assert the expected message
+        String expectedMessage = "Player already registered for the tournament!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+
+        // Verify that the save methods were not called since registration should not proceed
+        verify(players, times(0)).save(player);
+        verify(tournaments, times(0)).save(tournament);
+    }
+    
     @Test
     void registerPlayerForTournament_playerNotFound() {
         // Arrange
@@ -197,11 +254,10 @@ public class PlayerServiceTest {
         Long playerId = 1L;
         Long tournamentId = 1L;
 
-        Player player = Player.builder()
-                .id(playerId)
-                .name("John Doe")
-                .tournamentsRegistered(new ArrayList<>())
-                .build();
+        Player player = new Player();
+        player.setId(playerId);
+        player.setName("John Doe");
+        player.setTournamentsRegistered(new ArrayList<>());
 
         when(players.findById(playerId)).thenReturn(Optional.of(player));
         when(tournaments.findById(tournamentId)).thenReturn(Optional.empty());
@@ -216,6 +272,158 @@ public class PlayerServiceTest {
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
         verify(tournaments).findById(tournamentId);
+    }
+
+    @Test
+    void registerPlayerForTournament_registrationDeadlinePassed() {
+        // Arrange
+        Long playerId = 1L;
+        Long tournamentId = 1L;
+
+        // Initialize the player
+        Player player = new Player();
+        player.setId(playerId);
+        player.setName("John Doe");
+        player.setBirthdate(LocalDate.of(2008, 1, 1));
+        player.setGender("Male");
+        player.setTournamentsRegistered(new ArrayList<>());
+
+        // Initialize the tournament with a past registration date
+        Tournament tournament = new Tournament();
+        tournament.setId(tournamentId);
+        tournament.setName("Spring Tournament");
+        tournament.setRegistrationDate(LocalDate.of(2023, 11, 11));
+        tournament.setAgeGroup("Teen");
+        tournament.setGenderType("Male");
+        tournament.setVacancy(1);
+
+        // Mock the repository responses
+        when(players.findById(playerId)).thenReturn(Optional.of(player));
+        when(tournaments.findById(tournamentId)).thenReturn(Optional.of(tournament));
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            playerService.registerPlayerForTournament(playerId, tournamentId);
+        });
+
+        // Assert the expected message
+        String expectedMessage = "Registration deadline for Spring Tournament has passed!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void registerPlayerForTournament_noVacancies() {
+        // Arrange
+        Long playerId = 1L;
+        Long tournamentId = 1L;
+
+        // Initialize the player
+        Player player = new Player();
+        player.setId(playerId);
+        player.setName("John Doe");
+        player.setBirthdate(LocalDate.of(2008, 1, 1));
+        player.setGender("Male");
+        player.setTournamentsRegistered(new ArrayList<>());
+
+        // Initialize the tournament with no vacancies
+        Tournament tournament = new Tournament();
+        tournament.setId(tournamentId);
+        tournament.setName("Spring Tournament");
+        tournament.setRegistrationDate(LocalDate.of(2025, 11, 11));
+        tournament.setAgeGroup("Teen");
+        tournament.setGenderType("Male");
+        tournament.setVacancy(0); // No vacancies
+
+        // Mock the repository responses
+        when(players.findById(playerId)).thenReturn(Optional.of(player));
+        when(tournaments.findById(tournamentId)).thenReturn(Optional.of(tournament));
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            playerService.registerPlayerForTournament(playerId, tournamentId);
+        });
+
+        // Assert the expected message
+        String expectedMessage = "No vacancies left for Spring Tournament!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void registerPlayerForTournament_ageRequirementNotMet() {
+        // Arrange
+        Long playerId = 1L;
+        Long tournamentId = 1L;
+
+        // Initialize the player as an adult
+        Player player = new Player();
+        player.setId(playerId);
+        player.setName("John Doe");
+        player.setBirthdate(LocalDate.of(2000, 1, 1)); // 23 years old
+        player.setGender("Male");
+        player.setTournamentsRegistered(new ArrayList<>());
+
+        // Initialize the tournament with age group set to "Teen"
+        Tournament tournament = new Tournament();
+        tournament.setId(tournamentId);
+        tournament.setName("Spring Tournament");
+        tournament.setRegistrationDate(LocalDate.of(2025, 11, 11));
+        tournament.setAgeGroup("Teen"); // Set to Teen
+        tournament.setGenderType("Male");
+        tournament.setVacancy(1);
+
+        // Mock the repository responses
+        when(players.findById(playerId)).thenReturn(Optional.of(player));
+        when(tournaments.findById(tournamentId)).thenReturn(Optional.of(tournament));
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            playerService.registerPlayerForTournament(playerId, tournamentId);
+        });
+
+        // Assert the expected message
+        String expectedMessage = "Player's age does not meets the tournament's age requirement!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void registerPlayerForTournament_genderRequirementNotMet() {
+        // Arrange
+        Long playerId = 1L;
+        Long tournamentId = 1L;
+
+        // Initialize the player with a different gender
+        Player player = new Player();
+        player.setId(playerId);
+        player.setName("Jane Doe");
+        player.setBirthdate(LocalDate.of(2008, 1, 1));
+        player.setGender("Female"); // Different gender
+        player.setTournamentsRegistered(new ArrayList<>());
+
+        // Initialize the tournament with a male gender requirement
+        Tournament tournament = new Tournament();
+        tournament.setId(tournamentId);
+        tournament.setName("Spring Tournament");
+        tournament.setRegistrationDate(LocalDate.of(2025, 11, 11));
+        tournament.setAgeGroup("Teen");
+        tournament.setGenderType("Male"); // Male-only tournament
+        tournament.setVacancy(1);
+
+        // Mock the repository responses
+        when(players.findById(playerId)).thenReturn(Optional.of(player));
+        when(tournaments.findById(tournamentId)).thenReturn(Optional.of(tournament));
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            playerService.registerPlayerForTournament(playerId, tournamentId);
+        });
+
+        // Assert the expected message
+        String expectedMessage = "Player's gender does not match the tournament's gender requirement!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
@@ -330,5 +538,6 @@ public class PlayerServiceTest {
         assertTrue(actualMessage.contains(expectedMessage)); // Check if the actual message contains the expected message
         verify(players).findById(playerId); // Ensure that the findById method was called
     }
+    
 
 }

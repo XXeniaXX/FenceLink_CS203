@@ -4,6 +4,7 @@ package com.example.FenceLink.tournament;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -26,9 +27,9 @@ public class Tournament {
     @Column(name = "location") // Specify the column name and constraints
     private String location;
 
-    @Temporal(TemporalType.DATE) // Specify the type of the date
+
     @Column(name = "RegistrationDate") // Specify the column name and constraints
-    private Date RegistrationDate;
+    private LocalDate RegistrationDate;
 
     @Column(name = "description")
     private String description;
@@ -39,25 +40,23 @@ public class Tournament {
     @Column(name = "category")
     private String category;
 
-    @Column(name = "genderType")
+    @Column(name = "genderType")// "Male", "Female", or "Open" for mixed tournaments
     private String genderType;
 
-    @Column(name = "ageGroup")
+    @Column(name = "ageGroup")//"Teen":<18 years old, "Adult">=18 years old
     private String ageGroup;
 
-    @Temporal(TemporalType.DATE) // Specify the type of the date
     @Column(name = "startDate") // Specify the column name and constraints
-    private Date startDate;
+    private LocalDate startDate;
 
-    @Temporal(TemporalType.DATE) // Specify the type of the date
     @Column(name = "endDate") // Specify the column name and constraints
-    private Date endDate;
+    private LocalDate endDate;
 
     @Column(name = "vacancy") // Specify the column name and constraints
-    private int vancany;
+    private int vacancy;
 
-    public Tournament(String name, String location, Date RegistrationDate, String description, String tournamentType, 
-                    String category, String genderType, String ageGroup, Date startDate, Date endDate, int vacancy) {
+    public Tournament(String name, String location, LocalDate RegistrationDate, String description, String tournamentType, 
+                    String category, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy) {
         this.name = name;
         this.location = location;
         this.RegistrationDate = RegistrationDate;
@@ -68,9 +67,10 @@ public class Tournament {
         this.ageGroup = ageGroup; 
         this.startDate = startDate; 
         this.endDate = endDate; 
-        this.vancany = vacancy;
+        this.vacancy = vacancy;
 
     }
+    
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinTable(name = "tournament_registered", joinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id"), 
         inverseJoinColumns = @JoinColumn(name = "player_id",referencedColumnName = "id"))
@@ -102,13 +102,38 @@ public class Tournament {
         this.location = location;
     }
 
-    public Date getRegistrationDate() {
+    public LocalDate getRegistrationDate() {
         return RegistrationDate;
     }
 
-    public void setDate(Date RegistrationDate) {
+    public void setRegistrationDate(LocalDate RegistrationDate) {
         this.RegistrationDate = RegistrationDate;
     }
+
+    public String getAgeGroup() {
+        return ageGroup;
+    }
+    
+    public void setAgeGroup(String ageGroup) {
+        this.ageGroup = ageGroup;
+    }
+
+    public String getGenderType() {
+        return genderType;
+    }
+    
+    public void setGenderType(String genderType) {
+        this.genderType = genderType;
+    }
+
+    public int getVacancy() {
+        return vacancy;
+    }
+
+    public void setVacancy(int vacancy) {
+        this.vacancy = vacancy;
+    }
+
 }
 
 

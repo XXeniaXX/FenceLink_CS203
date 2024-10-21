@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+
 @Service
 public class PlayerServiceImpl implements PlayerService {
 
@@ -137,7 +138,7 @@ public class PlayerServiceImpl implements PlayerService {
         return playerRepository.findById(id).isPresent();
     }
 
-    // Method to register a player for a tournament and return a success message
+    // Method to register a player for a tournament
     @Transactional
     public String registerPlayerForTournament(Long playerId, Long tournamentId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> 
@@ -147,12 +148,45 @@ public class PlayerServiceImpl implements PlayerService {
             new IllegalArgumentException("Tournament with ID " + tournamentId + " not found!")
         );
 
-        // Add the tournament to the player's list if not already registered
-        if (!player.getTournamentsRegistered().contains(tournament)) {
-            player.getTournamentsRegistered().add(tournament);
-            playerRepository.save(player);  // Save updated player
+        // check if player already registered for the tournament
+        if (player.getTournamentsRegistered().contains(tournament)) {
+            throw new IllegalArgumentException("Player already registered for the tournament!");
         }
 
+        // Check if current date is before the tournament's registration deadline
+        LocalDate currentDate = LocalDate.now();
+        LocalDate registrationDate = tournament.getRegistrationDate();
+        if (currentDate.isAfter(registrationDate)) {
+            throw new IllegalArgumentException("Registration deadline for " + tournament.getName() + " has passed!");
+        }
+
+        // Check if there are vacancies left for the tournament
+        if (tournament.getVacancy() <= 0) {
+            throw new IllegalArgumentException("No vacancies left for " + tournament.getName() + "!");
+        }
+
+        // Calculate the player's age based on their birthdate
+        Period age = Period.between(player.getBirthdate(), currentDate);
+
+        // Check if the player's age fits the tournament's age group
+        String ageGroup = tournament.getAgeGroup(); // Assuming the age group is stored in the tournament object
+        if ((ageGroup.equals("Teen") && age.getYears() >= 18) || 
+        (ageGroup.equals("Adults") && age.getYears() < 18)) {
+            throw new IllegalArgumentException("Player's age does not meets the tournament's age requirement!");
+        }
+
+        // Check if the player's gender matches the tournament's gender type or if the tournament is "Open"
+        if (!tournament.getGenderType().equalsIgnoreCase("Open") && 
+        !tournament.getGenderType().equalsIgnoreCase(player.getGender())) {
+            throw new IllegalArgumentException("Player's gender does not match the tournament's gender requirement!");
+        }
+
+        // If all checks pass, register the player and update the tournament's vacancy
+        player.getTournamentsRegistered().add(tournament);
+        playerRepository.save(player);  // Save updated player
+        tournament.setVacancy(tournament.getVacancy() - 1);//update vacancy
+        tournamentRepository.save(tournament);  // Save updated tournament
+        
         // Return success message
         return player.getName() + " successfully registered for " + tournament.getName() + ".";
     }
@@ -247,7 +281,7 @@ public class PlayerServiceImpl implements PlayerService {
 
         // Filter tournaments that are scheduled after today
         return player.getTournamentsRegistered().stream()
-                .filter(tournament -> tournament.getRegistrationDate().after(java.sql.Date.valueOf(today)))
+                .filter(tournament -> tournament.getRegistrationDate().isAfter(today))
                 .collect(Collectors.toList());
     }
 
