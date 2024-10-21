@@ -3,14 +3,14 @@ import { confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
 import { useNavigate } from "react-router-dom";
 import OtpInput from "otp-input-react";
 import './otp.css'
-import './login.css'; // Import the CSS file
+import './login.css'; 
 
 const OtpCheck = () => {
   const navigate = useNavigate();
   
   const [username, setUsername] = useState('');
-  const [confirmationCode, setConfirmationCode] = useState(''); // State to hold OTP
-  const [errorMessage, setErrorMessage] = useState(''); // State to hold errors
+  const [confirmationCode, setConfirmationCode] = useState(''); 
+  const [errorMessage, setErrorMessage] = useState(''); 
   const [timeLeft, setTimeLeft] = useState(300);
 
   useEffect(() => {
@@ -18,12 +18,11 @@ const OtpCheck = () => {
     if (storedUsername) {
       setUsername(storedUsername); 
     } else {
-      console.log('No username found in local storage.'); // Debug log
+      console.log('No username found in local storage.'); 
     }
   }, []);
  
 
-  // Function to handle OTP confirmation
   async function handleSignUpConfirmation(e) {
     e.preventDefault();
 

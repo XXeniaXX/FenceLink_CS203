@@ -17,7 +17,7 @@ const Registration = () => {
   const [emailValidation, setEmailValidation] = useState('');
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the default form submission
+    e.preventDefault(); 
     console.log('Username:', username);
     console.log('Email:', email);
     console.log('Password:', password);
@@ -27,11 +27,10 @@ const Registration = () => {
     console.log('Email Validation:', emailValidation);
 
     if (passwordValidation || matchPassword) {
-        // If there are validation messages, do not proceed with registration
         return;
     }
 
-    await handleRegistration(); // Call the registration function
+    await handleRegistration();
   };
 
   const handleRegistration = async () => {
@@ -49,7 +48,6 @@ const Registration = () => {
 
       await handleSignUp()
     } else {
-      // Handle error
       const errorText = await response.text();
       alert('Registration failed: ' + errorText); 
       console.error('Registration failed');
