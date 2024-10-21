@@ -225,7 +225,7 @@ public class PlayerServiceImpl implements PlayerService {
 
         // Fetch all tournaments and filter based on the current date, exclude the ones the player is already registered for
         return tournamentRepository.findAll().stream()
-                .filter(tournament -> !tournament.getRegistrationDate().before(java.sql.Date.valueOf(today)) && 
+                .filter(tournament -> !tournament.getRegistrationDate().isBefore(today) && 
                                       !registeredTournaments.contains(tournament) &&
                                       isPlayerEligibleForGender(player, tournament.getGenderType()) &&
                                       isPlayerEligibleForAgeGroup(playerAge, tournament.getAgeGroup()) //&&
@@ -265,8 +265,8 @@ public class PlayerServiceImpl implements PlayerService {
     public boolean hasClashingTournament(Player player, Tournament newTournament) {
         return player.getTournamentsRegistered().stream()
             .anyMatch(registeredTournament -> 
-                !registeredTournament.getEndDate().before(newTournament.getStartDate()) && 
-                !registeredTournament.getStartDate().after(newTournament.getEndDate())
+                !registeredTournament.getEndDate().isBefore(newTournament.getStartDate()) && 
+                !registeredTournament.getStartDate().isAfter(newTournament.getEndDate())
             );
     }
 
