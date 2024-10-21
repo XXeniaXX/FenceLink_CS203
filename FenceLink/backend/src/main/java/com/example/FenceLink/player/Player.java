@@ -11,6 +11,7 @@ import java.util.*;
 
 import com.example.FenceLink.tournament.*;
 
+
 @Data
 @Builder
 @Entity
@@ -68,5 +69,7 @@ public class Player {
         inverseJoinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id")
     )
     private List<Tournament> tournamentsRegistered;
+
+    
     
 }
