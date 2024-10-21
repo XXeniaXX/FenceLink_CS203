@@ -3,6 +3,7 @@ package com.example.FenceLink.player;
 import java.util.*;
 
 import com.example.FenceLink.tournament.Tournament;
+import com.example.FenceLink.tournament.UpcomingTournamentResponse;
 
 public interface PlayerService {
     Player findById(Long id);
@@ -10,6 +11,6 @@ public interface PlayerService {
     Player insertPlayer(Player player);
     Player updatePlayer(Long id, Player player);
     void deletePlayerById(Long id);
-    List<Tournament> findUpcomingTournaments(Long playerId);
-    List<Tournament> findUpcomingTournamentsForPlayer(Long playerId);
+    List<UpcomingTournamentResponse> findUpcomingTournaments(Long playerId);
+    List<Tournament> findUpcomingRegisteredTournaments(Long playerId);
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.FenceLink.tournament.Tournament;
 import com.example.FenceLink.tournament.TournamentRepository;
+import com.example.FenceLink.tournament.UpcomingTournamentResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -178,7 +179,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     // Method to get a list of upcoming tournaments that player can register for
     @Override
-    public List<Tournament> findUpcomingTournaments(Long playerId) {
+    public List<UpcomingTournamentResponse> findUpcomingTournaments(Long playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> 
             new IllegalArgumentException("Player with ID " + playerId + " not found!")
         );
@@ -186,17 +187,58 @@ public class PlayerServiceImpl implements PlayerService {
         List<Tournament> registeredTournaments = player.getTournamentsRegistered();
         
         LocalDate today = LocalDate.now();
+        int playerAge = Period.between(player.getBirthdate(), LocalDate.now()).getYears();
 
         // Fetch all tournaments and filter based on the current date, exclude the ones the player is already registered for
         return tournamentRepository.findAll().stream()
                 .filter(tournament -> !tournament.getRegistrationDate().before(java.sql.Date.valueOf(today)) && 
-                                      !registeredTournaments.contains(tournament))
+                                      !registeredTournaments.contains(tournament) &&
+                                      isPlayerEligibleForGender(player, tournament.getGenderType()) &&
+                                      isPlayerEligibleForAgeGroup(playerAge, tournament.getAgeGroup()) //&&
+                                      //player.getFencingWeapon().equals(tournament.getCategory())
+                                      )
+                .map(tournament -> {
+                    boolean hasClash = hasClashingTournament(player, tournament);
+                    String clashMessage = hasClash ? "This tournament clashes with another tournament you are registered for." : null;
+                    return new UpcomingTournamentResponse(tournament, clashMessage);
+                    }) // returns clash message abt whether player have a registered clashing tournament
                 .collect(Collectors.toList());
+    }
+
+    // Method to check if a player is eligible for the tournament based on gender
+    private boolean isPlayerEligibleForGender(Player player, String genderType) {
+        // If the tournament is "Open", any player can participate
+        if (genderType.equals("Open")) {
+            return true;
+        }
+        // Otherwise, the player must match the gender type of the tournament
+        return genderType.equals(player.getGender());
+    }
+
+    // Method to check if player's age fits into the tournament's age group
+    private boolean isPlayerEligibleForAgeGroup(int playerAge, String ageGroup) {
+        switch (ageGroup) {
+            case "Teen":
+                return playerAge < 18;
+            case "Adults":
+                return playerAge >= 18;
+            default:
+                return true;  // If no specific age group, assume eligible
+        }
+    }
+
+    // Method for checking if the player has a clashing tournament
+    public boolean hasClashingTournament(Player player, Tournament newTournament) {
+        return player.getTournamentsRegistered().stream()
+            .anyMatch(registeredTournament -> 
+                !registeredTournament.getEndDate().before(newTournament.getStartDate()) && 
+                !registeredTournament.getStartDate().after(newTournament.getEndDate())
+            );
     }
 
     // Method for a Player to get upcoming tournaments that they have registered for
     @Override
-    public List<Tournament> findUpcomingTournamentsForPlayer(Long playerId) {
+    public List<Tournament> findUpcomingRegisteredTournaments(Long playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> 
             new IllegalArgumentException("Player with ID " + playerId + " not found!")
         );
