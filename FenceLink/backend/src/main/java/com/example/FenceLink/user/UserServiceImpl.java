@@ -1,5 +1,6 @@
 package com.example.FenceLink.user;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 //import org.springframework.security.access.prepost.PreAuthorize;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.example.FenceLink.player.Player;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -64,7 +66,11 @@ public class UserServiceImpl implements UserService {
 
         String role = "ROLE_PLAYER";
 
-        User newUser = new User(null, userDto.getUsername(), userDto.getEmail(), hashedPassword, role);
+        Player newPlayer = new Player(null, userDto.getUsername(), null, null, null, null, null, null, 0, new ArrayList<>(), null);
+
+        User newUser = new User(null, userDto.getUsername(), userDto.getEmail(), hashedPassword, role, newPlayer);
+
+        newPlayer.setUser(newUser);
 
         return userRepository.save(newUser);
     }
@@ -81,7 +87,7 @@ public class UserServiceImpl implements UserService {
 
         String role = "ROLE_ADMIN";
 
-        User newAdmin = new User(null, userDto.getUsername(), userDto.getEmail(), hashedPassword, role);
+        User newAdmin = new User(null, userDto.getUsername(), userDto.getEmail(), hashedPassword, role, null);
 
         return userRepository.save(newAdmin);
     }

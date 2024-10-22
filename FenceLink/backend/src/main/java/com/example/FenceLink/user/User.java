@@ -1,6 +1,7 @@
 package com.example.FenceLink.user;
 
 import com.example.FenceLink.player.Player;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,10 @@ public class User {
   
     @Column(name = "role")
     private String role;
+
+    @OneToOne (mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Player player;
 
    
     
