@@ -81,6 +81,29 @@ public class UserServiceTest {
     }
 
     @Test
+    void createAdmin_NewAdmin_ReturnSavedAdmin() {
+        // Arrange ***
+        UserDTO userDto = new UserDTO("adminuser", "admin@example.com", "adminpass123");
+        User newAdmin = new User(1L, "adminuser", "adminpass123", "admin@example.com", "ROLE_ADMIN", null);
+
+        when(users.findByEmail(any(String.class))).thenReturn(Optional.empty());
+
+        when(users.save(any(User.class))).thenReturn(newAdmin);
+
+        // Act ***
+        User savedAdmin = userService.createAdmin(userDto);
+
+        // Assert ***
+        assertNotNull(savedAdmin); 
+        assertEquals("adminuser", savedAdmin.getUsername()); 
+        assertEquals("admin@example.com", savedAdmin.getEmail()); 
+        assertEquals("ROLE_ADMIN", savedAdmin.getRole()); 
+
+        verify(users).findByEmail(userDto.getEmail());
+        verify(users).save(any(User.class));
+    }
+
+    @Test
     void findById_UserExists_ReturnUser() {
         // Arrange ***
         Long userId = 1L;
@@ -133,6 +156,24 @@ public class UserServiceTest {
 
         verify(users).findByEmail(userDto.getEmail());
         verify(users, times(0)).save(any(User.class)); 
+    }
+
+    @Test
+    void createAdmin_EmailAlreadyExists_ThrowsException() {
+        // Arrange ***
+        UserDTO userDto = new UserDTO("adminuser", "admin@example.com", "adminpass123");
+
+        when(users.findByEmail(any(String.class))).thenReturn(Optional.of(new User()));
+
+        // Act & Assert ***
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.createAdmin(userDto);
+        });
+
+        assertEquals("Email is already in use!", exception.getMessage()); 
+
+        verify(users).findByEmail(userDto.getEmail());
+        verify(users, times(0)).save(any(User.class));
     }
 
     @Test

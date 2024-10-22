@@ -39,6 +39,14 @@ public class UserController {
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
+     // Add new Admin
+     @PostMapping("/createadmin")
+     @ResponseStatus(HttpStatus.CREATED)
+     public ResponseEntity<User> addAdmin(@RequestBody UserDTO userDTO) {
+         User savedUser = userService.createAdmin(userDTO);
+         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         if (!userService.userExists(id)) {
