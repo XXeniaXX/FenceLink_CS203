@@ -70,21 +70,21 @@ public class PlayerController {
         return new ResponseEntity<>("Player details updated successfully", HttpStatus.OK);
     }
 
-    // Update player's points for ADMIN
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}/updatePoints")
-    public ResponseEntity<String> updatePlayerAdminFields(@PathVariable Long id, @RequestBody Player player) {
-        Player existingPlayer = playerService.findById(id);
-        if (existingPlayer == null) {
-            return new ResponseEntity<>("Player not found!", HttpStatus.NOT_FOUND);
-        }
+    // // Update player's points for ADMIN
+    // @PreAuthorize("hasRole('ADMIN')")
+    // @PutMapping("/{id}/updatePoints")
+    // public ResponseEntity<String> updatePlayerAdminFields(@PathVariable Long id, @RequestBody Player player) {
+    //     Player existingPlayer = playerService.findById(id);
+    //     if (existingPlayer == null) {
+    //         return new ResponseEntity<>("Player not found!", HttpStatus.NOT_FOUND);
+    //     }
 
-        // Only admins can update the points
-        existingPlayer.setPoints(player.getPoints());
+    //     // Only admins can update the points
+    //     existingPlayer.setPoints(player.getPoints());
 
-        playerService.updatePlayer(id, existingPlayer);
-        return new ResponseEntity<>("Player statistics updated successfully", HttpStatus.OK);
-    }
+    //     playerService.updatePlayer(id, existingPlayer);
+    //     return new ResponseEntity<>("Player statistics updated successfully", HttpStatus.OK);
+    // }
 
     // Delete player for ADMIN
     @DeleteMapping("/{id}")

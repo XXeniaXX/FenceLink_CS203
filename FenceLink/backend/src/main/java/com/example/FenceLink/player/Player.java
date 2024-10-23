@@ -19,26 +19,10 @@ import com.example.FenceLink.user.*;
 @Table(name = "player")
 @NoArgsConstructor
 public class Player {
-
-    public enum Role {
-        ROLE_USER,
-        ROLE_ADMIN
-    }
-
-    public enum Gender {
-        M,
-        F
-    }
     
-<<<<<<< HEAD
-    public Player(Long id, Role role, String name, String gender, String country, LocalDate birthdate, String location,
-            String fencingWeapon, String bio, Integer points, List<Tournament> tournamentsRegistered) {
-=======
     public Player(Long id, String name, String gender, String country, LocalDate birthdate, String location,
             String fencingWeapon, String bio, Integer points, List<Tournament> tournamentsRegistered, User user) {
->>>>>>> Doris3
         this.id = id;
-        this.role = role;
         this.name = name;
         this.gender = gender;
         this.country = country;
@@ -46,7 +30,7 @@ public class Player {
         this.location = location;
         this.fencingWeapon = fencingWeapon;
         this.bio = bio;
-        this.points = points;
+        this.points = 100; // Default number of points, all players start with 100
         this.tournamentsRegistered = tournamentsRegistered;
     }
 
@@ -55,13 +39,9 @@ public class Player {
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
     @Column(name = "name")
     private String name;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "gender")
     private String gender;
 
