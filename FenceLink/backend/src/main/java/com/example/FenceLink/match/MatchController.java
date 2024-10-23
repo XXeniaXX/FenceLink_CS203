@@ -52,7 +52,8 @@ public class MatchController {
             updatedMatch.setDate(matchDetails.getDate());
             updatedMatch.setStartTime(matchDetails.getStartTime());
             updatedMatch.setEndTime(matchDetails.getEndTime());
-            updatedMatch.setWinner(matchDetails.getWinner());
+            updatedMatch.setPlayer1points(matchDetails.getPlayer1points());
+            updatedMatch.setPlayer2points(matchDetails.getPlayer2points());
 
             matchService.updateMatch(updatedMatch);
             return ResponseEntity.ok(updatedMatch);
