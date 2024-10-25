@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-fencelink-dev-e136b-authRole",
+      "UnauthRoleArn": "arn:aws:iam::976193220058:role/amplify-fencelink-dev-e136b-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::976193220058:role/amplify-fencelink-dev-e136b-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-fencelink-dev-e136b-deployment",
+      "UnauthRoleName": "amplify-fencelink-dev-e136b-unauthRole",
+      "StackName": "amplify-fencelink-dev-e136b",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:976193220058:stack/amplify-fencelink-dev-e136b/ceed1280-8788-11ef-94ea-02142df23065",
+      "AmplifyAppId": "d1ztkja6ecvr1h"
+    },
+    "categories": {
+      "auth": {
+        "fencelinkb5260db5": {}
+      }
+    }
+  }
+}

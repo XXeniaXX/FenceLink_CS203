@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 //import org.springframework.security.access.prepost.PreAuthorize;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.example.FenceLink.player.Player;
 
@@ -16,8 +16,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    // @Autowired
-    // private BCryptPasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
     public void checkUser(UserDTO userDto) throws IllegalArgumentException {
        
@@ -57,7 +56,7 @@ public class UserServiceImpl implements UserService {
     public User registerUser(UserDTO userDto) throws IllegalArgumentException {
         checkUser(userDto); 
 
-        String hashedPassword = userDto.getPassword();
+        String hashedPassword = passwordEncoder.encode(userDto.getPassword());
         
         //check if email already exists before saving
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
@@ -78,7 +77,7 @@ public class UserServiceImpl implements UserService {
     public User createAdmin(UserDTO userDto) throws IllegalArgumentException {
         checkUser(userDto); 
 
-        String hashedPassword = userDto.getPassword();
+        String hashedPassword = passwordEncoder.encode(userDto.getPassword());
         
         //check if email already exists before saving
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
