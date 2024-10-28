@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -47,5 +46,11 @@ public class UserController {
         userService.deleteUserById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    // @PostMapping("/auth/login")
+    // public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    //     // Your authentication logic here
+    // }
+
     
 }

@@ -39,6 +39,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // Anyone can retrieve players 
                 .requestMatchers(HttpMethod.GET, "/api/players/**").hasAnyRole()
+
+                // Allow login requests without authentication
+                .antMatchers("/api/auth/login").permitAll()  
+                .anyRequest().authenticated()
                 
                 // Players can edit their own details (excluding points)
                 .requestMatchers(HttpMethod.GET, "/api/players/{id}/edit").hasAnyRole("PLAYER", "ADMIN")
@@ -49,8 +53,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(HttpMethod.DELETE, "/api/players/*").hasRole("ADMIN")
 
                 .anyRequest().authenticated()
-            .and()
-                .csrf().disable();
+                .and()
+                .csrf().disable()
+                .formLogin().disable();
     }
 
     @Bean
