@@ -2,10 +2,18 @@ package com.example.leaderboard;
 
 import java.util.*;
 import com.example.FenceLink.player.Player;
+import jakarta.persistence.*;
 
+@Entity
 public class Leaderboard {
 
-    private List<Player> players;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    
+
+    public Leaderboard() {}
 
     public Leaderboard(List<Player> players) {
         this.players = players;
@@ -52,5 +60,11 @@ public class Leaderboard {
 
         // Sort the players after updating points
         sortPlayersByPoints();
+    }
+
+    public void addPlayer(Player player) {
+        if (!players.contains(player)) {
+            players.add(player);
+        }
     }
 }

@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.example.FenceLink.player.Player;
+import com.example.FenceLink.leaderboard.Leaderboard;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
@@ -55,8 +56,12 @@ public class Tournament {
     @Column(name = "vacancy") // Specify the column name and constraints
     private int vacancy;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "leaderboard_id")
+    private Leaderboard leaderboard;
+
     public Tournament(String name, String location, LocalDate RegistrationDate, String description, String tournamentType, 
-                    String weaponType, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy) {
+                    String weaponType, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy, Leaderboard leaderboard) {
         this.name = name;
         this.location = location;
         this.RegistrationDate = RegistrationDate;
@@ -68,7 +73,7 @@ public class Tournament {
         this.startDate = startDate; 
         this.endDate = endDate; 
         this.vacancy = vacancy;
-
+        this.leaderboard = leaderboard;
     }
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
@@ -134,6 +139,9 @@ public class Tournament {
         this.vacancy = vacancy;
     }
 
+    public Leaderboard getLeaderboard() {
+        return leaderboard;
+    }
 }
 
 

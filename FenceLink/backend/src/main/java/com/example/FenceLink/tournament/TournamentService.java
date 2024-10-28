@@ -50,4 +50,17 @@ public class TournamentService {
             new RuntimeException("Tournament not found for id: " + id)
         );
     }
+
+    // Add players to tournament AND leaderboard
+    @Transactional
+    public void addPlayerToTournament(Long tournamentId, Player player) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+            .orElseThrow(() -> new RuntimeException("Tournament not found!"));
+
+            if (!tournament.getAllPlayers().contains(player)) {
+                tournament.getPlayers().add(player);
+                tournament.getLeaderboard().addPlayer(player);
+                tournamentRepository.save(tournament);
+            }
+    }
 }

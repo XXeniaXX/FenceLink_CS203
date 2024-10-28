@@ -21,10 +21,6 @@ public class Match {
     @Column(name = "roundNo")
     private int roundNo; 
 
-    @Id
-    @Column(name = "TournamentID")
-    private Long tournamentId;
-
     @JoinColumn(name = "Player1Id")
     private Long player1Id; 
 
@@ -49,6 +45,9 @@ public class Match {
     @Column(name = "Player2Points")
     private String player2points;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "leaderboard_id")
+    private Leaderboard leaderboard;
 
     // Constructor
     public Match(Long matchId, int roundNo, Long tournamentId, Long player1Id, Long player2Id, Date date, Time startTime, Time endTime, String player1points, String player2points) {
@@ -62,5 +61,6 @@ public class Match {
         this.endTime = endTime;
         this.player1points = player1points;
         this.player2points = player2points;
+        this. leaderboard = new Leaderboard();
     }
 }

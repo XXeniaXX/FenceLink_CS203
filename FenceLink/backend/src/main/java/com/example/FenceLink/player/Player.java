@@ -12,7 +12,6 @@ import java.util.*;
 import com.example.FenceLink.tournament.*;
 import com.example.FenceLink.user.*;
 
-
 @Data
 @Builder
 @Entity
@@ -75,6 +74,4 @@ public class Player {
     @JoinColumn(name = "user_id")
     private User user;
 
-    
-    
 }
