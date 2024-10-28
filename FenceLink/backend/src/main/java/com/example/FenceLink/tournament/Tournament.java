@@ -1,15 +1,14 @@
 package com.example.FenceLink.tournament;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import com.example.FenceLink.player.Player;
 import com.example.FenceLink.leaderboard.Leaderboard;
+import com.example.FenceLink.match.Match;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
@@ -27,7 +26,6 @@ public class Tournament {
 
     @Column(name = "location") // Specify the column name and constraints
     private String location;
-
 
     @Column(name = "RegistrationDate") // Specify the column name and constraints
     private LocalDate RegistrationDate;
@@ -60,8 +58,12 @@ public class Tournament {
     @JoinColumn(name = "leaderboard_id")
     private Leaderboard leaderboard;
 
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Match> matches;
+
     public Tournament(String name, String location, LocalDate RegistrationDate, String description, String tournamentType, 
-                    String weaponType, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy, Leaderboard leaderboard) {
+                    String weaponType, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy, Leaderboard leaderboard,
+                    List<Match> matches) {
         this.name = name;
         this.location = location;
         this.RegistrationDate = RegistrationDate;
@@ -74,6 +76,7 @@ public class Tournament {
         this.endDate = endDate; 
         this.vacancy = vacancy;
         this.leaderboard = leaderboard;
+        this.matches = matches;
     }
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
@@ -141,6 +144,12 @@ public class Tournament {
 
     public Leaderboard getLeaderboard() {
         return leaderboard;
+    }
+
+    public void addPlayer(Player player) {
+        if (!players.contains(player)) {
+            players.add(player);
+        }
     }
 }
 

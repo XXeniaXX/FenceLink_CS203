@@ -5,27 +5,31 @@ import java.util.Date;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.example.FenceLink.leaderboard.Leaderboard;
+import com.example.FenceLink.player.Player;
+import com.example.FenceLink.tournament.Tournament;
 
 @Data
 @Entity
 @Table(name = "matches")
-@IdClass(MatchId.class) // Define the composite key class
 @NoArgsConstructor
 public class Match {
 
-    @Id
-    @Column(name = "matchId")
-    private Long matchId;
+    @EmbeddedId
+    private MatchId id;
 
-    @Id
-    @Column(name = "roundNo")
-    private int roundNo; 
+    @MapsId("tournamentId")
+    @ManyToOne
+    @JoinColumn(name = "tournament_id", nullable = false)
+    private Tournament tournament;
 
-    @JoinColumn(name = "Player1Id")
-    private Long player1Id; 
+    @ManyToOne
+    @JoinColumn(name = "player1_id")
+    private Player player1;
 
-    @JoinColumn(name = "Player2Id")
-    private Long player2Id;
+    @ManyToOne
+    @JoinColumn(name = "player2_id")
+    private Player player2;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "Date")
@@ -39,28 +43,20 @@ public class Match {
     @Column(name = "EndTime")
     private Time endTime;
 
-    @Column(name = "Player1Points")
-    private String player1points;
-
-    @Column(name = "Player2Points")
-    private String player2points;
-
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "leaderboard_id")
     private Leaderboard leaderboard;
 
     // Constructor
-    public Match(Long matchId, int roundNo, Long tournamentId, Long player1Id, Long player2Id, Date date, Time startTime, Time endTime, String player1points, String player2points) {
-        this.matchId = matchId;
-        this.roundNo = roundNo;
-        this.tournamentId = tournamentId;
-        this.player1Id = player1Id;
-        this.player2Id = player2Id;
+    public Match(MatchId id, Tournament tournament, Date date, Time startTime, Time endTime, Player player1, Player player2,
+    Leaderboard leaderboard) {
+        this.id = id;
+        this.tournament = tournament;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.player1points = player1points;
-        this.player2points = player2points;
-        this. leaderboard = new Leaderboard();
+        this.player1 = player1;
+        this.player2 = player2;
+        this. leaderboard = leaderboard;
     }
 }

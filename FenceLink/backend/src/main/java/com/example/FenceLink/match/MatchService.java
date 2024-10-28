@@ -3,18 +3,20 @@ package com.example.FenceLink.match;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.FenceLink.tournament.Tournament;
+import com.example.FenceLink.tournament.TournamentRepository;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MatchService {
 
-    private final MatchRepository matchRepository;
+    @Autowired
+    private MatchRepository matchRepository;
 
     @Autowired
-    public MatchService(MatchRepository matchRepository) {
-        this.matchRepository = matchRepository;
-    }
+    private TournamentRepository tournamentRepository;
 
     public List<Match> getAllMatches() {
         return matchRepository.findAll();
@@ -24,8 +26,12 @@ public class MatchService {
         return matchRepository.findById(id);
     }
 
-    public List<Match> getMatchesByTournamentId(Long tournamentId) {
-        return matchRepository.findByTournamentId(tournamentId);
+    public List<Match> getMatchesByTournament(Tournament tournament) {
+        return matchRepository.findByTournament(tournament);
+    }
+
+    public Optional<Tournament> findTournamentById(Long tournamentId) {
+        return tournamentRepository.findById(tournamentId);
     }
 
     public Match createMatch(Match match) {

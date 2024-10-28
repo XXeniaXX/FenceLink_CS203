@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.leaderboard.Leaderboard;
+
 @ExtendWith(MockitoExtension.class)
 public class TournamentServiceTest {
 
@@ -28,7 +30,7 @@ public class TournamentServiceTest {
         // Arrange
         Tournament tournament = new Tournament("Summer Cup", "New York", LocalDate.of(2024, 11, 11), 
                 "An exciting summer tournament", "Friendly", "foil", 
-                "Male", "Teen", LocalDate.of(2025, 10, 11), LocalDate.of(2025, 11, 11), 100
+                "Male", "Teen", LocalDate.of(2025, 10, 11), LocalDate.of(2025, 11, 11), 100, null 
                 );
 
         when(tournamentRepository.save(any(Tournament.class))).thenReturn(tournament);
@@ -44,9 +46,12 @@ public class TournamentServiceTest {
     @Test
     void getTournamentById_existingId_returnTournament() {
         // Arrange
-        Tournament tournament = new Tournament("Winter Cup", "Los Angeles", LocalDate.of(2024, 11, 11), 
-                "Winter tournament in LA", "Round Robin", "Amateur", 
-                "Female", "18+", LocalDate.of(2024, 11, 11), LocalDate.of(2024, 11, 11), 50);
+        Leaderboard ldb = new Leaderboard();
+        Tournament tournament = new Tournament("Summer Cup", "New York", LocalDate.of(2024, 11, 11), 
+                "An exciting summer tournament", "Friendly", "foil", 
+                "Male", "Teen", LocalDate.of(2025, 10, 11), LocalDate.of(2025, 11, 11), 100, null 
+                );
+
         tournament.setId(1L);
 
         when(tournamentRepository.findById(1L)).thenReturn(Optional.of(tournament));
@@ -80,7 +85,7 @@ public class TournamentServiceTest {
         // Arrange
         Tournament tournament = new Tournament("Spring Cup", "Chicago", LocalDate.of(2024, 11, 11), 
                 "Spring tournament in Chicago", "Knockout", "Professional", 
-                "Male", "18+", LocalDate.of(2024, 11, 11), LocalDate.of(2024, 11, 11), 75);
+                "Male", "18+", LocalDate.of(2024, 11, 11), LocalDate.of(2024, 11, 11), 75, null);
         tournament.setId(1L);
 
         when(tournamentRepository.findById(1L)).thenReturn(Optional.of(tournament));
@@ -100,7 +105,7 @@ public class TournamentServiceTest {
         // Arrange
         Tournament tournament = new Tournament("Autumn Cup", "Miami", LocalDate.of(2024, 11, 11), 
                 "Autumn tournament in Miami", "League", "Amateur", 
-                "Female", "18+", LocalDate.of(2024, 11, 11), LocalDate.of(2024, 11, 11), 60);
+                "Female", "18+", LocalDate.of(2024, 11, 11), LocalDate.of(2024, 11, 11), 60, null);
         tournament.setId(99L);
 
         when(tournamentRepository.findById(99L)).thenReturn(Optional.empty());
@@ -119,7 +124,7 @@ public class TournamentServiceTest {
         // Arrange
         Tournament tournament = new Tournament("Championship", "Boston", LocalDate.of(2024, 11, 11), 
                 "Championship event in Boston", "Knockout", "Professional", 
-                "Male", "18+", LocalDate.of(2024, 11, 11), LocalDate.of(2024, 11, 11), 100);
+                "Male", "18+", LocalDate.of(2024, 11, 11), LocalDate.of(2024, 11, 11), 100, null);
         tournament.setId(1L);
 
         when(tournamentRepository.findById(1L)).thenReturn(Optional.of(tournament));
