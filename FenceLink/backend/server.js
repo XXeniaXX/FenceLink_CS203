@@ -68,6 +68,27 @@ mongoose.connect('mongodb+srv://FenceLink:yFyjObV9c7nG1Svs@cluster0.5sbov.mongod
     }
   });
 
+  app.put('/resetPassword', async (req, res) => {
+    try {
+      const { email, newPassword } = req.body;
+  
+      const user = await User.findOne({ email });
+      if (!user) return res.status(404).send('User not found');
+  
+      // Hash the new password
+      const salt = await bcrypt.genSalt(10);
+      const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+  
+      // Update the user's password in the database
+      user.password = hashedNewPassword;
+      await user.save();
+  
+      res.status(200).send('Password reset successful');
+    } catch (error) {
+      res.status(500).send('Server error: ' + error.message);
+    }
+  });
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
