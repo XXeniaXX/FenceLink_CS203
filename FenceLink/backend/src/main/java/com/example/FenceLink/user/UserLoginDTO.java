@@ -14,9 +14,12 @@ public class UserLoginDTO {
     @NotNull(message = "Password should not be null")
     private String password;
 
+    private String jwtToken;
+
     public UserLoginDTO(String email, String password) {
         this.email = email;
         this.password = password;
+        this.jwtToken = jwtToken;
     }
     
 }

@@ -3,7 +3,7 @@ import { confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
 import { useNavigate } from "react-router-dom";
 import OtpInput from "otp-input-react";
 import './otp.css'
-import './login.css'; // Import the CSS file
+import './login.css'; 
 
 const OtpCheck = () => {
   const navigate = useNavigate();
