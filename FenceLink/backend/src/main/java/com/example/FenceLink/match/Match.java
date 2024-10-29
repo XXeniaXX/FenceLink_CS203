@@ -1,7 +1,10 @@
 package com.example.FenceLink.match;
 
 import java.sql.Time;
-import java.util.Date;
+import java.time.LocalDate;
+
+import com.example.FenceLink.tournament.Tournament;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,31 +12,25 @@ import lombok.*;
 @Data
 @Entity
 @Table(name = "matches")
-@IdClass(MatchId.class) // Define the composite key class
 @NoArgsConstructor
 public class Match {
-
+    
     @Id
-    @Column(name = "matchId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long matchId;
 
-    @Id
+
     @Column(name = "roundNo")
     private int roundNo; 
 
-    @Id
-    @Column(name = "TournamentID")
-    private Long tournamentId;
-
-    @JoinColumn(name = "Player1Id")
+    @Column(name = "Player1Id")
     private Long player1Id; 
 
-    @JoinColumn(name = "Player2Id")
+    @Column(name = "Player2Id")
     private Long player2Id;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "Date")
-    private Date date;
+    private LocalDate date;
 
     @Temporal(TemporalType.TIME)
     @Column(name = "StartTime")
@@ -44,14 +41,26 @@ public class Match {
     private Time endTime;
 
     @Column(name = "Player1Points")
-    private String player1points;
+    private int player1points;
 
     @Column(name = "Player2Points")
-    private String player2points;
+    private int player2points;
+
+    @Column(name = "Winner")
+    private Long winner;
+
+    // Foreign key reference
+    @Column(name = "tournament_id", insertable = false, updatable = false)
+    private Long tournamentId;
+
+    @ManyToOne
+    @JoinColumn(name = "tournament_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    private Tournament tournament;
 
 
     // Constructor
-    public Match(Long matchId, int roundNo, Long tournamentId, Long player1Id, Long player2Id, Date date, Time startTime, Time endTime, String player1points, String player2points) {
+    public Match(Long matchId, int roundNo, Long tournamentId, Long player1Id, Long player2Id, LocalDate date, Time startTime, Time endTime, int player1points, int player2points, Long winner) {
         this.matchId = matchId;
         this.roundNo = roundNo;
         this.tournamentId = tournamentId;
