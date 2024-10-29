@@ -37,8 +37,8 @@ public class Tournament {
     @Column(name = "tournamentType")
     private String tournamentType;
 
-    @Column(name = "category")
-    private String category;
+    @Column(name = "weaponType")
+    private String weaponType;
 
     @Column(name = "genderType")// "Male", "Female", or "Open" for mixed tournaments
     private String genderType;
@@ -56,13 +56,13 @@ public class Tournament {
     private int vacancy;
 
     public Tournament(String name, String location, LocalDate RegistrationDate, String description, String tournamentType, 
-                    String category, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy) {
+                    String weaponType, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy) {
         this.name = name;
         this.location = location;
         this.RegistrationDate = RegistrationDate;
         this.description = description; 
         this.tournamentType = tournamentType;
-        this.category = category; 
+        this.weaponType = weaponType; 
         this.genderType = genderType; 
         this.ageGroup = ageGroup; 
         this.startDate = startDate; 

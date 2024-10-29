@@ -40,11 +40,15 @@ public class Match {
     @Column(name = "EndTime")
     private Time endTime;
 
-    @Column(name = "Winner")
-    private String winner;
+    @Column(name = "Player1Points")
+    private String player1points;
+
+    @Column(name = "Player2Points")
+    private String player2points;
+
 
     // Constructor
-    public Match(Long matchId, int roundNo, Long tournamentId, Long player1Id, Long player2Id, Date date, Time startTime, Time endTime, String winner) {
+    public Match(Long matchId, int roundNo, Long tournamentId, Long player1Id, Long player2Id, Date date, Time startTime, Time endTime, String player1points, String player2points) {
         this.matchId = matchId;
         this.roundNo = roundNo;
         this.tournamentId = tournamentId;
@@ -53,6 +57,7 @@ public class Match {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.winner = winner;
+        this.player1points = player1points;
+        this.player2points = player2points;
     }
 }
