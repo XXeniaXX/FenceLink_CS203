@@ -172,7 +172,7 @@ public class PlayerServiceImpl implements PlayerService {
         String ageGroup = tournament.getAgeGroup(); // Assuming the age group is stored in the tournament object
         if ((ageGroup.equals("Teen") && age.getYears() >= 18) || 
         (ageGroup.equals("Adults") && age.getYears() < 18)) {
-            throw new IllegalArgumentException("Player's age does not meets the tournament's age requirement!");
+            throw new IllegalArgumentException("Player's age does not meet the tournament's age requirement!");
         }
 
         // Check if the player's gender matches the tournament's gender type or if the tournament is "Open"
@@ -211,34 +211,6 @@ public class PlayerServiceImpl implements PlayerService {
         }
     }
 
-    // Method to get a list of upcoming tournaments that player can register for
-    @Override
-    public List<UpcomingTournamentResponse> findUpcomingTournaments(Long playerId) {
-        Player player = playerRepository.findById(playerId).orElseThrow(() -> 
-            new IllegalArgumentException("Player with ID " + playerId + " not found!")
-        );
-
-        List<Tournament> registeredTournaments = player.getTournamentsRegistered();
-        
-        LocalDate today = LocalDate.now();
-        int playerAge = Period.between(player.getBirthdate(), LocalDate.now()).getYears();
-
-        // Fetch all tournaments and filter based on the current date, exclude the ones the player is already registered for
-        return tournamentRepository.findAll().stream()
-                .filter(tournament -> !tournament.getRegistrationDate().isBefore(today) && 
-                                      !registeredTournaments.contains(tournament) &&
-                                      isPlayerEligibleForGender(player, tournament.getGenderType()) &&
-                                      isPlayerEligibleForAgeGroup(playerAge, tournament.getAgeGroup()) //&&
-                                      //player.getFencingWeapon().equals(tournament.getCategory())
-                                      )
-                .map(tournament -> {
-                    boolean hasClash = hasClashingTournament(player, tournament);
-                    String clashMessage = hasClash ? "This tournament clashes with another tournament you are registered for." : null;
-                    return new UpcomingTournamentResponse(tournament, clashMessage);
-                    }) // returns clash message abt whether player have a registered clashing tournament
-                .collect(Collectors.toList());
-    }
-
     // Method to check if a player is eligible for the tournament based on gender
     private boolean isPlayerEligibleForGender(Player player, String genderType) {
         // If the tournament is "Open", any player can participate
@@ -269,6 +241,36 @@ public class PlayerServiceImpl implements PlayerService {
                 !registeredTournament.getStartDate().isAfter(newTournament.getEndDate())
             );
     }
+
+    // Method to get a list of upcoming tournaments that player can register for
+    @Override
+    public List<UpcomingTournamentResponse> findUpcomingTournaments(Long playerId) {
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> 
+            new IllegalArgumentException("Player with ID " + playerId + " not found!")
+        );
+
+        List<Tournament> registeredTournaments = player.getTournamentsRegistered();
+        
+        LocalDate today = LocalDate.now();
+        int playerAge = Period.between(player.getBirthdate(), LocalDate.now()).getYears();
+
+        // Fetch all tournaments and filter based on the current date, exclude the ones the player is already registered for
+        return tournamentRepository.findAll().stream()
+                .filter(tournament -> !tournament.getRegistrationDate().isBefore(today) && 
+                                      !registeredTournaments.contains(tournament) &&
+                                      isPlayerEligibleForGender(player, tournament.getGenderType()) &&
+                                      isPlayerEligibleForAgeGroup(playerAge, tournament.getAgeGroup()) //&&
+                                      //player.getFencingWeapon().equals(tournament.getCategory())
+                                      )
+                .map(tournament -> {
+                    boolean hasClash = hasClashingTournament(player, tournament);
+                    String clashMessage = hasClash ? "This tournament clashes with another tournament you are registered for." : null;
+                    return new UpcomingTournamentResponse(tournament, clashMessage);
+                    }) // returns clash message abt whether player have a registered clashing tournament
+                .collect(Collectors.toList());
+    }
+
+    
 
     // Method for a Player to get upcoming tournaments that they have registered for
     @Override

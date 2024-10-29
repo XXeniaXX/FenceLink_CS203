@@ -1,11 +1,14 @@
 package com.example.FenceLink.tournament;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/tournaments")
@@ -54,6 +57,29 @@ public class TournamentController {
         } else {
             return new ResponseEntity<>("Tournament not found", HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchTournaments(
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String location,
+        @RequestParam(required = false) String tournamentType,
+        @RequestParam(required = false) String genderType,
+        @RequestParam(required = false) String weaponType,
+        @RequestParam(required = false) LocalDate fromDate,
+        @RequestParam(required = false) LocalDate toDate
+        ) {
+        List<Tournament> tournaments = tournamentService.searchTournaments(
+            name, location, tournamentType, genderType, weaponType, fromDate, toDate);
+        
+        if (tournaments.isEmpty()) {
+            return new ResponseEntity<>(
+                Collections.singletonMap("message", "No tournaments found matching the search criteria."), 
+                HttpStatus.NOT_FOUND);
+
+
+        }
+        return ResponseEntity.ok(tournaments);
     }
 }
 
