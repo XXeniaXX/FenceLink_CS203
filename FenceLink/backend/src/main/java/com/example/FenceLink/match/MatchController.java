@@ -23,45 +23,27 @@ public class MatchController {
         return matchService.getAllMatches();
     }
 
-    @GetMapping("/{matchId}/{roundNo}/{tournamentId}")
-    public ResponseEntity<Match> getMatchById(@PathVariable Long matchId, @PathVariable int roundNo, @PathVariable Long tournamentId) {
-        MatchId id = new MatchId(matchId, roundNo, tournamentId);
-        Optional<Match> match = matchService.getMatchById(id);
+    // Adjusted endpoint to use only matchId
+    @GetMapping("/{matchId}")
+    public ResponseEntity<Match> getMatchById(@PathVariable Long matchId) {
+        Optional<Match> match = matchService.getMatchById(matchId);
         return match.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/tournament/{tournamentId}")
+    public List<Match> getMatchesByTournamentId(@PathVariable Long tournamentId) {
+        return matchService.getMatchesByTournamentId(tournamentId);
     }
 
     @PostMapping
     public Match createMatch(@RequestBody Match match) {
-        // Creating the MatchId manually from the fields
-        MatchId id = new MatchId(match.getMatchId(), match.getRoundNo(), match.getTournamentId());
-        match.setMatchId(id.getMatchId());
         return matchService.createMatch(match);
     }
 
-    @PutMapping("/{matchId}/{roundNo}/{tournamentId}/result/update")
-    public ResponseEntity<Match> updateRoundResult(
-            @PathVariable Long matchId,
-            @PathVariable int roundNo,
-            @PathVariable Long tournamentId,
-            @RequestBody String updatedWinner) {
-
-        MatchId id = new MatchId(matchId, roundNo, tournamentId);
-        Optional<Match> matchOptional = matchService.getMatchById(id);
-
-        if (matchOptional.isPresent()) {
-            Match match = matchOptional.get();
-            match.setWinner(updatedWinner);
-            matchService.updateMatch(match);
-            return ResponseEntity.ok(match);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PutMapping("/{matchId}/{roundNo}/{tournamentId}")
-    public ResponseEntity<Match> updateMatch(@PathVariable Long matchId, @PathVariable int roundNo, @PathVariable Long tournamentId, @RequestBody Match matchDetails) {
-        MatchId id = new MatchId(matchId, roundNo, tournamentId);
-        Optional<Match> match = matchService.getMatchById(id);
+    // Updated method to use only matchId
+    @PutMapping("/{matchId}")
+    public ResponseEntity<Match> updateMatch(@PathVariable Long matchId, @RequestBody Match matchDetails) {
+        Optional<Match> match = matchService.getMatchById(matchId);
 
         if (match.isPresent()) {
             Match updatedMatch = match.get();
@@ -72,6 +54,7 @@ public class MatchController {
             updatedMatch.setEndTime(matchDetails.getEndTime());
             updatedMatch.setPlayer1points(matchDetails.getPlayer1points());
             updatedMatch.setPlayer2points(matchDetails.getPlayer2points());
+            updatedMatch.setWinner(matchDetails.getWinner());
 
             matchService.updateMatch(updatedMatch);
             return ResponseEntity.ok(updatedMatch);
@@ -80,12 +63,10 @@ public class MatchController {
         }
     }
 
-    @DeleteMapping("/{matchId}/{roundNo}/{tournamentId}")
-    public ResponseEntity<Void> deleteMatch(@PathVariable Long matchId, @PathVariable int roundNo, @PathVariable Long tournamentId) {
-        MatchId id = new MatchId(matchId, roundNo, tournamentId);
-        matchService.deleteMatch(id);
+    // Updated delete method to use only matchId
+    @DeleteMapping("/{matchId}")
+    public ResponseEntity<Void> deleteMatch(@PathVariable Long matchId) {
+        matchService.deleteMatch(matchId);
         return ResponseEntity.noContent().build();
     }
 }
-
-

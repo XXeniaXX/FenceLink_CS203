@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.example.FenceLink.player.Player;
+import com.example.FenceLink.match.Match;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
@@ -70,6 +71,8 @@ public class Tournament {
         this.vacancy = vacancy;
 
     }
+    @OneToMany(mappedBy = "tournament")
+    private List<Match> matches;
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinTable(name = "tournament_registered", joinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id"), 
