@@ -16,6 +16,7 @@ public class PlayerController {
     @Autowired
     private PlayerServiceImpl playerService;
 
+
     // Get all players
     @GetMapping("/all")
     public List<Player> getAllPlayers() {
@@ -107,6 +108,12 @@ public class PlayerController {
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+    }
+    //get player's id who has register for a specific tournament
+    @GetMapping("/{tournamentId}/get-all-players")
+    public ResponseEntity<List<Long>> getRegisteredPlayerIds(@PathVariable Long tournamentId) {
+        List<Long> playerIds = playerService.getRegisteredPlayerIds(tournamentId);
+        return new ResponseEntity<>(playerIds, HttpStatus.OK);
     }
 
 }
