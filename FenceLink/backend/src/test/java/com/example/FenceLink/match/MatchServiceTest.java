@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,11 +48,12 @@ public class MatchServiceTest {
                 "Male", "Teen", LocalDate.of(2025, 10, 11), LocalDate.of(2025, 11, 11), 100);
         tournament.setId(100L);
 
-        Match match = new Match(null, 1, tournament.getId(), 200L, 300L, LocalDate.of(2023, 10, 30),
+        Match match = new Match(null, 1, null, 200L, 300L, LocalDate.of(2023, 10, 30),
                                 Time.valueOf("10:00:00"), Time.valueOf("11:00:00"), 5, 3, 200L);
+        match.setTournament(tournament); // Set tournament in match to establish relationship
 
         when(tournamentRepository.findById(tournament.getId())).thenReturn(Optional.of(tournament));
-        when(matchRepository.save(match)).thenReturn(match);
+        when(matchRepository.save(any(Match.class))).thenReturn(match);
 
         // Act
         Match result = matchService.createMatch(match);
@@ -75,17 +77,21 @@ public class MatchServiceTest {
     @Test
     public void testCreateMatch_TournamentNotFound() {
         // Arrange
-        Match match = new Match(null, 1, 100L, 200L, 300L, LocalDate.of(2023, 10, 30),
-                                Time.valueOf("10:00:00"), Time.valueOf("11:00:00"), 5, 3, 200L);
+        Tournament tournament = new Tournament();  // Create a tournament object with a specific ID
+        tournament.setId(100L);
 
-        when(tournamentRepository.findById(match.getTournamentId())).thenReturn(Optional.empty());
+        Match match = new Match(null, 1, null, 200L, 300L, LocalDate.of(2023, 10, 30),
+                                Time.valueOf("10:00:00"), Time.valueOf("11:00:00"), 5, 3, 200L);
+        match.setTournament(tournament);  // Set the tournament in the match
+
+        when(tournamentRepository.findById(match.getTournament().getId())).thenReturn(Optional.empty());
 
         // Act & Assert
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             matchService.createMatch(match);
         });
 
-        assertEquals("Tournament not found for ID: " + match.getTournamentId(), exception.getMessage());
+        assertEquals("Tournament not found for ID: " + match.getTournament().getId(), exception.getMessage());
     }
 
     //Test match system
@@ -184,27 +190,52 @@ public class MatchServiceTest {
         verify(tournamentRepository, times(1)).findById(tournamentId);
         verify(playerService, times(1)).getRegisteredPlayerIds(tournamentId);
 
-        // Expected match count:
-        // Each player in a pool plays with every other player in the same pool.
-        // Calculate the expected number of matches based on pool distribution:
-        int expectedMatches = calculateExpectedMatchesForPools(registeredPlayerIds, 7); // Assuming 7-player pools
+        // Calculate expected matches based on dynamically generated pools
+        int expectedMatches = calculateExpectedMatchesForPools(registeredPlayerIds, 7);
 
-        // Verify the exact number of matches were saved to the repository
+        // Verify that the exact number of matches were saved to the repository
         verify(matchRepository, times(expectedMatches)).save(any(Match.class));
     }
 
     // calculate expected matches for given pool sizes
-    private int calculateExpectedMatchesForPools(List<Long> playerIds, int poolSize) {
+    private int calculateExpectedMatchesForPools(List<Long> playerIds, int maxPoolSize) {
+        List<List<Long>> pools = createPools(playerIds);
         int totalMatches = 0;
-        int totalPlayers = playerIds.size();
-
-        // Calculate match counts per pool
-        for (int i = 0; i < totalPlayers; i += poolSize) {
-            int end = Math.min(i + poolSize, totalPlayers);
-            int playersInPool = end - i;
-            totalMatches += (playersInPool * (playersInPool - 1)) / 2; // Round-robin within the pool
+    
+        for (List<Long> pool : pools) {
+            int poolSize = pool.size();
+            totalMatches += (poolSize * (poolSize - 1)) / 2; // Matches per pool in round-robin format
         }
-
         return totalMatches;
+    }
+    private List<List<Long>> createPools(List<Long> playerIds) {
+        List<List<Long>> pools = new ArrayList<>();
+        List<Long> shuffledPlayers = new ArrayList<>(playerIds);
+        Collections.shuffle(shuffledPlayers);
+    
+        int totalPlayers = shuffledPlayers.size();
+        int minPoolSize = 5;
+        int maxPoolSize = 7;
+    
+        // Calculate the optimal number of pools
+        int numPools = (int) Math.ceil((double) totalPlayers / maxPoolSize);
+    
+        // Ensure each pool can have at least the minimum pool size
+        while (numPools * minPoolSize > totalPlayers) {
+            numPools++;
+        }
+    
+        int basePoolSize = totalPlayers / numPools;
+        int extraPlayers = totalPlayers % numPools;
+    
+        int startIndex = 0;
+        for (int i = 0; i < numPools; i++) {
+            int currentPoolSize = basePoolSize + (i < extraPlayers ? 1 : 0); // Distribute extra players
+            int endIndex = startIndex + currentPoolSize;
+            pools.add(new ArrayList<>(shuffledPlayers.subList(startIndex, endIndex)));
+            startIndex = endIndex;
+        }
+    
+        return pools;
     }
 }

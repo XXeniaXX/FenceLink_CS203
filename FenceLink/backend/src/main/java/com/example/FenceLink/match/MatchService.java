@@ -52,14 +52,14 @@ public class MatchService {
         if (match == null) {
             throw new IllegalArgumentException("Match cannot be null.");
         }
-        if (match.getTournamentId() == null) {
+        if (match.getTournament().getId()== null) {
             throw new IllegalArgumentException("Tournament ID is required but is missing.");
         }
 
-        logger.info("Attempting to save Match with tournament ID: {}", match.getTournamentId());
+        logger.info("Attempting to save Match with tournament ID: {}", match.getTournament().getId());
 
-        Tournament tournament = tournamentRepository.findById(match.getTournamentId())
-            .orElseThrow(() -> new IllegalArgumentException("Tournament not found for ID: " + match.getTournamentId()));
+        Tournament tournament = tournamentRepository.findById(match.getTournament().getId())
+            .orElseThrow(() -> new IllegalArgumentException("Tournament not found for ID: " + match.getTournament().getId()));
 
         match.setTournament(tournament);
         return matchRepository.save(match);
@@ -111,11 +111,11 @@ public class MatchService {
                     logger.info("Creating match in Pool {}: Player {} vs Player {}", poolIndex + 1, player1Id, player2Id);
     
                     Match match = new Match();
-                    match.setTournamentId(tournament.getId());
+                    match.setTournament(tournament);
                     match.setRoundNo(roundNo);
                     match.setPlayer1Id(player1Id);
                     match.setPlayer2Id(player2Id);
-                    match.setDate(tournament.getStartDate()); // Assuming matches are scheduled for the tournament start date
+                    match.setDate(tournament.getStartDate());
     
                     // Save each match to the repository
                     matchRepository.save(match);
@@ -129,11 +129,29 @@ public class MatchService {
         List<Long> shuffledPlayers = new ArrayList<>(playerIds);
         Collections.shuffle(shuffledPlayers);
     
-        int poolSize = playerIds.size() <= 15 ? 5 : 7;
-        for (int i = 0; i < shuffledPlayers.size(); i += poolSize) {
-            int end = Math.min(i + poolSize, shuffledPlayers.size());
-            pools.add(new ArrayList<>(shuffledPlayers.subList(i, end)));
+        int totalPlayers = shuffledPlayers.size();
+        int minPoolSize = 5;
+        int maxPoolSize = 7;
+    
+        // Calculate the optimal number of pools
+        int numPools = (int) Math.ceil((double) totalPlayers / maxPoolSize);
+    
+        // Ensure each pool can have at least the minimum pool size
+        while (numPools * minPoolSize > totalPlayers) {
+            numPools++;
         }
+    
+        int basePoolSize = totalPlayers / numPools;
+        int extraPlayers = totalPlayers % numPools;
+    
+        int startIndex = 0;
+        for (int i = 0; i < numPools; i++) {
+            int currentPoolSize = basePoolSize + (i < extraPlayers ? 1 : 0); // Distribute extra players
+            int endIndex = startIndex + currentPoolSize;
+            pools.add(new ArrayList<>(shuffledPlayers.subList(startIndex, endIndex)));
+            startIndex = endIndex;
+        }
+    
         return pools;
     }
 
