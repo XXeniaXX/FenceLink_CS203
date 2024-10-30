@@ -33,7 +33,7 @@ const Login = () => {
       console.log("ID Token (JWT):", rawToken);
       localStorage.setItem('jwtToken', rawToken);
 
-      navigate("/mainpage");
+      validateTokenOnLogin(rawToken);
       
       
     } catch (error) {
@@ -41,6 +41,32 @@ const Login = () => {
       alert('Login failed: ' + error.message);
     }
   };
+
+  async function validateTokenOnLogin(token) {
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/validate-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+  
+      const result = await response.text();
+      if (result === 'Token is valid') {
+        console.log('Token is valid');
+        // Navigate to main page or update UI to show user is logged in
+        navigate("/mainpage");
+      } else {
+        console.error('Invalid token:', result);
+        // Redirect to login if invalid or expired
+        localStorage.removeItem('idToken');
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error('Token validation failed:', error);
+    }
+  }
 
   return (
     <div className="container">
