@@ -1,6 +1,7 @@
 package com.example.FenceLink.match;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,4 +70,18 @@ public class MatchController {
         matchService.deleteMatch(matchId);
         return ResponseEntity.noContent().build();
     }
+
+    //For matching system
+    // Endpoint to manually generate matches for a tournament
+    @PostMapping("/generate/{tournamentId}")
+    public ResponseEntity<String> generateMatchesForTournament(@PathVariable Long tournamentId) {
+        try {
+            matchService.generateMatches(tournamentId);
+            return ResponseEntity.ok("First Round match generated successfully for tournament ID: " + tournamentId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error generating matches: " + e.getMessage());
+        }
+    }
+
 }
