@@ -1,7 +1,10 @@
 package com.example.FenceLink.match;
 
 import java.sql.Time;
-import java.util.Date;
+import java.time.LocalDate;
+
+import com.example.FenceLink.tournament.Tournament;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,26 +17,23 @@ import com.example.FenceLink.tournament.Tournament;
 @Table(name = "matches")
 @NoArgsConstructor
 public class Match {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long matchId;
 
-    @EmbeddedId
-    private MatchId id;
 
-    @MapsId("tournamentId")
-    @ManyToOne
-    @JoinColumn(name = "tournament_id", nullable = false)
-    private Tournament tournament;
+    @Column(name = "roundNo")
+    private int roundNo; 
 
-    @ManyToOne
-    @JoinColumn(name = "player1_id")
-    private Player player1;
+    @Column(name = "Player1Id")
+    private Long player1Id; 
 
-    @ManyToOne
-    @JoinColumn(name = "player2_id")
-    private Player player2;
+    @Column(name = "Player2Id")
+    private Long player2Id;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "Date")
-    private Date date;
+    private LocalDate date;
 
     @Temporal(TemporalType.TIME)
     @Column(name = "StartTime")
@@ -43,20 +43,37 @@ public class Match {
     @Column(name = "EndTime")
     private Time endTime;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "leaderboard_id")
-    private Leaderboard leaderboard;
+    @Column(name = "Player1Points")
+    private int player1points;
+
+    @Column(name = "Player2Points")
+    private int player2points;
+
+    @Column(name = "Winner")
+    private Long winner;
+
+    // Foreign key reference
+    @Column(name = "tournament_id", insertable = false, updatable = false)
+    private Long tournamentId;
+
+    @ManyToOne
+    @JoinColumn(name = "tournament_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    private Tournament tournament;
+
 
     // Constructor
-    public Match(MatchId id, Tournament tournament, Date date, Time startTime, Time endTime, Player player1, Player player2,
-    Leaderboard leaderboard) {
-        this.id = id;
-        this.tournament = tournament;
+    public Match(Long matchId, int roundNo, Long tournamentId, Long player1Id, Long player2Id, LocalDate date, Time startTime, Time endTime, int player1points, int player2points, Long winner) {
+        this.matchId = matchId;
+        this.roundNo = roundNo;
+        this.tournamentId = tournamentId;
+        this.player1Id = player1Id;
+        this.player2Id = player2Id;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.player1 = player1;
-        this.player2 = player2;
-        this. leaderboard = leaderboard;
+        this.player1points = player1points;
+        this.player2points = player2points;
+        this.winner = winner;
     }
 }

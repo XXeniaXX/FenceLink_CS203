@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.example.FenceLink.player.Player;
-import com.example.FenceLink.leaderboard.Leaderboard;
 import com.example.FenceLink.match.Match;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -54,12 +53,7 @@ public class Tournament {
     @Column(name = "vacancy") // Specify the column name and constraints
     private int vacancy;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "leaderboard_id")
     private Leaderboard leaderboard;
-
-    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Match> matches;
 
     public Tournament(String name, String location, LocalDate RegistrationDate, String description, String tournamentType, 
                     String weaponType, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy, Leaderboard leaderboard,
@@ -78,6 +72,8 @@ public class Tournament {
         this.leaderboard = leaderboard;
         this.matches = matches;
     }
+    @OneToMany(mappedBy = "tournament")
+    private List<Match> matches;
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinTable(name = "tournament_registered", joinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id"), 
