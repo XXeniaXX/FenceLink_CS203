@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.example.FenceLink.player.Player;
+import com.example.FenceLink.match.Match;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
@@ -37,8 +38,8 @@ public class Tournament {
     @Column(name = "tournamentType")
     private String tournamentType;
 
-    @Column(name = "category")
-    private String category;
+    @Column(name = "weaponType")
+    private String weaponType;
 
     @Column(name = "genderType")// "Male", "Female", or "Open" for mixed tournaments
     private String genderType;
@@ -56,13 +57,13 @@ public class Tournament {
     private int vacancy;
 
     public Tournament(String name, String location, LocalDate RegistrationDate, String description, String tournamentType, 
-                    String category, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy) {
+                    String weaponType, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy) {
         this.name = name;
         this.location = location;
         this.RegistrationDate = RegistrationDate;
         this.description = description; 
         this.tournamentType = tournamentType;
-        this.category = category; 
+        this.weaponType = weaponType; 
         this.genderType = genderType; 
         this.ageGroup = ageGroup; 
         this.startDate = startDate; 
@@ -70,6 +71,8 @@ public class Tournament {
         this.vacancy = vacancy;
 
     }
+    @OneToMany(mappedBy = "tournament")
+    private List<Match> matches;
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinTable(name = "tournament_registered", joinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id"), 

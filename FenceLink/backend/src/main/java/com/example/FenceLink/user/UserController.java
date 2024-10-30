@@ -40,6 +40,26 @@ public class UserController {
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UserDTO userDto) {
+        try {
+            userService.updateUser(id, userDto);
+            return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/updatepassword/{id}")
+    public ResponseEntity<String> updateUserPassword(@PathVariable Long id, @RequestBody UserDTO userDto) {
+        try {
+            userService.updateUserPassword(id, userDto);
+            return new ResponseEntity<>("User pasword updated successfully", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
      // Add new Admin
      @PostMapping("/createadmin")
      @ResponseStatus(HttpStatus.CREATED)

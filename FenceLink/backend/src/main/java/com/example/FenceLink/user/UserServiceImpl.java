@@ -36,6 +36,12 @@ public class UserServiceImpl implements UserService {
     
     }
 
+    public void checkPassword(UserDTO userDto) throws IllegalArgumentException {
+        if (userDto.getPassword() == null || userDto.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty!");
+        }
+    }
+
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
@@ -103,6 +109,18 @@ public class UserServiceImpl implements UserService {
 
         existingUser.setUsername(userDto.getUsername());
         existingUser.setEmail(userDto.getEmail());
+        existingUser.setPassword(userDto.getPassword());
+
+        return userRepository.save(existingUser);
+    }
+
+    public User updateUserPassword(Long id, UserDTO userDto) throws IllegalArgumentException {
+        User existingUser = findById(id);
+        if (existingUser == null) {
+            throw new IllegalArgumentException("User not found!");
+        }
+
+        checkPassword(userDto);
 
         existingUser.setPassword(userDto.getPassword());
 
