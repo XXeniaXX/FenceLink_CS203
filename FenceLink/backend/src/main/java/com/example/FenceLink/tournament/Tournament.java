@@ -1,11 +1,9 @@
 package com.example.FenceLink.tournament;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import com.example.FenceLink.player.Player;
@@ -27,7 +25,6 @@ public class Tournament {
 
     @Column(name = "location") // Specify the column name and constraints
     private String location;
-
 
     @Column(name = "RegistrationDate") // Specify the column name and constraints
     private LocalDate RegistrationDate;
@@ -56,8 +53,11 @@ public class Tournament {
     @Column(name = "vacancy") // Specify the column name and constraints
     private int vacancy;
 
+    private Leaderboard leaderboard;
+
     public Tournament(String name, String location, LocalDate RegistrationDate, String description, String tournamentType, 
-                    String weaponType, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy) {
+                    String weaponType, String genderType, String ageGroup, LocalDate startDate, LocalDate endDate, int vacancy, Leaderboard leaderboard,
+                    List<Match> matches) {
         this.name = name;
         this.location = location;
         this.RegistrationDate = RegistrationDate;
@@ -69,7 +69,8 @@ public class Tournament {
         this.startDate = startDate; 
         this.endDate = endDate; 
         this.vacancy = vacancy;
-
+        this.leaderboard = leaderboard;
+        this.matches = matches;
     }
     @OneToMany(mappedBy = "tournament")
     private List<Match> matches;
@@ -137,6 +138,15 @@ public class Tournament {
         this.vacancy = vacancy;
     }
 
+    public Leaderboard getLeaderboard() {
+        return leaderboard;
+    }
+
+    public void addPlayer(Player player) {
+        if (!players.contains(player)) {
+            players.add(player);
+        }
+    }
 }
 
 

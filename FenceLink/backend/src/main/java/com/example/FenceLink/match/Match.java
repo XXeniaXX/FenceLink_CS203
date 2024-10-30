@@ -8,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.example.FenceLink.leaderboard.Leaderboard;
+import com.example.FenceLink.player.Player;
+import com.example.FenceLink.tournament.Tournament;
 
 @Data
 @Entity
@@ -71,5 +74,6 @@ public class Match {
         this.endTime = endTime;
         this.player1points = player1points;
         this.player2points = player2points;
+        this.winner = winner;
     }
 }

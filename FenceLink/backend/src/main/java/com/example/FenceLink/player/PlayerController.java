@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+// import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.example.FenceLink.tournament.*;
 
+import java.security.Principal;
 import java.util.*;
 
 @RestController
@@ -41,24 +43,55 @@ public class PlayerController {
         return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
     }
 
-    // Update player details for ADMIN
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updatePlayer(@PathVariable Long id, @RequestBody Player player) {
-        player.setId(id);  // Ensure player ID is set
-        try {
-            playerService.updatePlayer(id, player);
-            return new ResponseEntity<>("Player updated successfully", HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    // Update player details for PLAYER
+    @PutMapping("/{id}/edit")
+    public ResponseEntity<String> updatePlayer(@PathVariable Long id, @RequestBody Player player, Principal principal) {
+        Player existingPlayer = playerService.findById(id);
+        if (existingPlayer == null) {
+            return new ResponseEntity<>("Player not found!", HttpStatus.NOT_FOUND);
         }
+
+        // Only players can update their own details
+        if (!principal.getName().equals(existingPlayer.getName())) {
+            return new ResponseEntity<>("Unauthorized to update this player's details!", HttpStatus.FORBIDDEN);
+        }
+
+        // Players can update only the following fields
+        existingPlayer.setName(player.getName());
+        existingPlayer.setBirthdate(player.getBirthdate());
+        existingPlayer.setGender(player.getGender());
+        existingPlayer.setBio(player.getBio());
+        existingPlayer.setLocation(player.getLocation());
+        existingPlayer.setFencingWeapon(player.getFencingWeapon());
+        existingPlayer.setCountry(player.getCountry());
+
+        // Checks validity of info through:
+        playerService.updatePlayer(id, existingPlayer);
+        return new ResponseEntity<>("Player details updated successfully", HttpStatus.OK);
     }
+
+    // // Update player's points for ADMIN
+    // @PreAuthorize("hasRole('ADMIN')")
+    // @PutMapping("/{id}/updatePoints")
+    // public ResponseEntity<String> updatePlayerAdminFields(@PathVariable Long id, @RequestBody Player player) {
+    //     Player existingPlayer = playerService.findById(id);
+    //     if (existingPlayer == null) {
+    //         return new ResponseEntity<>("Player not found!", HttpStatus.NOT_FOUND);
+    //     }
+
+    //     // Only admins can update the points
+    //     existingPlayer.setPoints(player.getPoints());
+
+    //     playerService.updatePlayer(id, existingPlayer);
+    //     return new ResponseEntity<>("Player statistics updated successfully", HttpStatus.OK);
+    // }
 
     // Delete player for ADMIN
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePlayer(@PathVariable Long id) {
         Player player = playerService.findById(id);
         if (player == null) {
-            return new ResponseEntity<>("Player not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Player not found!", HttpStatus.NOT_FOUND);
         }
         playerService.deletePlayerById(id);
         return new ResponseEntity<>("Player deleted successfully", HttpStatus.OK);

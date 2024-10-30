@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.FenceLink.tournament.Tournament;
 import com.example.FenceLink.tournament.TournamentRepository;
 
+import com.example.FenceLink.tournament.Tournament;
+import com.example.FenceLink.tournament.TournamentRepository;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +38,8 @@ public class MatchService {
         return matchRepository.findById(matchId);
     }
 
-    public List<Match> getMatchesByTournamentId(Long tournamentId) {
-        return matchRepository.findByTournamentId(tournamentId);
+    public Optional<Tournament> findTournamentById(Long tournamentId) {
+        return tournamentRepository.findById(tournamentId);
     }
 
     @Transactional

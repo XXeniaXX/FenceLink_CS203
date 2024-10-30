@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.FenceLink.tournament.Tournament;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -11,12 +13,8 @@ import java.util.Optional;
 @RequestMapping("/api/matches")
 public class MatchController {
 
-    private final MatchService matchService;
-
     @Autowired
-    public MatchController(MatchService matchService) {
-        this.matchService = matchService;
-    }
+    private MatchService matchService;
 
     @GetMapping
     public List<Match> getAllMatches() {
@@ -31,8 +29,15 @@ public class MatchController {
     }
 
     @GetMapping("/tournament/{tournamentId}")
-    public List<Match> getMatchesByTournamentId(@PathVariable Long tournamentId) {
-        return matchService.getMatchesByTournamentId(tournamentId);
+    public ResponseEntity<List<Match>> getMatchesByTournamentId(@PathVariable Long tournamentId) {
+        Optional<Tournament> tournament = matchService.findTournamentById(tournamentId);
+    
+        if (tournament.isPresent()) {
+            List<Match> matches = matchService.getMatchesByTournament(tournament.get());
+            return ResponseEntity.ok(matches);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
