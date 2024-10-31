@@ -3,6 +3,7 @@ package com.example.FenceLink.player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.FenceLink.tournament.*;
@@ -43,6 +44,7 @@ public class PlayerController {
 
     // Update player details for ADMIN
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updatePlayer(@PathVariable Long id, @RequestBody Player player) {
         player.setId(id);  // Ensure player ID is set
         try {
@@ -55,6 +57,7 @@ public class PlayerController {
 
     // Delete player for ADMIN
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deletePlayer(@PathVariable Long id) {
         Player player = playerService.findById(id);
         if (player == null) {

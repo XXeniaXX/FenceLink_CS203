@@ -9,5 +9,4 @@ public interface UserService {
     User registerUser(UserDTO userDto);
     User updateUser(Long id, UserDTO userDto);
     void deleteUserById(Long id);
-    
 }

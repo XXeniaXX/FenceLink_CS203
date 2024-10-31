@@ -48,9 +48,17 @@ const Login = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Include token in Authorization header
         },
         body: JSON.stringify({ token }),
       });
+
+      console.log('Response status:', response.status);
+    if (response.status === 401) {
+      console.log('Full response:', response);
+      const text = await response.text();
+      console.log('Response body:', text);
+    }
   
       const result = await response.text();
       if (result === 'Token is valid') {

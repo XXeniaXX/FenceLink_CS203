@@ -3,6 +3,9 @@ package com.example.FenceLink.user;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 //import org.springframework.security.access.prepost.PreAuthorize;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -103,6 +106,20 @@ public class UserServiceImpl implements UserService {
         User existingUser = findById(id);
         if (existingUser == null) {
             throw new IllegalArgumentException("User not found!");
+        }
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = null;
+
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+
+        // Ensure the authenticated user is authorized to update the user
+        if (!existingUser.getUsername().equals(username)) {
+            throw new AccessDeniedException("Unauthorized to update this user!");
         }
 
         checkUser(userDto);
