@@ -4,8 +4,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import com.example.FenceLink.token.CognitoJWTValidator;
 
 
 @RestController
@@ -63,15 +65,20 @@ public class UserController {
 
      // Add new Admin
      @PostMapping("/createadmin")
-     @PreAuthorize("hasRole('ADMIN')")
      @ResponseStatus(HttpStatus.CREATED)
-     public ResponseEntity<User> addAdmin(@RequestBody UserDTO userDTO) {
-         User savedUser = userService.createAdmin(userDTO);
-         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+     public ResponseEntity<User> addAdmin(@RequestBody UserDTO userDTO, @RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "").trim();
+        
+        if (CognitoJWTValidator.isAdmin(token)) {
+            User savedUser = userService.createAdmin(userDTO);
+            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
      }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         if (!userService.userExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

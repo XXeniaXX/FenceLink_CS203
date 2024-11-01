@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import org.springframework.web.client.RestTemplate;
+import java.util.*;
 
 import java.security.interfaces.RSAPublicKey;
 import java.util.logging.Logger;
@@ -79,6 +80,32 @@ public class CognitoJWTValidator {
         } catch (Exception e) {
             logger.warning("Failed to fetch JWKS: " + e.getMessage());
             return null;
+        }
+    }
+
+    public static boolean isAdmin(String token) {
+        try {
+            logger.info("Received token: " + token);
+    
+            // Ensure the token is valid before checking claims
+            String validationResult = validateToken(token);
+            if (!"Token is valid".equals(validationResult)) {
+                logger.warning("Token validation failed: " + validationResult);
+                return false;
+            }
+    
+            // Extract the 'cognito:groups' claim and check if it contains 'Admin'
+            DecodedJWT decodedJWT = JWT.decode(token);
+            List<String> groups = decodedJWT.getClaim("cognito:groups").asList(String.class);
+            logger.info("Extracted groups claim: " + groups);
+    
+            return groups != null && groups.contains("admin");
+        } catch (IllegalArgumentException e) {
+            logger.warning("Failed to decode token: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            logger.warning("Failed to check admin role: " + e.getMessage());
+            return false;
         }
     }
 }
