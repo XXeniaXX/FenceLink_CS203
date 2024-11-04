@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signIn, fetchAuthSession, confirmSignIn} from 'aws-amplify/auth';
+import { signIn, fetchAuthSession, confirmSignIn, signInWithRedirect} from 'aws-amplify/auth';
 import './login.css'; // Import the CSS file
+import googleLogo from './assets/googlelogo.png';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,6 +18,16 @@ const Login = () => {
   
     await handleLogin();
   }
+
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithRedirect({ provider: 'Google' });
+      console.log('Redirecting to Google login...');
+    } catch (error) {
+      console.error('Google sign-in failed:', error);
+      alert('Google sign-in failed: ' + error.message);
+    }
+  };
 
   const handleLogin = async () => {
     try {
@@ -76,6 +87,8 @@ const Login = () => {
     }
   }
 
+  
+
   return (
     <div className="container">
       <h1 className="header">LOGIN</h1>
@@ -105,23 +118,17 @@ const Login = () => {
         <label className = "label2">
           <Link to="/forgotpassword">Forgot Password?</Link>
         </label>
-        
-        {/* {showOtpInput && (
-          <label className="label">
-            OTP
-            <input
-              type="text"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              className="input"
-              placeholder="Enter the OTP sent to your email"
-              required
-            />
-          </label>
-        )} */}
-
         <button type="submit" className="button">
           {'Login'}
+        </button>
+        or
+        <button onClick={handleGoogleLogin} className="google-login-button">
+          <img
+            src={googleLogo}
+            alt="Google Logo"
+            className="google-logo"
+          />
+          Login with Google
         </button>
       
         <footer classname= "footer">

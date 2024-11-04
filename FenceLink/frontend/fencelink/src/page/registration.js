@@ -103,7 +103,6 @@ const Registration = () => {
   }
 
   
-
   return (
     <div className="container">
       <h1 className="header">REGISTRATION</h1>

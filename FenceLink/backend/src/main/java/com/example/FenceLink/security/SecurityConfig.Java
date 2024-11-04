@@ -14,31 +14,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             http.cors().and()
             .csrf.disable();
-            // .and()
-            // .oauth2ResourceServer(oauth2 -> oauth2
-            //     .jwt(jwt -> jwt
-            //         .jwtAuthenticationConverter(jwtAuthenticationConverter())
-            //     )
-            //);
         return http.build();
     }
-
-    // @Bean
-    // public JwtAuthenticationConverter jwtAuthenticationConverter() {
-    //     JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-    //     grantedAuthoritiesConverter.setAuthoritiesClaimName("roles"); // or whatever your roles claim is named in the JWT
-        
-    //     JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-    //     jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-        
-    //     return jwtAuthenticationConverter;
-    // }
     
 }

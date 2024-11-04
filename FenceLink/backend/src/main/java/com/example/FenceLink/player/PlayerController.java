@@ -3,15 +3,15 @@ package com.example.FenceLink.player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.FenceLink.token.CognitoJWTValidator;
 import com.example.FenceLink.tournament.*;
 
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/players")
+@CrossOrigin(origins = "http://localhost:3000")
 public class PlayerController {
 
     @Autowired
@@ -44,8 +44,14 @@ public class PlayerController {
 
     // Update player details for ADMIN
     @PutMapping("/{id}")
-    //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> updatePlayer(@PathVariable Long id, @RequestBody Player player) {
+    public ResponseEntity<String> updatePlayer(@PathVariable Long id, @RequestBody Player player, @RequestHeader("Authorization") String authorizationHeader ) {
+        
+        String token = authorizationHeader.replace("Bearer ", "").trim();
+
+        if(!CognitoJWTValidator.isAdmin(token)) {
+            return new ResponseEntity<>("Access denied: Admin rights required", HttpStatus.FORBIDDEN);
+        }
+        
         player.setId(id);  // Ensure player ID is set
         try {
             playerService.updatePlayer(id, player);
@@ -57,8 +63,14 @@ public class PlayerController {
 
     // Delete player for ADMIN
     @DeleteMapping("/{id}")
-    //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deletePlayer(@PathVariable Long id) {
+    public ResponseEntity<String> deletePlayer(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader) {
+        
+        String token = authorizationHeader.replace("Bearer ", "").trim();
+
+        if(!CognitoJWTValidator.isAdmin(token)) {
+            return new ResponseEntity<>("Access denied: Admin rights required", HttpStatus.FORBIDDEN);
+        }
+
         Player player = playerService.findById(id);
         if (player == null) {
             return new ResponseEntity<>("Player not found", HttpStatus.NOT_FOUND);
