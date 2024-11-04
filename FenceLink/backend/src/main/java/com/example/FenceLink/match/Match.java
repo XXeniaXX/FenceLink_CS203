@@ -68,5 +68,8 @@ public class Match {
         this.endTime = endTime;
         this.player1points = player1points;
         this.player2points = player2points;
+        this.winner=winner;
     }
+
+
 }

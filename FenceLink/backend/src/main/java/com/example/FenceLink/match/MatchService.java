@@ -13,11 +13,16 @@ import com.example.FenceLink.player.PlayerServiceImpl;
 import com.example.FenceLink.tournament.Tournament;
 import com.example.FenceLink.tournament.TournamentRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @Service
 public class MatchService {
@@ -154,84 +159,185 @@ public class MatchService {
     
         return pools;
     }
+    
+    public List<Long> getPlayerRank(List<Match> matches) {
+        // Map to store the win and loss count for each player
+        Map<Long, Integer> winCountMap = new HashMap<>();
+        Map<Long, Integer> lossCountMap = new HashMap<>();
+    
+        // Check for matches with null winners and throw an exception if found
+        for (Match match : matches) {
+            if (match.getWinner() == null) {
+                throw new IllegalStateException("All matches need to be completed to calculate rankings.");
+            }
+        }
+    
+        // Count wins and losses for each player
+        for (Match match : matches) {
+            Long winnerId = match.getWinner();
+            Long player1Id = match.getPlayer1Id();
+            Long player2Id = match.getPlayer2Id();
+    
+            // Initialize counts to 0 if the player IDs are not already in the maps
+            winCountMap.putIfAbsent(player1Id, 0);
+            winCountMap.putIfAbsent(player2Id, 0);
+            lossCountMap.putIfAbsent(player1Id, 0);
+            lossCountMap.putIfAbsent(player2Id, 0);
+    
+            if (winnerId.equals(player1Id)) {
+                winCountMap.put(player1Id, winCountMap.get(player1Id) + 1);
+                lossCountMap.put(player2Id, lossCountMap.get(player2Id) + 1);
+            } else if (winnerId.equals(player2Id)) {
+                winCountMap.put(player2Id, winCountMap.get(player2Id) + 1);
+                lossCountMap.put(player1Id, lossCountMap.get(player1Id) + 1);
+            }
+        }
+    
+        // Create a list of player IDs from the winCountMap
+        List<Long> playerIds = new ArrayList<>(winCountMap.keySet());
+    
+        // Sort the player IDs first by wins (descending), then by losses (ascending)
+        playerIds.sort((id1, id2) -> {
+            int winCompare = Integer.compare(winCountMap.get(id2), winCountMap.get(id1)); // More wins rank higher
+            if (winCompare == 0) {
+                int lossCompare = Integer.compare(lossCountMap.get(id1), lossCountMap.get(id2)); // Fewer losses rank higher
+                if (lossCompare == 0) {
+                    return new Random().nextInt(2) * 2 - 1; // Randomly choose -1 or 1 if both are equal
+                }
+                return lossCompare;
+            }
+            return winCompare;
+        });
+    
+        // Log the ranking for each player
+        logger.info("Player Rankings:");
+        for (int rank = 0; rank < playerIds.size(); rank++) {
+            Long playerId = playerIds.get(rank);
+            int wins = winCountMap.getOrDefault(playerId, 0);
+            int losses = lossCountMap.getOrDefault(playerId, 0);
+            logger.info("Rank {}: Player ID: {}, Wins: {}, Losses: {}", rank + 1, playerId, wins, losses);
+        }
+    
+        return playerIds;
+    }
+    
+    public void updateMatchResults(Long matchId, int player1Points, int player2Points) {
+        Match match = matchRepository.findById(matchId)
+            .orElseThrow(() -> new IllegalArgumentException("Match not found for ID: " + matchId));
+    
+        // Check if both player's points are provided
+        if (player1Points < 0 || player2Points < 0) {
+            throw new IllegalArgumentException("Both players' points must be provided and cannot be negative.");
+        }
+    
+        // Check if the points are equal
+        if (player1Points == player2Points) {
+            throw new IllegalArgumentException("Points cannot be equal. A winner must be determined.");
+        }
+    
+        // Set points for both players
+        match.setPlayer1points(player1Points);
+        match.setPlayer2points(player2Points);
+    
+        // Determine and set the winner
+        if (player1Points > player2Points) {
+            match.setWinner(match.getPlayer1Id());
+        } else {
+            match.setWinner(match.getPlayer2Id());
+        }
+    
+        // Save the updated match
+        matchRepository.save(match);
+    }
 
-    // private void generateDirectEliminationMatches(Tournament tournament, List<Player> players, int roundNo) {
-    //     List<Player> matchedPlayers = new ArrayList<>(players);
-    //     Collections.shuffle(matchedPlayers); // Random matching
-        
-    //     // Generate matches for this round
-    //     for (int i = 0; i < matchedPlayers.size() - 1; i += 2) {
-    //         Match match = Match.builder()
-    //             .tournamentId(tournament.getId())
-    //             .roundNo(roundNo)
-    //             .player1Id(matchedPlayers.get(i).getId())
-    //             .player2Id(matchedPlayers.get(i + 1).getId())
-    //             .date(tournament.getStartDate())
-    //             // startTime and endTime will be set by admin
-    //             .build();
-            
-    //         matchRepository.save(match);
-    //     }
-    // }
+    public void generateSeedingMatches(Tournament tournament, List<Long> rankedPlayerIds) {
+    int playerCount = rankedPlayerIds.size();
+    int targetCount = playerCount > 16 ? 32 : 16;
 
-    // public void promotePlayersToNextRound(Long tournamentId, int currentRound) {
-    //     Tournament tournament = tournamentRepository.findById(tournamentId)
-    //         .orElseThrow(() -> new RuntimeException("Tournament not found"));
-            
-    //     // Get matches from current round
-    //     List<Match> matches = matchRepository.findByTournamentIdAndRoundNo(tournamentId, currentRound);
-        
-    //     // Get qualified players sorted by points
-    //     List<Player> qualifiedPlayers = matches.stream()
-    //         .map(match -> playerRepository.findById(match.getWinner())
-    //             .orElseThrow(() -> new RuntimeException("Winner not found")))
-    //         .sorted(Comparator.comparing(Player::getPoints).reversed())
-    //         .collect(Collectors.toList());
-        
-    //     int nextRound = currentRound + 1;
-        
-    //     // Determine next round structure based on current round and player count
-    //     if (currentRound == 1) { // After Round Robin
-    //         if (qualifiedPlayers.size() >= 32) {
-    //             qualifiedPlayers = qualifiedPlayers.subList(0, 32); // Top 32 advance
-    //             // Round 2: DE-32
-    //         } else if (qualifiedPlayers.size() >= 16) {
-    //             qualifiedPlayers = qualifiedPlayers.subList(0, 16); // Top 16 advance
-    //             // Round 2: DE-16
-    //         } else {
-    //             qualifiedPlayers = qualifiedPlayers.subList(0, 8); // Top 8 advance
-    //             // Round 2: Quarterfinals
-    //         }
-    //     }
-        
-    //     // Special handling for semifinals and finals
-    //     if (qualifiedPlayers.size() == 4) {
-    //         // Generate semifinals (Round 5)
-    //         generateDirectEliminationMatches(tournament, qualifiedPlayers, nextRound);
-    //     } else if (qualifiedPlayers.size() == 2) {
-    //         // For bronze medal match (Round 6)
-    //         List<Player> losers = getSemifinalLosers(tournamentId);
-    //         generateDirectEliminationMatches(tournament, losers, nextRound);
-            
-    //         // For gold medal match (Round 7)
-    //         generateDirectEliminationMatches(tournament, qualifiedPlayers, nextRound + 1);
-    //     } else {
-    //         // Normal DE round
-    //         generateDirectEliminationMatches(tournament, qualifiedPlayers, nextRound);
-    //     }
-    // }
+    // Number of players who need to fight for a spot
+    int playersToSeed = playerCount - (playerCount - targetCount / 2);
 
-    // private List<Player> getSemifinalLosers(Long tournamentId) {
-    //     // Get semifinal matches and return the losers
-    //     List<Match> semifinals = matchRepository.findByTournamentIdAndRoundNo(tournamentId, 5);
-    //     return semifinals.stream()
-    //         .map(match -> {
-    //             Long loserId = match.getPlayer1Id().equals(match.getWinner()) 
-    //                 ? match.getPlayer2Id() 
-    //                 : match.getPlayer1Id();
-    //             return playerRepository.findById(loserId)
-    //                 .orElseThrow(() -> new RuntimeException("Player not found"));
-    //         })
-    //         .collect(Collectors.toList());
-    // }
+    // Create seeding matches (highest rank vs lowest rank)
+    for (int i = 0; i < playersToSeed / 2; i++) {
+        Long player1Id = rankedPlayerIds.get(i);
+        Long player2Id = rankedPlayerIds.get(playersToSeed - i - 1);
+
+        Match match = new Match();
+        match.setTournament(tournament);
+        match.setRoundNo(2); // Assuming seeding round is round 2
+        match.setPlayer1Id(player1Id);
+        match.setPlayer2Id(player2Id);
+        match.setDate(LocalDate.now()); // You can adjust the date as needed
+        matchRepository.save(match);
+    }
+}
+
+    public void generateDirectEliminationMatches(Tournament tournament, List<Long> playerIds, int roundId) {
+        Collections.shuffle(playerIds); // Shuffle for random matching
+
+        for (int i = 0; i < playerIds.size() - 1; i += 2) {
+            Long player1Id = playerIds.get(i);
+            Long player2Id = playerIds.get(i + 1);
+
+            Match match = new Match();
+            match.setTournament(tournament);
+            match.setRoundNo(roundId);
+            match.setPlayer1Id(player1Id);
+            match.setPlayer2Id(player2Id);
+            match.setDate(LocalDate.now()); // You can adjust the date as needed
+            matchRepository.save(match);
+        }
+    }
+
+    public List<Long> promotePlayersToNextRound(Long tournamentId, int currentRoundId) {
+        List<Match> matches = matchRepository.findByTournamentIdAndRoundNo(tournamentId, currentRoundId);
+        List<Long> winners = new ArrayList<>();
+    
+        for (Match match : matches) {
+            Long winnerId = match.getWinner();
+            if (winnerId != null) {
+                winners.add(winnerId);
+            } else {
+                throw new IllegalStateException("All matches need to be completed to determine winners.");
+            }
+        }
+        return winners;
+    }
+
+    public void handleMedalMatches(Tournament tournament, List<Long> semifinalistIds) {
+        if (semifinalistIds.size() != 4) {
+            throw new IllegalArgumentException("There should be exactly 4 players for medal matches.");
+        }
+    
+        // Semifinal matches
+        Match semifinal1 = new Match();
+        semifinal1.setTournament(tournament);
+        semifinal1.setRoundNo(5);
+        semifinal1.setPlayer1Id(semifinalistIds.get(0));
+        semifinal1.setPlayer2Id(semifinalistIds.get(1));
+        semifinal1.setDate(LocalDate.now());
+        matchRepository.save(semifinal1);
+    
+        Match semifinal2 = new Match();
+        semifinal2.setTournament(tournament);
+        semifinal2.setRoundNo(5);
+        semifinal2.setPlayer1Id(semifinalistIds.get(2));
+        semifinal2.setPlayer2Id(semifinalistIds.get(3));
+        semifinal2.setDate(LocalDate.now());
+        matchRepository.save(semifinal2);
+    
+        // Bronze medal match (losers of the semifinals)
+        Match bronzeMatch = new Match();
+        bronzeMatch.setTournament(tournament);
+        bronzeMatch.setRoundNo(6);
+        bronzeMatch.setDate(LocalDate.now());
+        matchRepository.save(bronzeMatch);
+    
+        // Gold medal match (winners of the semifinals)
+        Match goldMatch = new Match();
+        goldMatch.setTournament(tournament);
+        goldMatch.setRoundNo(7);
+        goldMatch.setDate(LocalDate.now());
+        matchRepository.save(goldMatch);
+    }
 }

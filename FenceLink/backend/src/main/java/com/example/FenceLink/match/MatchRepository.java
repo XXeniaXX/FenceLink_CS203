@@ -7,4 +7,5 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     
     // Custom query to find matches by tournament ID
     List<Match> findByTournamentId(Long tournamentId);
+    List<Match> findByTournamentIdAndRoundNo(Long tournamentId, int roundNo);
 }

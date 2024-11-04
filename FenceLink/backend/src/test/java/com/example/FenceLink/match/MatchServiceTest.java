@@ -197,7 +197,95 @@ public class MatchServiceTest {
         verify(matchRepository, times(expectedMatches)).save(any(Match.class));
     }
 
-    // calculate expected matches for given pool sizes
+    @Test
+    public void testGetPlayerRank_WithIncompleteMatches() {
+        // Arrange
+        List<Match> matches = new ArrayList<>();
+        matches.add(new Match(1L, 1, 1L, 101L, 102L, LocalDate.now(), null, null, 5, 3, null)); // Incomplete match
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            matchService.getPlayerRank(matches);
+        });
+
+        assertEquals("All matches need to be completed to calculate rankings.", exception.getMessage());
+    }
+
+    @Test
+    public void testRankPlayer() {
+        // Arrange
+        List<Match> matches = new ArrayList<>();
+        
+        // Create some mock matches with valid winners
+        matches.add(new Match(1L, 1, 1L, 101L, 102L, LocalDate.now(), null, null, 5, 3, 101L)); // Player 101 wins
+        matches.add(new Match(2L, 1, 1L, 103L, 101L, LocalDate.now(), null, null, 4, 6, 101L)); // Player 101 wins again
+        matches.add(new Match(3L, 1, 1L, 102L, 103L, LocalDate.now(), null, null, 3, 5, 103L)); // Player 103 wins
+
+        // Log the match details for debugging
+        System.out.println("Match details:");
+        for (Match match : matches) {
+            System.out.println("Match ID: " + match.getMatchId() + ", Winner: " + match.getWinner());
+        }
+
+        // Act
+        List<Long> rankedPlayers = matchService.getPlayerRank(matches);
+
+        // Assert
+        assertEquals(3, rankedPlayers.size()); // Expecting 3 players in the ranking
+        assertEquals(101L, rankedPlayers.get(0)); // Player 101 should be ranked first (2 wins)
+        assertEquals(103L, rankedPlayers.get(1)); // Player 103 should be ranked second (1 win)
+        assertEquals(102L, rankedPlayers.get(2)); // Player 102 should be ranked third (0 wins)
+
+        // Optionally, log the rankings for debugging
+        System.out.println("Ranked Players: " + rankedPlayers);
+    }
+    
+    @Test
+    public void testRankPlayerWithTies() {
+        // Arrange
+        List<Match> matches = new ArrayList<>();
+
+        // Pool 1: Player 101, 102, 103
+        matches.add(new Match(1L, 1, 1L, 101L, 102L, LocalDate.now(), null, null, 5, 3, 101L)); // Player 101 wins
+        matches.add(new Match(2L, 1, 1L, 102L, 103L, LocalDate.now(), null, null, 4, 6, 103L)); // Player 103 wins
+        matches.add(new Match(3L, 1, 1L, 103L, 101L, LocalDate.now(), null, null, 7, 5, 103L)); // Player 103 wins
+
+        // Pool 2: Player 201, 202, 203
+        matches.add(new Match(4L, 1, 1L, 201L, 202L, LocalDate.now(), null, null, 5, 4, 201L)); // Player 201 wins
+        matches.add(new Match(5L, 1, 1L, 202L, 203L, LocalDate.now(), null, null, 3, 5, 203L)); // Player 203 wins
+        matches.add(new Match(6L, 1, 1L, 203L, 201L, LocalDate.now(), null, null, 2, 6, 201L)); // Player 201 wins
+
+        // Act
+        List<Long> rankedPlayers = matchService.getPlayerRank(matches);
+
+        // Assert
+        assertEquals(6, rankedPlayers.size()); // There should be 6 players in total
+
+        // Since players 103 and 201 both have 2 wins and 0 losses, their positions may be swapped randomly
+        Long firstPlayer = rankedPlayers.get(0);
+        Long secondPlayer = rankedPlayers.get(1);
+        assertTrue((firstPlayer.equals(103L) && secondPlayer.equals(201L)) ||
+                (firstPlayer.equals(201L) && secondPlayer.equals(103L)),
+                "Players with equal wins and losses should be randomly ordered.");
+
+        // Players 101 and 203 should follow, as both have 1 win and 1 loss
+        Long thirdPlayer = rankedPlayers.get(2);
+        Long fourthPlayer = rankedPlayers.get(3);
+        assertTrue((thirdPlayer.equals(101L) && fourthPlayer.equals(203L)) ||
+                (thirdPlayer.equals(203L) && fourthPlayer.equals(101L)),
+                "Players with equal wins and losses should be randomly ordered.");
+
+        // Players 102 and 202 should be last, both with 0 wins and 2 losses
+        Long fifthPlayer = rankedPlayers.get(4);
+        Long sixthPlayer = rankedPlayers.get(5);
+        assertTrue((fifthPlayer.equals(102L) && sixthPlayer.equals(202L)) ||
+                (fifthPlayer.equals(202L) && sixthPlayer.equals(102L)),
+                "Players with equal losses should be randomly ordered.");
+
+        // Log the rankings to review in the console
+        System.out.println("Ranked Players with Ties: " + rankedPlayers);
+    }
+
     private int calculateExpectedMatchesForPools(List<Long> playerIds, int maxPoolSize) {
         List<List<Long>> pools = createPools(playerIds);
         int totalMatches = 0;
