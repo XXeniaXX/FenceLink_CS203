@@ -77,7 +77,6 @@ public class MatchService {
     public void deleteMatch(Long matchId) {
         matchRepository.deleteById(matchId);
     }
-
     //matching system
     public void generateMatches(Long tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
@@ -250,29 +249,52 @@ public class MatchService {
         matchRepository.save(match);
     }
 
-    public void generateSeedingMatches(Tournament tournament, List<Long> rankedPlayerIds) {
-    int playerCount = rankedPlayerIds.size();
-    int targetCount = playerCount > 16 ? 32 : 16;
-
-    // Number of players who need to fight for a spot
-    int playersToSeed = playerCount - (playerCount - targetCount / 2);
-
-    // Create seeding matches (highest rank vs lowest rank)
-    for (int i = 0; i < playersToSeed / 2; i++) {
-        Long player1Id = rankedPlayerIds.get(i);
-        Long player2Id = rankedPlayerIds.get(playersToSeed - i - 1);
-
-        Match match = new Match();
-        match.setTournament(tournament);
-        match.setRoundNo(2); // Assuming seeding round is round 2
-        match.setPlayer1Id(player1Id);
-        match.setPlayer2Id(player2Id);
-        match.setDate(LocalDate.now()); // You can adjust the date as needed
-        matchRepository.save(match);
+    public void generateSLMatches(Tournament tournament, List<Long> rankedPlayerIds) {
+        int playerCount = rankedPlayerIds.size();
+        int targetCount = playerCount > 16 ? 32 : 16;
+    
+        // Calculate the number of players who need to fight for a spot
+        int playersToSeed = targetCount - playerCount;
+    
+        // Collect the player IDs who get a direct pass (top-ranked players)
+        List<Long> playersWithPass = new ArrayList<>(rankedPlayerIds.subList(0, playersToSeed));
+    
+        // Create seeding matches for the rest of the players
+        int remainingPlayersStartIndex = playersToSeed;
+        int remainingPlayersCount = playerCount - playersToSeed;
+    
+        for (int i = 0; i < remainingPlayersCount / 2; i++) {
+            Long player1Id = rankedPlayerIds.get(remainingPlayersStartIndex + i);
+            Long player2Id = rankedPlayerIds.get(remainingPlayersStartIndex + remainingPlayersCount - i - 1);
+    
+            Match match = new Match();
+            match.setTournament(tournament);
+            match.setRoundNo(2); // Assuming seeding round is round 2
+            match.setPlayer1Id(player1Id);
+            match.setPlayer2Id(player2Id);
+            match.setDate(LocalDate.now()); // You can adjust the date as needed
+            matchRepository.save(match);
+        }
+    
+        // Add matches for players who get a direct pass
+        for (Long playerId : playersWithPass) {
+            Match match = new Match();
+            match.setTournament(tournament);
+            match.setRoundNo(2); // Assuming pass round is round 2
+            match.setPlayer1Id(playerId);
+            match.setPlayer2Id(0L); // Special ID for the "Pass" opponent
+            match.setDate(LocalDate.now()); // You can adjust the date as needed
+            match.setPlayer1points(0); // Default 0 points for a pass
+            match.setPlayer2points(0); // Default 0 points for the "Pass" opponent
+            match.setWinner(playerId); // The player with the pass is the winner
+            matchRepository.save(match);
+        }
+    
+        // Log the players who get a direct pass
+        logger.info("Players who get a direct pass: {}", playersWithPass);
     }
-}
 
-    public void generateDirectEliminationMatches(Tournament tournament, List<Long> playerIds, int roundId) {
+    public void generateDEMatches(Tournament tournament, List<Long> playerIds, int roundId) {
         Collections.shuffle(playerIds); // Shuffle for random matching
 
         for (int i = 0; i < playerIds.size() - 1; i += 2) {
