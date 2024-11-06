@@ -1,20 +1,26 @@
 package com.example.FenceLink.match;
 
+import com.example.FenceLink.MatchRank.MatchRankService;
+import com.example.FenceLink.player.Player;
 import com.example.FenceLink.player.PlayerService;
 import com.example.FenceLink.player.PlayerServiceImpl;
 import com.example.FenceLink.tournament.Tournament;
 import com.example.FenceLink.tournament.TournamentRepository;
+import com.example.FenceLink.MatchRank.MatchRank;
+import com.example.FenceLink.MatchRank.MatchRankRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +35,12 @@ public class MatchServiceTest {
 
     @Mock
     private TournamentRepository tournamentRepository;
+
+    @Mock
+    private MatchRankService matchRankService;
+
+    @Mock
+    private MatchRankRepository matchRankRepository;
 
     @Mock
     private PlayerServiceImpl playerService; // Use PlayerService, not PlayerServiceImpl
@@ -199,104 +211,26 @@ public class MatchServiceTest {
     }
 
     @Test
-    public void testGetPlayerRank_WithIncompleteMatches() {
-        // Arrange
-        List<Match> matches = new ArrayList<>();
-        matches.add(new Match(1L, 1, 1L, 101L, 102L, LocalDate.now(), null, null, 5, 3, null)); // Incomplete match
-
-        // Act & Assert
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            matchService.getPlayerRank(matches);
-        });
-
-        assertEquals("All matches need to be completed to calculate rankings.", exception.getMessage());
-    }
-
-    @Test
-    public void testRankPlayer() {
-        // Arrange
-        List<Match> matches = new ArrayList<>();
-        
-        // Create some mock matches with valid winners
-        matches.add(new Match(1L, 1, 1L, 101L, 102L, LocalDate.now(), null, null, 5, 3, 101L)); // Player 101 wins
-        matches.add(new Match(2L, 1, 1L, 103L, 101L, LocalDate.now(), null, null, 4, 6, 101L)); // Player 101 wins again
-        matches.add(new Match(3L, 1, 1L, 102L, 103L, LocalDate.now(), null, null, 3, 5, 103L)); // Player 103 wins
-
-        // Log the match details for debugging
-        System.out.println("Match details:");
-        for (Match match : matches) {
-            System.out.println("Match ID: " + match.getMatchId() + ", Winner: " + match.getWinner());
-        }
-
-        // Act
-        List<Long> rankedPlayers = matchService.getPlayerRank(matches);
-
-        // Assert
-        assertEquals(3, rankedPlayers.size()); // Expecting 3 players in the ranking
-        assertEquals(101L, rankedPlayers.get(0)); // Player 101 should be ranked first (2 wins)
-        assertEquals(103L, rankedPlayers.get(1)); // Player 103 should be ranked second (1 win)
-        assertEquals(102L, rankedPlayers.get(2)); // Player 102 should be ranked third (0 wins)
-
-        // Optionally, log the rankings for debugging
-        System.out.println("Ranked Players: " + rankedPlayers);
-    }
-    
-    @Test
-    public void testRankPlayerWithTies() {
-        // Arrange
-        List<Match> matches = new ArrayList<>();
-
-        // Pool 1: Player 101, 102, 103
-        matches.add(new Match(1L, 1, 1L, 101L, 102L, LocalDate.now(), null, null, 5, 3, 101L)); // Player 101 wins
-        matches.add(new Match(2L, 1, 1L, 102L, 103L, LocalDate.now(), null, null, 4, 6, 103L)); // Player 103 wins
-        matches.add(new Match(3L, 1, 1L, 103L, 101L, LocalDate.now(), null, null, 7, 5, 103L)); // Player 103 wins
-
-        // Pool 2: Player 201, 202, 203
-        matches.add(new Match(4L, 1, 1L, 201L, 202L, LocalDate.now(), null, null, 5, 4, 201L)); // Player 201 wins
-        matches.add(new Match(5L, 1, 1L, 202L, 203L, LocalDate.now(), null, null, 3, 5, 203L)); // Player 203 wins
-        matches.add(new Match(6L, 1, 1L, 203L, 201L, LocalDate.now(), null, null, 2, 6, 201L)); // Player 201 wins
-
-        // Act
-        List<Long> rankedPlayers = matchService.getPlayerRank(matches);
-
-        // Assert
-        assertEquals(6, rankedPlayers.size()); // There should be 6 players in total
-
-        // Since players 103 and 201 both have 2 wins and 0 losses, their positions may be swapped randomly
-        Long firstPlayer = rankedPlayers.get(0);
-        Long secondPlayer = rankedPlayers.get(1);
-        assertTrue((firstPlayer.equals(103L) && secondPlayer.equals(201L)) ||
-                (firstPlayer.equals(201L) && secondPlayer.equals(103L)),
-                "Players with equal wins and losses should be randomly ordered.");
-
-        // Players 101 and 203 should follow, as both have 1 win and 1 loss
-        Long thirdPlayer = rankedPlayers.get(2);
-        Long fourthPlayer = rankedPlayers.get(3);
-        assertTrue((thirdPlayer.equals(101L) && fourthPlayer.equals(203L)) ||
-                (thirdPlayer.equals(203L) && fourthPlayer.equals(101L)),
-                "Players with equal wins and losses should be randomly ordered.");
-
-        // Players 102 and 202 should be last, both with 0 wins and 2 losses
-        Long fifthPlayer = rankedPlayers.get(4);
-        Long sixthPlayer = rankedPlayers.get(5);
-        assertTrue((fifthPlayer.equals(102L) && sixthPlayer.equals(202L)) ||
-                (fifthPlayer.equals(202L) && sixthPlayer.equals(102L)),
-                "Players with equal losses should be randomly ordered.");
-
-        // Log the rankings to review in the console
-        System.out.println("Ranked Players with Ties: " + rankedPlayers);
-    }
-
-    @Test
     public void testUpdateMatchResults_Success() {
         // Arrange
         Long matchId = 1L;
+        Tournament tournament = new Tournament();
+        tournament.setId(1L); // Set the tournament ID
+
         Match match = new Match();
         match.setMatchId(matchId);
+        match.setTournament(tournament); // Set the tournament
         match.setPlayer1Id(101L);
         match.setPlayer2Id(102L);
 
+        MatchRank player1Rank = new MatchRank(1L, tournament, 101L, 0, 0, 0, false);
+        MatchRank player2Rank = new MatchRank(2L, tournament, 102L, 0, 0, 0, false);
+
         when(matchRepository.findById(matchId)).thenReturn(Optional.of(match));
+        when(matchRankRepository.findByTournamentIdAndPlayerId(1L, 101L))
+            .thenReturn(Optional.of(player1Rank));
+        when(matchRankRepository.findByTournamentIdAndPlayerId(1L, 102L))
+            .thenReturn(Optional.of(player2Rank));
 
         // Act
         matchService.updateMatchResults(matchId, 5, 3);
@@ -306,8 +240,16 @@ public class MatchServiceTest {
         assertEquals(3, match.getPlayer2points());
         assertEquals(101L, match.getWinner()); // Player 1 wins
 
+        // Check if the win and loss counts are updated
+        assertEquals(1, player1Rank.getWinCount()); // Player 1 should have 1 win
+        assertEquals(0, player1Rank.getLossCount());
+        assertEquals(0, player2Rank.getWinCount());
+        assertEquals(1, player2Rank.getLossCount()); // Player 2 should have 1 loss
+
         verify(matchRepository, times(1)).findById(matchId);
         verify(matchRepository, times(1)).save(match);
+        verify(matchRankRepository, times(1)).save(player1Rank);
+        verify(matchRankRepository, times(1)).save(player2Rank);
     }
 
     @Test
@@ -365,13 +307,18 @@ public class MatchServiceTest {
     public void testGenerateSLP10() {
         // Arrange
         Tournament tournament = new Tournament();
+        tournament.setId(1L);
+
         List<Long> rankedPlayerIds = new ArrayList<>();
-        for (long i = 1; i <= 10; i++) { // 10 players, so 6 will get a direct pass
+        for (long i = 1; i <= 10; i++) {
             rankedPlayerIds.add(i);
         }
-
+        // Mock the rank-related methods in matchRankService
+        when(matchRankService.getRankedPlayerIds(tournament.getId())).thenReturn(rankedPlayerIds);
+        doNothing().when(matchRankService).updateCurrentRank(tournament.getId());
+        
         // Act
-        matchService.generateSLMatches(tournament, rankedPlayerIds);
+        matchService.generateSLMatches(tournament);
 
         // Capture saved matches
         ArgumentCaptor<Match> matchCaptor = ArgumentCaptor.forClass(Match.class);
@@ -418,13 +365,17 @@ public class MatchServiceTest {
     public void testGenerateSLP15() {
         // Arrange
         Tournament tournament = new Tournament();
+        tournament.setId(1L);
         List<Long> rankedPlayerIds = new ArrayList<>();
         for (long i = 1; i <= 15; i++) { // 15 players, so 1 will get a direct pass
             rankedPlayerIds.add(i);
         }
+        // Mock the rank-related methods in matchRankService
+        when(matchRankService.getRankedPlayerIds(tournament.getId())).thenReturn(rankedPlayerIds);
+        doNothing().when(matchRankService).updateCurrentRank(tournament.getId());
     
         // Act
-        matchService.generateSLMatches(tournament, rankedPlayerIds);
+        matchService.generateSLMatches(tournament);
     
         // Capture saved matches
         ArgumentCaptor<Match> matchCaptor = ArgumentCaptor.forClass(Match.class);
@@ -476,13 +427,16 @@ public class MatchServiceTest {
     public void testGenerateSLP18() {
         // Arrange
         Tournament tournament = new Tournament();
+        tournament.setId(1L);
         List<Long> rankedPlayerIds = new ArrayList<>();
         for (long i = 1; i <= 18; i++) { // 18 players, so 14 will get a direct pass
             rankedPlayerIds.add(i);
         }
+        when(matchRankService.getRankedPlayerIds(tournament.getId())).thenReturn(rankedPlayerIds);
+        doNothing().when(matchRankService).updateCurrentRank(tournament.getId());
 
         // Act
-        matchService.generateSLMatches(tournament, rankedPlayerIds);
+        matchService.generateSLMatches(tournament);
 
         // Capture saved matches
         ArgumentCaptor<Match> matchCaptor = ArgumentCaptor.forClass(Match.class);
@@ -529,13 +483,16 @@ public class MatchServiceTest {
     public void testGenerateSLP30() {
         // Arrange
         Tournament tournament = new Tournament();
+        tournament.setId(1L);
         List<Long> rankedPlayerIds = new ArrayList<>();
         for (long i = 1; i <= 30; i++) { // 30 players, so 2 will get a direct pass
             rankedPlayerIds.add(i);
         }
+        when(matchRankService.getRankedPlayerIds(tournament.getId())).thenReturn(rankedPlayerIds);
+        doNothing().when(matchRankService).updateCurrentRank(tournament.getId());
 
         // Act
-        matchService.generateSLMatches(tournament, rankedPlayerIds);
+        matchService.generateSLMatches(tournament);
 
         // Capture saved matches
         ArgumentCaptor<Match> matchCaptor = ArgumentCaptor.forClass(Match.class);
@@ -590,8 +547,263 @@ public class MatchServiceTest {
         System.out.println("Matchups: " + matchups);
     }
     
+    @Test
+    public void testGenerateDEMatchesFor8Players() {
+        // Arrange
+        Tournament mockTournament = new Tournament();
+        mockTournament.setId(1L);
 
+        List<Long> rankedPlayerIds = new ArrayList<>();
+        for (long i = 1; i <= 8; i++) {
+            rankedPlayerIds.add(i);
+        }
 
+        when(matchRankService.getRankedPlayerIds(1L)).thenReturn(rankedPlayerIds);
+
+        // Act
+        matchService.generateDEMatches(mockTournament);
+
+        // Assert
+        ArgumentCaptor<Match> matchCaptor = ArgumentCaptor.forClass(Match.class);
+        verify(matchRepository, times(4)).save(matchCaptor.capture());
+        List<Match> savedMatches = matchCaptor.getAllValues();
+
+        // Example assertions for 8 players
+        assertEquals(4, savedMatches.size()); // Ensure we have 4 matches
+
+        // Match 1
+        assertEquals(1L, savedMatches.get(0).getPlayer1Id().longValue());
+        assertEquals(8L, savedMatches.get(0).getPlayer2Id().longValue());
+        
+        // Match 2
+        assertEquals(3L, savedMatches.get(1).getPlayer1Id().longValue());
+        assertEquals(6L, savedMatches.get(1).getPlayer2Id().longValue());
+        
+        // Match 3
+        assertEquals(4L, savedMatches.get(2).getPlayer1Id().longValue());
+        assertEquals(5L, savedMatches.get(2).getPlayer2Id().longValue());
+        
+        // Match 4
+        assertEquals(2L, savedMatches.get(3).getPlayer1Id().longValue());
+        assertEquals(7L, savedMatches.get(3).getPlayer2Id().longValue());
+    }
+
+    @Test
+    public void testGenerateDEMatchesFor16Players() {
+        // Arrange
+        Tournament mockTournament = new Tournament();
+        mockTournament.setId(1L);
+
+        List<Long> rankedPlayerIds = new ArrayList<>();
+        for (long i = 1; i <= 16; i++) {
+            rankedPlayerIds.add(i);
+        }
+
+        when(matchRankService.getRankedPlayerIds(1L)).thenReturn(rankedPlayerIds);
+
+        // Act
+        matchService.generateDEMatches(mockTournament);
+
+        // Assert
+        ArgumentCaptor<Match> matchCaptor = ArgumentCaptor.forClass(Match.class);
+        verify(matchRepository, times(8)).save(matchCaptor.capture());
+        List<Match> savedMatches = matchCaptor.getAllValues();
+
+        // Example assertions for 8 players
+        assertEquals(8, savedMatches.size()); // Ensure we have 8 matches
+
+        // Match 1
+        assertEquals(1L, savedMatches.get(0).getPlayer1Id().longValue());
+        assertEquals(16L, savedMatches.get(0).getPlayer2Id().longValue());
+        
+        // Match 2
+        assertEquals(7L, savedMatches.get(1).getPlayer1Id().longValue());
+        assertEquals(10L, savedMatches.get(1).getPlayer2Id().longValue());
+        
+        // Match 3
+        assertEquals(5L, savedMatches.get(2).getPlayer1Id().longValue());
+        assertEquals(12L, savedMatches.get(2).getPlayer2Id().longValue());
+        
+        // Match 4
+        assertEquals(3L, savedMatches.get(3).getPlayer1Id().longValue());
+        assertEquals(14L, savedMatches.get(3).getPlayer2Id().longValue());
+        
+        // Match 5
+        assertEquals(4L, savedMatches.get(4).getPlayer1Id().longValue());
+        assertEquals(13L, savedMatches.get(4).getPlayer2Id().longValue());
+        
+        // Match 6
+        assertEquals(6L, savedMatches.get(5).getPlayer1Id().longValue());
+        assertEquals(11L, savedMatches.get(5).getPlayer2Id().longValue());
+        
+        // Match 7
+        assertEquals(8L, savedMatches.get(6).getPlayer1Id().longValue());
+        assertEquals(9L, savedMatches.get(6).getPlayer2Id().longValue());
+        
+        // Match 8
+        assertEquals(2L, savedMatches.get(7).getPlayer1Id().longValue());
+        assertEquals(15L, savedMatches.get(7).getPlayer2Id().longValue());
+    }
+
+      @Test
+    public void testPromotePlayersToNextRound() {
+        // Arrange
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+
+        // Mocking the repository to return the current round
+        when(matchRepository.findMaxRoundByTournamentId(1L)).thenReturn(3);
+
+        // Mocking matches for the current round
+        Match match1 = new Match(1L, 3, 1L, 1L, 2L, LocalDate.now(), null, null, 10, 5, 1L);
+        Match match2 = new Match(2L, 3, 1L, 3L, 4L, LocalDate.now(), null, null, 8, 9, 4L);
+        when(matchRepository.findByTournamentIdAndRoundNo(1L, 3)).thenReturn(Arrays.asList(match1, match2));
+
+        // Act
+        List<Long> winners = matchService.promotePlayersToNextRound(tournament);
+
+        // Assert
+        assertEquals(2, winners.size());
+        assertEquals(Long.valueOf(1L), winners.get(0)); // Winner of match1
+        assertEquals(Long.valueOf(4L), winners.get(1)); // Winner of match2
+
+        // Verify that new matches for the next round were created and saved
+        verify(matchRepository, times(1)).saveAll(Mockito.anyList());
+    }
+
+    @Test
+    public void testPromotePlayersToNextRoundWithTwoWinners() {
+        // Arrange
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+
+        // Mocking the repository to return the current round
+        when(matchRepository.findMaxRoundByTournamentId(1L)).thenReturn(3);
+
+        // Mocking matches for the current round
+        Match match1 = new Match(1L, 3, 1L, 1L, 3L, LocalDate.now(), null, null, 10, 5, 1L); // Winner: 1L
+        Match match2 = new Match(2L, 3, 1L, 2L, 4L, LocalDate.now(), null, null, 8, 9, 4L); // Winner: 4L
+        when(matchRepository.findByTournamentIdAndRoundNo(1L, 3)).thenReturn(Arrays.asList(match1, match2));
+
+        // Act
+        List<Long> winners = matchService.promotePlayersToNextRound(tournament);
+
+        // Assert
+        assertEquals(2, winners.size());
+        assertEquals(Long.valueOf(1L), winners.get(0)); // Winner of match1
+        assertEquals(Long.valueOf(4L), winners.get(1)); // Winner of match2
+
+        // Verify that two new matches were created and saved: one for gold/silver, one for bronze
+        ArgumentCaptor<List<Match>> matchCaptor = ArgumentCaptor.forClass(List.class);
+        verify(matchRepository, times(1)).saveAll(matchCaptor.capture());
+
+        List<Match> createdMatches = matchCaptor.getValue();
+        assertEquals(2, createdMatches.size());
+
+        // Check the gold/silver match
+        Match goldSilverMatch = createdMatches.get(0);
+        assertEquals(1L, goldSilverMatch.getPlayer1Id());
+        assertEquals(4L, goldSilverMatch.getPlayer2Id());
+
+        // Check the bronze match
+        Match bronzeMatch = createdMatches.get(1);
+        assertEquals(3L, bronzeMatch.getPlayer1Id()); // Loser of match1
+        assertEquals(2L, bronzeMatch.getPlayer2Id()); // Loser of match2
+    }
+
+    @Test
+    public void testPromotePlayersToNextRoundWithFourWinners() {
+        // Arrange
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+
+        // Mocking the repository to return the current round
+        when(matchRepository.findMaxRoundByTournamentId(1L)).thenReturn(2);
+
+        // Mocking matches for the current round with 4 winners
+        Match match1 = new Match(1L, 2, 1L, 1L, 2L, LocalDate.now(), null, null, 10, 5, 1L); // Winner: 1L
+        Match match2 = new Match(2L, 2, 1L, 3L, 4L, LocalDate.now(), null, null, 7, 12, 4L); // Winner: 4L
+        Match match3 = new Match(3L, 2, 1L, 5L, 6L, LocalDate.now(), null, null, 6, 9, 6L); // Winner: 6L
+        Match match4 = new Match(4L, 2, 1L, 7L, 8L, LocalDate.now(), null, null, 11, 8, 7L); // Winner: 7L
+        when(matchRepository.findByTournamentIdAndRoundNo(1L, 2)).thenReturn(Arrays.asList(match1, match2, match3, match4));
+
+        // Act
+        List<Long> winners = matchService.promotePlayersToNextRound(tournament);
+
+        // Assert
+        assertEquals(4, winners.size());
+        assertEquals(Long.valueOf(1L), winners.get(0)); // Winner of match1
+        assertEquals(Long.valueOf(4L), winners.get(1)); // Winner of match2
+        assertEquals(Long.valueOf(6L), winners.get(2)); // Winner of match3
+        assertEquals(Long.valueOf(7L), winners.get(3)); // Winner of match4
+
+        // Verify that two new matches are created for the next round
+        ArgumentCaptor<List<Match>> matchCaptor = ArgumentCaptor.forClass(List.class);
+        verify(matchRepository, times(1)).saveAll(matchCaptor.capture());
+
+        List<Match> createdMatches = matchCaptor.getValue();
+        assertEquals(2, createdMatches.size()); // Two matches for the next round
+
+        // Check the matches for the next round
+        Match nextMatch1 = createdMatches.get(0);
+        Match nextMatch2 = createdMatches.get(1);
+        assertEquals(1L, nextMatch1.getPlayer1Id());
+        assertEquals(4L, nextMatch1.getPlayer2Id());
+        assertEquals(6L, nextMatch2.getPlayer1Id());
+        assertEquals(7L, nextMatch2.getPlayer2Id());
+    }
+
+    @Test
+    public void testPromotePlayersToNextRoundWithEightWinners() {
+        // Arrange
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+
+        // Mocking the repository to return the current round
+        when(matchRepository.findMaxRoundByTournamentId(1L)).thenReturn(2);
+
+        // Mocking matches for the current round with 8 winners
+        Match match1 = new Match(1L, 2, 1L, 1L, 2L, LocalDate.now(), null, null, 10, 5, 1L); // Winner: 1L
+        Match match2 = new Match(2L, 2, 1L, 3L, 4L, LocalDate.now(), null, null, 7, 12, 4L); // Winner: 4L
+        Match match3 = new Match(3L, 2, 1L, 5L, 6L, LocalDate.now(), null, null, 6, 9, 6L); // Winner: 6L
+        Match match4 = new Match(4L, 2, 1L, 7L, 8L, LocalDate.now(), null, null, 11, 8, 7L); // Winner: 7L
+        Match match5 = new Match(5L, 2, 1L, 9L, 10L, LocalDate.now(), null, null, 15, 5, 9L); // Winner: 9L
+        Match match6 = new Match(6L, 2, 1L, 11L, 12L, LocalDate.now(), null, null, 8, 9, 12L); // Winner: 12L
+        Match match7 = new Match(7L, 2, 1L, 13L, 14L, LocalDate.now(), null, null, 10, 6, 13L); // Winner: 13L
+        Match match8 = new Match(8L, 2, 1L, 15L, 16L, LocalDate.now(), null, null, 9, 8, 15L); // Winner: 15L
+        when(matchRepository.findByTournamentIdAndRoundNo(1L, 2)).thenReturn(Arrays.asList(match1, match2, match3, match4, match5, match6, match7, match8));
+
+        // Act
+        List<Long> winners = matchService.promotePlayersToNextRound(tournament);
+
+        // Assert
+        assertEquals(8, winners.size());
+        assertEquals(Long.valueOf(1L), winners.get(0)); // Winner of match1
+        assertEquals(Long.valueOf(4L), winners.get(1)); // Winner of match2
+        assertEquals(Long.valueOf(6L), winners.get(2)); // Winner of match3
+        assertEquals(Long.valueOf(7L), winners.get(3)); // Winner of match4
+        assertEquals(Long.valueOf(9L), winners.get(4)); // Winner of match5
+        assertEquals(Long.valueOf(12L), winners.get(5)); // Winner of match6
+        assertEquals(Long.valueOf(13L), winners.get(6)); // Winner of match7
+        assertEquals(Long.valueOf(15L), winners.get(7)); // Winner of match8
+
+        // Verify that four new matches are created for the next round
+        ArgumentCaptor<List<Match>> matchCaptor = ArgumentCaptor.forClass(List.class);
+        verify(matchRepository, times(1)).saveAll(matchCaptor.capture());
+
+        List<Match> createdMatches = matchCaptor.getValue();
+        assertEquals(4, createdMatches.size()); // Four matches for the next round
+
+        // Check the matches for the next round
+        assertEquals(1L, createdMatches.get(0).getPlayer1Id());
+        assertEquals(4L, createdMatches.get(0).getPlayer2Id());
+        assertEquals(6L, createdMatches.get(1).getPlayer1Id());
+        assertEquals(7L, createdMatches.get(1).getPlayer2Id());
+        assertEquals(9L, createdMatches.get(2).getPlayer1Id());
+        assertEquals(12L, createdMatches.get(2).getPlayer2Id());
+        assertEquals(13L, createdMatches.get(3).getPlayer1Id());
+        assertEquals(15L, createdMatches.get(3).getPlayer2Id());
+    }
 
 
     private int calculateExpectedMatchesForPools(List<Long> playerIds, int maxPoolSize) {
