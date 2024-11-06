@@ -74,9 +74,11 @@ const OtpCheck = () => {
     });
 
     if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem("playerId", data.playerId);
        
       console.log('Registration successful');
-      navigate("/mainpage");
+      navigate("/playerinfo");
 
     } else {
       // Handle error
@@ -98,6 +100,10 @@ const OtpCheck = () => {
   }
 
   return (
+  <div>
+    <nav className="nav">
+      <div className="site-title">FENCELINK</div>
+    </nav>
     <div className="container">
       <h1 className = "header">OTP Verification</h1>
       <form onSubmit={handleSignUpConfirmation} className = "form">  
@@ -122,6 +128,7 @@ const OtpCheck = () => {
             Didn't receive code?<button onClick={resendConfirmationCode} className = "underline-button">Resend</button>
       </footer>
     </div>
+  </div>
   );
 };
 

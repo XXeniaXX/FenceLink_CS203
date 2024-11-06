@@ -90,6 +90,11 @@ const Login = () => {
   
 
   return (
+  <div>
+    <nav className="nav">
+      <div className="site-title">FENCELINK</div>
+    </nav>
+
     <div className="container">
       <h1 className="header">LOGIN</h1>
       <form onSubmit={handleSubmit} className="form">
@@ -134,11 +139,10 @@ const Login = () => {
         <footer classname= "footer">
           Don't have an account? <Link to="/register">Register here</Link>
         </footer>
-
         
       </form>
-      
     </div>
+  </div>
   );
 
 };

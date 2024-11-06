@@ -106,6 +106,10 @@ const ForgotPassword = () => {
     
     
     return (
+  <div>
+    <nav className="nav">
+      <div className="site-title">FENCELINK</div>
+    </nav>
     <div className="container">
       <h1 className="header">Forgot Password</h1>
       {step === 1 && (
@@ -171,6 +175,7 @@ const ForgotPassword = () => {
       )}
       {step === 3 && <p>Password reset successful! You can now log in with your new password.</p>}
     </div>
+</div>
         
     )
 }

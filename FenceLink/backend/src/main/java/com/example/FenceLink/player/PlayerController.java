@@ -37,20 +37,17 @@ public class PlayerController {
     // Add new player
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Player> addPlayer(@RequestBody Player player) {
+    public ResponseEntity<Map<String, Object>> addPlayer(@RequestBody Player player) {
         Player savedPlayer = playerService.insertPlayer(player);
-        return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Player created successfully");
+        response.put("playerId", savedPlayer.getId()); // Include playerId in the response
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // Update player details for ADMIN
     @PutMapping("/{id}")
-    public ResponseEntity<String> updatePlayer(@PathVariable Long id, @RequestBody Player player, @RequestHeader("Authorization") String authorizationHeader ) {
-        
-        String token = authorizationHeader.replace("Bearer ", "").trim();
-
-        if(!CognitoJWTValidator.isAdmin(token)) {
-            return new ResponseEntity<>("Access denied: Admin rights required", HttpStatus.FORBIDDEN);
-        }
+    public ResponseEntity<String> updatePlayer(@PathVariable Long id, @RequestBody Player player) {
         
         player.setId(id);  // Ensure player ID is set
         try {

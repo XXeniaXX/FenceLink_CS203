@@ -3,7 +3,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    height: 91vh;
+    width: 100%;
     background-color: #f0f0f0;
   }
   
@@ -17,11 +18,28 @@
   .form {
     display: flex;
     flex-direction: column;
-    width: 350px;
+    width: 450px;
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     background-color: #fff;
+  }
+
+    .form2 {
+      display: flex;
+      flex-direction: column;
+      width: 100%; /* Ensure the form uses full width within its parent */
+      max-width: 550px;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+
+  .form-group {
+      display: flex;
+      gap: 20px;
+      width: 100%;
   }
   
   .label {

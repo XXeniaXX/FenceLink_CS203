@@ -104,6 +104,10 @@ const Registration = () => {
 
   
   return (
+  <div>
+    <nav className="nav">
+      <div className="site-title">FENCELINK</div>
+    </nav>
     <div className="container">
       <h1 className="header">REGISTRATION</h1>
       <form onSubmit={handleSubmit} className="form">
@@ -170,8 +174,8 @@ const Registration = () => {
             Already have an account? <Link to="/login">Log in here</Link>
         </footer>
       </form>
-      
     </div>
+  </div>
   );
 };
 
