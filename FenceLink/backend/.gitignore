@@ -35,5 +35,9 @@ build/
 ### ENV Files ###
 .env
 
+<<<<<<< HEAD
 application.properties
 node_modules/
+=======
+node_modules/
+>>>>>>> 1393eb3a13a1cd81b58b9d32b6e692d63417b1b8
