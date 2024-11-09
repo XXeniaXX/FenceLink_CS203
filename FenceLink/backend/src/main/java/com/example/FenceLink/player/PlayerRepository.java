@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, Long> {
     Optional<Player> findById(Long id);
+    Optional<Player> findByUserId(Long userId);
     List<Player> findAll();
     void deletePlayerById(Long id);
 }

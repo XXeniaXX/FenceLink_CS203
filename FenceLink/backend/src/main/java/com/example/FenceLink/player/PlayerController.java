@@ -36,6 +36,12 @@ public class PlayerController {
         return new ResponseEntity<>(player, HttpStatus.OK);
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Player> getPlayerByUserId(@PathVariable Long userId) {
+        Player player = playerService.findByUserId(userId);
+        return new ResponseEntity<>(player, HttpStatus.OK);
+    }
+
     // Add new player
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
