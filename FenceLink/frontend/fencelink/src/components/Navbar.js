@@ -8,7 +8,7 @@ const NavBar = () => {
       <div className="site-title">FENCELINK</div>
 
       <ul className="nav-links">
-        <li><Link to="/homepage">Home</Link></li>
+        <li><Link to="/mainpage">Home</Link></li>
         <li><Link to="/tournament">Tournament</Link></li>
         <li><Link to="/results">Results</Link></li>
         <li><Link to="/ranking">Ranking</Link></li>

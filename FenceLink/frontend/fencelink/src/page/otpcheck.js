@@ -77,6 +77,7 @@ const OtpCheck = () => {
       
       const data = await response.json();
       localStorage.setItem("playerId", data.playerId);
+      localStorage.setItem("userId", data.userId);
        
       console.log('Registration successful');
       navigate("/playerinfo");

@@ -13,15 +13,22 @@ const MainPage = () => {
 
     useEffect(() => {
         // Function to fetch the user's name from the backend
+        const storedUserId = localStorage.getItem('userId');
+
+        if (!storedUserId) {
+            alert('User ID not found. Please log in again.');
+            return;
+        }
+
         const fetchUserName = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/user'); // Replace with your backend URL
+            const response = await fetch(`http://localhost:8080/api/user/${storedUserId}`); // Replace with your backend URL
             if (!response.ok) {
                 throw new Error('Failed to fetch user data');
             }
 
             const data = await response.json();
-            setUserName(data.name); // Assume the backend returns { "name": "Admin" }
+            setUserName(data.username); // Assume the backend returns { "name": "Admin" }
         } catch (error) {
             console.error('Error fetching user data:', error);
         } finally {

@@ -539,5 +539,43 @@ public class PlayerServiceTest {
         verify(players).findById(playerId); // Ensure that the findById method was called
     }
     
+    @Test
+    void getRegisteredPlayerIds_returnsCorrectPlayerIds() {
+        // Arrange: Create a sample tournament and players
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
 
+        Player player1 = new Player();
+        player1.setId(5L);
+        Player player2 = new Player();
+        player2.setId(10L);
+        Player player3 = new Player();
+        player3.setId(15L);
+
+        // Add players to the tournament
+        tournament.setPlayers(Arrays.asList(player1, player2, player3));
+
+        // Mock the repository response
+        when(tournaments.findById(anyLong())).thenReturn(Optional.of(tournament));
+
+        // Act: Call the service method
+        List<Long> playerIds = playerService.getRegisteredPlayerIds(1L);
+
+        // Assert: Verify the response matches the expected player IDs
+        assertEquals(Arrays.asList(5L, 10L, 15L), playerIds);
+    }
+
+    @Test
+    void getRegisteredPlayerIds_throwsExceptionWhenTournamentNotFound() {
+        // Arrange: Mock repository to return empty for non-existing tournament ID
+        when(tournaments.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act & Assert: Verify that an exception is thrown if the tournament doesn't exist
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class, 
+            () -> playerService.getRegisteredPlayerIds(1L)
+        );
+        
+        assertEquals("Tournament with ID 1 not found!", exception.getMessage());
+    }
 }

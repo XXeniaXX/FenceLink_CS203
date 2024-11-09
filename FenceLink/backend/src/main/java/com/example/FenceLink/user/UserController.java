@@ -30,6 +30,8 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         User user = userService.findById(id);
+        String userName = user.getUsername();
+
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -40,12 +42,13 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Map<String, Object>> addUser(@RequestBody UserDTO userDTO) {
         User savedUser = userService.registerUser(userDTO);
-        String userName = savedUser.getUsername();
         Long playerId = savedUser.getPlayer() != null ? savedUser.getPlayer().getId() : null;
+        Long userId = savedUser.getId();
 
         Map<String, Object> response = new HashMap<>();
-        response.put("playerId", playerId); // Include player ID in the response
-        response.put("name", userName);
+        response.put("playerId", playerId);
+        response.put("userId", userId); 
+        response.put("user", savedUser); 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

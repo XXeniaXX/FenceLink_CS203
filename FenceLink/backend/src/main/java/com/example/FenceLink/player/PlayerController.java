@@ -18,6 +18,7 @@ public class PlayerController {
     @Autowired
     private PlayerServiceImpl playerService;
 
+
     // Get all players
     @GetMapping("/all")
     public List<Player> getAllPlayers() {
@@ -101,13 +102,13 @@ public class PlayerController {
 
     // Player view a list of upcoming tournaments they can register for
     @GetMapping("/{playerId}/upcoming-tournaments")
-    public ResponseEntity<List<Tournament>> viewUpcomingTournaments(@PathVariable Long playerId) {
+    public ResponseEntity<List<UpcomingTournamentResponse>> viewUpcomingTournaments(@PathVariable Long playerId) {
         Player player = playerService.findById(playerId);
         if (player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<Tournament> upcomingTournaments = playerService.findUpcomingTournaments(playerId);
+        List<UpcomingTournamentResponse> upcomingTournaments = playerService.findUpcomingTournaments(playerId);
         return new ResponseEntity<>(upcomingTournaments, HttpStatus.OK);
     }
 
@@ -115,11 +116,17 @@ public class PlayerController {
     @GetMapping("/{playerId}/upcoming-registered-tournaments")
     public ResponseEntity<List<Tournament>> getUpcomingRegisteredTournaments(@PathVariable Long playerId) {
         try {
-            List<Tournament> upcomingTournaments = playerService.findUpcomingTournamentsForPlayer(playerId);
+            List<Tournament> upcomingTournaments = playerService.findUpcomingRegisteredTournaments(playerId);
             return new ResponseEntity<>(upcomingTournaments, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+    }
+    //get player's id who has register for a specific tournament
+    @GetMapping("/{tournamentId}/get-all-players")
+    public ResponseEntity<List<Long>> getRegisteredPlayerIds(@PathVariable Long tournamentId) {
+        List<Long> playerIds = playerService.getRegisteredPlayerIds(tournamentId);
+        return new ResponseEntity<>(playerIds, HttpStatus.OK);
     }
 
 }
