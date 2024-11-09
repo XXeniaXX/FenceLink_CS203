@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
-import Home from './page/home'
+import LandingPage from './page/LandingPage';
 import Registration from './page/registration';
+import HomePage from './page/HomePage'; // Import HomePage
 import './App.css'
 import { useEffect, useState } from 'react'
 
@@ -13,9 +14,9 @@ function App() {
       <div className="App">
         <Routes>
           {/* Default route for the base URL */}
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<HomePage />} />
           {/* Existing routes */}
-          <Route path="/home" element={<Home />} />
+          <Route path="/LandingPage" element={<LandingPage />} />
 
           <Route path="/register" element={<Registration />} />
           {/* Fallback route to redirect unknown paths */}

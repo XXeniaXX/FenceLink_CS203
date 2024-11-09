@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './home.css'; // Import the CSS file
+import './LandingPage.css'; // Import the CSS file
 
-const Home = () => {
+const LandingPage = () => {
   // State variables to hold username and password
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -65,7 +65,7 @@ const Home = () => {
         <button type="submit" className="button">
           Login
         </button>
-        <footer classname= "footer">
+        <footer className= "footer">
           Don't have an account? <Link to="/register">Register here</Link>
         </footer>
       </form>
@@ -74,4 +74,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default LandingPage;
