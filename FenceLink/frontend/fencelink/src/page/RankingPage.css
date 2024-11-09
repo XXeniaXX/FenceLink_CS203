@@ -12,7 +12,15 @@
     border-collapse: collapse;
 }
 
-.leaderboard-table th,
+.leaderboard-table th.rank-header,
+.leaderboard-table th.id-header,
+.leaderboard-table td.id-cell,
+.leaderboard-table td.rank-cell {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
 .leaderboard-table td {
     padding: 12px;
     text-align: left;
@@ -23,6 +31,9 @@
     background-color: #f8f9fa;
     font-weight: bold;
     color: #1C1E53;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .leaderboard-table tr:nth-child(even) td {
@@ -61,9 +72,8 @@
     background-color: #6b6b6b;
 }
 
-/* Style for the rank column header */
 .rank-header {
-    color: #333; /* Set color */
+    color: #333;
     font-weight: bold;
     text-align: center;
 }
@@ -71,7 +81,6 @@
 .rank-cell {
     color: #555;
     text-align: center;
-    background-color: #f9f9f9;
     font-size: 14px;
 }
 
@@ -93,16 +102,20 @@
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Style on hover */
 .filters select:hover {
     background-color: #1C1E53; 
     border-color: #1C1E53; 
     color: white;
 }
 
-/* Style on focus */
 .filters select:focus {
     background-color: #1C1E53; 
     border-color: #1C1E53; 
     color: white;
+}
+
+.id-cell {
+    font-family:'Franklin Gothic', 'Arial Narrow', Arial, sans-serif;
+    font-size: 14px;
+    color: #2d3084;
 }

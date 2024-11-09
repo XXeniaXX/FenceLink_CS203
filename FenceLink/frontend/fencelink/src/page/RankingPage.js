@@ -58,8 +58,8 @@ const RankingPage = () => {
                 <table className="leaderboard-table">
                     <thead>
                         <tr>
-                        <th className="rank-header">Rank</th>
-                            <th>ID</th>
+                            <th className="rank-header">Rank</th>
+                            <th className="id-header"> ID</th>
                             <th>Name</th>
                             <th>Gender</th>
                             <th>Country</th>
@@ -70,7 +70,7 @@ const RankingPage = () => {
                         {players.length > 0 ? players.map((player, index) => (
                             <tr key={player.id} className="leaderboard-row">
                                 <td className="rank-cell">{currentPage * playersPerPage + index + 1}</td>
-                                <td>{player.id}</td>
+                                <td className="id-cell">{player.id}</td>
                                 <td>{player.name}</td>
                                 <td>{player.gender}</td>
                                 <td>{player.country}</td>
