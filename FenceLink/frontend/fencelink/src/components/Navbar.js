@@ -5,7 +5,9 @@ import './Navbar.css';
 const NavBar = () => {
   return (
     <nav className="nav">
-      <div className="site-title">FENCELINK</div>
+      <div className="logo-container">
+        <img src="/fencelink.png" alt="Logo" className="logo" />
+      </div>
 
       <ul className="nav-links">
         <li><Link to="/homepage">Home</Link></li>
@@ -15,8 +17,8 @@ const NavBar = () => {
       </ul>
 
       <div className="profile-section">
-        <img src="/path/to/profile-pic.jpg" alt="Profile" className="profile-pic" />
-        <span>Hi, name</span>
+        <img src="/defaultpfp.png" alt="Profile" className="profile-pic" />
+        <span>Profile</span>
         <span className="dropdown-icon">▼</span>
       </div>
     </nav>
