@@ -12,7 +12,9 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     List<Match> findByTournamentId(Long tournamentId);
     List<Match> findByTournamentIdAndRoundNo(Long tournamentId, int roundNo);
 
-    @Query("SELECT MAX(m.roundNo) FROM Match m WHERE m.tournamentId = :tournamentId")
+    long countByTournamentIdAndRoundNo(Long tournamentId, int roundNo);
+
+    @Query("SELECT MAX(m.roundNo) FROM Match m WHERE m.tournament.id = :tournamentId")
     Integer findMaxRoundByTournamentId(@Param("tournamentId") Long tournamentId);
 
 }

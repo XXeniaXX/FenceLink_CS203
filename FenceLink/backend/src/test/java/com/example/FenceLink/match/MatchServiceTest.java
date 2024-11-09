@@ -1,8 +1,6 @@
 package com.example.FenceLink.match;
 
 import com.example.FenceLink.MatchRank.MatchRankService;
-import com.example.FenceLink.player.Player;
-import com.example.FenceLink.player.PlayerService;
 import com.example.FenceLink.player.PlayerServiceImpl;
 import com.example.FenceLink.tournament.Tournament;
 import com.example.FenceLink.tournament.TournamentRepository;
@@ -26,6 +24,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 public class MatchServiceTest {
@@ -35,6 +34,7 @@ public class MatchServiceTest {
 
     @Mock
     private TournamentRepository tournamentRepository;
+    
 
     @Mock
     private MatchRankService matchRankService;
@@ -303,6 +303,52 @@ public class MatchServiceTest {
         verify(matchRepository, times(1)).findById(matchId);
     }
 
+    @Test
+    public void testUpdateMatchResults_Round1_NoElimination() {
+        // Arrange
+        Long matchId = 1L;
+        Tournament tournament = new Tournament();
+        tournament.setId(1L); // Set the tournament ID
+
+        Match match = new Match();
+        match.setMatchId(matchId);
+        match.setTournament(tournament); // Set the tournament
+        match.setPlayer1Id(101L);
+        match.setPlayer2Id(102L);
+        match.setRoundNo(1); // Set the round number to 1 (first round)
+
+        MatchRank player1Rank = new MatchRank(1L, tournament, 101L, 0, 0, 0, false);
+        MatchRank player2Rank = new MatchRank(2L, tournament, 102L, 0, 0, 0, false);
+
+        when(matchRepository.findById(matchId)).thenReturn(Optional.of(match));
+        when(matchRepository.countByTournamentIdAndRoundNo(1L, 1)).thenReturn(4L); // Not a semi-final (more than 2 matches)
+        when(matchRankRepository.findByTournamentIdAndPlayerId(1L, 101L))
+            .thenReturn(Optional.of(player1Rank));
+        when(matchRankRepository.findByTournamentIdAndPlayerId(1L, 102L))
+            .thenReturn(Optional.of(player2Rank));
+
+        // Act
+        matchService.updateMatchResults(matchId, 5, 3);
+
+        // Assert
+        assertEquals(5, match.getPlayer1points());
+        assertEquals(3, match.getPlayer2points());
+        assertEquals(101L, match.getWinner()); // Player 1 wins
+
+        // Check if the win and loss counts are updated correctly without elimination
+        assertEquals(1, player1Rank.getWinCount());
+        assertEquals(0, player1Rank.getLossCount());
+        assertFalse(player1Rank.isEliminated());
+        assertEquals(0, player2Rank.getWinCount());
+        assertEquals(1, player2Rank.getLossCount());
+        assertFalse(player2Rank.isEliminated()); // Player 2 should not be eliminated
+
+        verify(matchRepository, times(1)).findById(matchId);
+        verify(matchRepository, times(1)).save(match);
+        verify(matchRankRepository, times(1)).save(player1Rank);
+        verify(matchRankRepository, times(1)).save(player2Rank);
+    }
+   
     @Test
     public void testGenerateSLP10() {
         // Arrange
@@ -805,6 +851,33 @@ public class MatchServiceTest {
         assertEquals(15L, createdMatches.get(3).getPlayer2Id());
     }
 
+    @Test
+    public void testredefinedRounds_17Players() {
+        // Arrange
+        Long tournamentId = 1L;
+        List<Long> participantPlayerIds = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 16L,17L);
+        when(playerService.getRegisteredPlayerIds(tournamentId)).thenReturn(participantPlayerIds);
+
+        // Act
+        int predefinedRounds = matchService.predefinedRounds(tournamentId);
+
+        // Assert
+        assertEquals(7, predefinedRounds, "The number of predefined rounds for 16 players should be 7.");
+    }
+
+    @Test
+    public void testredefinedRounds_10Players() {
+        // Arrange
+        Long tournamentId = 1L;
+        List<Long> participantPlayerIds = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
+        when(playerService.getRegisteredPlayerIds(tournamentId)).thenReturn(participantPlayerIds);
+
+        // Act
+        int predefinedRounds = matchService.predefinedRounds(tournamentId);
+
+        // Assert
+        assertEquals(6, predefinedRounds, "The number of predefined rounds for 10 players should be 6.");
+    }
 
     private int calculateExpectedMatchesForPools(List<Long> playerIds, int maxPoolSize) {
         List<List<Long>> pools = createPools(playerIds);

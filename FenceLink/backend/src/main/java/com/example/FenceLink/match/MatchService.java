@@ -1,14 +1,13 @@
 package com.example.FenceLink.match;
 
-import org.apache.logging.log4j.util.PropertySource.Comparator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.FenceLink.player.Player;
-import com.example.FenceLink.player.PlayerService;
+
 import com.example.FenceLink.player.PlayerServiceImpl;
 import com.example.FenceLink.tournament.Tournament;
 import com.example.FenceLink.tournament.TournamentRepository;
@@ -21,11 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+
 
 
 @Service
@@ -175,7 +172,7 @@ public class MatchService {
             .orElseThrow(() -> new IllegalArgumentException("Match not found for ID: " + matchId));
 
         // Check if both player's points are provided
-        if (player1Points < 0 || player2Points < 0) {
+        if (player1Points <= 0 || player2Points <= 0) {
             throw new IllegalArgumentException("Both players' points must be provided and cannot be negative.");
         }
 
@@ -202,17 +199,28 @@ public class MatchService {
         // Save the updated match
         matchRepository.save(match);
 
-        // Update MatchRank for the winner and loser
+        // Determine if the current round is the semi-final round
+        int currentRoundNo = match.getRoundNo();
+        int predefinedRounds=predefinedRounds(match.getTournament().getId());
+
+
+        // Update MatchRank for the winner
         MatchRank winnerRank = matchRankRepository.findByTournamentIdAndPlayerId(match.getTournament().getId(), winnerId)
             .orElseThrow(() -> new IllegalArgumentException("MatchRank not found for player ID: " + winnerId));
+        winnerRank.setWinCount(winnerRank.getWinCount() + 1);
+        matchRankRepository.save(winnerRank);
+
+        // Update MatchRank for the loser with elimination conditions
         MatchRank loserRank = matchRankRepository.findByTournamentIdAndPlayerId(match.getTournament().getId(), loserId)
             .orElseThrow(() -> new IllegalArgumentException("MatchRank not found for player ID: " + loserId));
-
-        winnerRank.setWinCount(winnerRank.getWinCount() + 1);
         loserRank.setLossCount(loserRank.getLossCount() + 1);
 
-        // Save the updated MatchRank objects
-        matchRankRepository.save(winnerRank);
+        // Apply elimination conditions
+        if (currentRoundNo > 1 && currentRoundNo != predefinedRounds-2) { // Only eliminate if it's not the semi-final round
+            loserRank.setEliminated(true);
+        }
+
+        // Save the updated MatchRank object for the loser
         matchRankRepository.save(loserRank);
     }
 
@@ -269,9 +277,10 @@ public class MatchService {
     }
 
     public void generateDEMatches(Tournament tournament) {
+        Long tournamentId = tournament.getId();
         // Update player ranks before starting the DE matches
-        matchRankService.updateCurrentRank(tournament.getId());
-        List<Long> rankedPlayerIds = matchRankService.getRankedPlayerIds(tournament.getId());
+        matchRankService.updateCurrentRank(tournamentId);
+        List<Long> rankedPlayerIds = matchRankService.getRankedPlayerIds(tournamentId);
     
         int roundId = 3; // Starting round for DE matches
         List<Match> basket1 = new ArrayList<>();
@@ -309,8 +318,12 @@ public class MatchService {
     public List<Long> promotePlayersToNextRound(Tournament tournament) { 
         // Fetch the current round ID (latest round number)
         Integer currentRoundId = matchRepository.findMaxRoundByTournamentId(tournament.getId());
+        int predefinedRound=predefinedRounds(tournament.getId());
         if (currentRoundId == null) {
             throw new IllegalStateException("No matches found for the given tournament.");
+        }
+        if ((currentRoundId == predefinedRound) || (currentRoundId == predefinedRound-1)) {
+            throw new IllegalStateException("Match has been finalise,you cannot generate more macthes.");
         }
     
         List<Match> matches = matchRepository.findByTournamentIdAndRoundNo(tournament.getId(), currentRoundId);
@@ -326,7 +339,7 @@ public class MatchService {
             // Create the gold/silver match
             Match goldSilverMatch = new Match();
             goldSilverMatch.setTournament(tournament);
-            goldSilverMatch.setRoundNo(currentRoundId + 1); // Next round for final match
+            goldSilverMatch.setRoundNo(currentRoundId + 2); // Next next round for final match
             goldSilverMatch.setPlayer1Id(winners.get(0));
             goldSilverMatch.setPlayer2Id(winners.get(1));
             goldSilverMatch.setDate(LocalDate.now()); // Adjust as needed
@@ -344,7 +357,7 @@ public class MatchService {
             // Create the bronze match between previous opponents
             Match bronzeMatch = new Match();
             bronzeMatch.setTournament(tournament);
-            bronzeMatch.setRoundNo(currentRoundId + 1); // Same round as gold/silver match
+            bronzeMatch.setRoundNo(currentRoundId + 1); //next round of the bronze match
             bronzeMatch.setPlayer1Id(previousOpponents.get(0));
             bronzeMatch.setPlayer2Id(previousOpponents.get(1));
             bronzeMatch.setDate(LocalDate.now()); // Adjust as needed
@@ -373,6 +386,23 @@ public class MatchService {
         return winners; // Return the list of winners if needed
     }
 
+    public int predefinedRounds(Long tournamentId) {
+        // Fetch the list of participating players from PlayerServiceImpl
+        List<Long> participantPlayerIds = playerService.getRegisteredPlayerIds(tournamentId);
+        int playerCount = participantPlayerIds.size();
+    
+        // Minimum rounds: Round 1 + Seeding Round
+        int predefinedRounds = 2;
+    
+        if (playerCount >= 32) {
+            predefinedRounds += 6; // DE-32, DE-16, Quarterfinals, Semifinals, Bronze Match, Finals (Gold/Silver)
+        } else if (playerCount >= 16) {
+            predefinedRounds += 5; // DE-16, Quarterfinals, Semifinals, Bronze Match, Finals (Gold/Silver)
+        } else if (playerCount >=10) {
+            predefinedRounds += 4; // DE-8, DE-4, Bronze Match, Finals (Gold/Silver)
+        }
+        return predefinedRounds;
+    }
 
     public List<Match> rearrangeBaskets(List<Match> basket1, List<Match> basket2) {
         List<Match> rearrangedBasket1 = new ArrayList<>();

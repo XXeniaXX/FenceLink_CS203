@@ -72,10 +72,10 @@ public class Tournament {
         this.vacancy = vacancy;
 
     }
-    @OneToMany(mappedBy = "tournament", orphanRemoval = true)
+    @OneToMany(mappedBy = "tournament")
     private List<Match> matches;
 
-    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
     private List<MatchRank> match_ranks;
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
