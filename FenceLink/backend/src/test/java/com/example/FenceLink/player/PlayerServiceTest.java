@@ -360,7 +360,7 @@ public class PlayerServiceTest {
         Player player = new Player();
         player.setId(playerId);
         player.setName("John Doe");
-        player.setBirthdate(LocalDate.of(2000, 1, 1)); // 23 years old
+        player.setBirthdate(LocalDate.of(1998, 1, 1)); // 23 years old
         player.setGender("Male");
         player.setTournamentsRegistered(new ArrayList<>());
 
@@ -383,7 +383,7 @@ public class PlayerServiceTest {
         });
 
         // Assert the expected message
-        String expectedMessage = "Player's age does not meets the tournament's age requirement!";
+        String expectedMessage = "Player's age does not meet the tournament's age requirement!";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }
