@@ -1,12 +1,18 @@
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
-import LandingPage from './page/LandingPage';
+import Login from './page/login'
 import Registration from './page/registration';
+import OtpCheck from './page/otpcheck';
+import Main from './page/mainpage';
+import ForgotPassword from './page/forgotpassword';
+import PlayerInfo from './page/playerinfo';
+import ProfilePage from './page/profilepage';
 import RankingPage from './page/RankingPage';
-import HomePage from './page/HomePage'; // Import HomePage
 import './App.css'
 import { useEffect, useState } from 'react'
 
+
 function App() {
+
   const [loggedIn, setLoggedIn] = useState(false)
   const [email, setEmail] = useState('')
 
@@ -15,17 +21,24 @@ function App() {
       <div className="App">
         <Routes>
           {/* Default route for the base URL */}
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Login />} />
           {/* Existing routes */}
-          <Route path="/LandingPage" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/playerinfo" element={<PlayerInfo />} />
+          <Route path="/updateplayer/:id" element={<PlayerInfo />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/profilepage" element={<ProfilePage />} />
 
           <Route path="/register" element={<Registration />} />
+          <Route path="/otpcheck" element={<OtpCheck />} />
+          <Route path="/mainpage" element={<Main />} />
           {/* Fallback route to redirect unknown paths */}
           <Route path="*" element={<Navigate to="/" />} />
           <Route path="/ranking" element={<RankingPage />} />
         </Routes>
       </div>
     </BrowserRouter>
+    
   );
 }
 

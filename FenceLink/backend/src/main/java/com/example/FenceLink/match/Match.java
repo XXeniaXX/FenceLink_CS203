@@ -49,11 +49,9 @@ public class Match {
     @Column(name = "Winner")
     private Long winner;
 
-    // Foreign key reference
-    @Column(name = "tournament_id", insertable = false, updatable = false)
-    private Long tournamentId;
 
-    @ManyToOne
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "tournament_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private Tournament tournament;
@@ -63,7 +61,6 @@ public class Match {
     public Match(Long matchId, int roundNo, Long tournamentId, Long player1Id, Long player2Id, LocalDate date, Time startTime, Time endTime, int player1points, int player2points, Long winner) {
         this.matchId = matchId;
         this.roundNo = roundNo;
-        this.tournamentId = tournamentId;
         this.player1Id = player1Id;
         this.player2Id = player2Id;
         this.date = date;
@@ -71,5 +68,8 @@ public class Match {
         this.endTime = endTime;
         this.player1points = player1points;
         this.player2points = player2points;
+        this.winner=winner;
     }
+
+
 }

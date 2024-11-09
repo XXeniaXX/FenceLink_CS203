@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import java.util.*;
 
 import com.example.FenceLink.tournament.*;
+import com.example.FenceLink.user.*;
+
 
 @Data
 @Builder
@@ -19,7 +21,7 @@ import com.example.FenceLink.tournament.*;
 public class Player {
     
     public Player(Long id, String name, String gender, String country, LocalDate birthdate, String location,
-            String fencingWeapon, String bio, Integer points, List<Tournament> tournamentsRegistered) {
+            String fencingWeapon, String bio, Integer points, List<Tournament> tournamentsRegistered, User user) {
         this.id = id;
         this.name = name;
         this.gender = gender;
@@ -68,5 +70,11 @@ public class Player {
         inverseJoinColumns = @JoinColumn(name = "tournament_id",referencedColumnName = "id")
     )
     private List<Tournament> tournamentsRegistered;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    
     
 }

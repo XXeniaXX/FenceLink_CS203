@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './LandingPage'; // Import the CSS file
+import React, { useEffect,useState } from 'react';
+import { signUp } from 'aws-amplify/auth';
+import { Link, useNavigate } from "react-router-dom";
+import './login.css';
+import './otp.css'; // Import the CSS file
 
 const Registration = () => {
+  const navigate = useNavigate();
+  
   // State variables to hold username and password
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -27,28 +31,9 @@ const Registration = () => {
         return;
     }
 
-    await handleRegistration(); // Call the registration function
+    await handleSignUp(); // Call the registration function
   };
 
-  const handleRegistration = async () => {
-    const response = await fetch('http://localhost:5000/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, email, password, confirmPassword}),
-    });
-
-    if (response.ok) {
-      alert('Registration successful!'); 
-      console.log('Registration successful');
-    } else {
-      // Handle error
-      const errorText = await response.text();
-      alert('Registration failed: ' + errorText); 
-      console.error('Registration failed');
-    }
-  };
 
   function validatePassword(password) {
     const minLength = 8;
@@ -57,7 +42,7 @@ const Registration = () => {
     const hasNumber = /[0-9]/.test(password);
 
     if (password.length < minLength) {
-      return "Password is too short. It must be at least 8 characters.";
+      return "Password must be at least 8 characters.";
     } else if (!hasSpecialCharacter) {
       return "Password must contain at least one special character.";
     } else if (!hasUppercase) {
@@ -87,7 +72,42 @@ const Registration = () => {
     }
   }
 
+  async function handleSignUp() {
+    try {
+
+      if (password !== confirmPassword) {
+        throw new Error('Passwords do not match');
+      }
+     
+      await signUp({
+        username: email,
+        password: password,
+        options: {
+          userAttributes: {
+            email: email
+          }
+        }
+      });
+      
+        console.log(username);
+        localStorage.setItem('username', username);
+        localStorage.setItem('email', email);
+        localStorage.setItem('password', password);
+    
+        alert('OTP page!');
+        navigate("/otpcheck");
+      } catch (error) {
+         console.log('error signing up:', error);
+      }
+    
+  }
+
+  
   return (
+  <div>
+    <nav className="nav">
+      <div className="site-title">FENCELINK</div>
+    </nav>
     <div className="container">
       <h1 className="header">REGISTRATION</h1>
       <form onSubmit={handleSubmit} className="form">
@@ -150,12 +170,12 @@ const Registration = () => {
         <button type="submit" className="button">
           Register
         </button>
-        <footer classname= "footer">
-            Already have an account? <Link to="/home">Log in here</Link>
+        <footer className= "footer">
+            Already have an account? <Link to="/login">Log in here</Link>
         </footer>
       </form>
-      
     </div>
+  </div>
   );
 };
 

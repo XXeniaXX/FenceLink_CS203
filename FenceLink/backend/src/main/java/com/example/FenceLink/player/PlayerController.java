@@ -4,17 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.FenceLink.token.CognitoJWTValidator;
 import com.example.FenceLink.tournament.*;
+import com.example.FenceLink.user.UserDTO;
 
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/players")
+@CrossOrigin(origins = "http://localhost:3000")
 public class PlayerController {
 
     @Autowired
     private PlayerServiceImpl playerService;
+
 
     // Get all players
     @GetMapping("/all")
@@ -36,14 +39,18 @@ public class PlayerController {
     // Add new player
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Player> addPlayer(@RequestBody Player player) {
+    public ResponseEntity<Map<String, Object>> addPlayer(@RequestBody Player player) {
         Player savedPlayer = playerService.insertPlayer(player);
-        return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Player created successfully");
+        response.put("playerId", savedPlayer.getId()); // Include playerId in the response
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // Update player details for ADMIN
     @PutMapping("/{id}")
     public ResponseEntity<String> updatePlayer(@PathVariable Long id, @RequestBody Player player) {
+        
         player.setId(id);  // Ensure player ID is set
         try {
             playerService.updatePlayer(id, player);
@@ -55,7 +62,14 @@ public class PlayerController {
 
     // Delete player for ADMIN
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePlayer(@PathVariable Long id) {
+    public ResponseEntity<String> deletePlayer(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader) {
+        
+        String token = authorizationHeader.replace("Bearer ", "").trim();
+
+        if(!CognitoJWTValidator.isAdmin(token)) {
+            return new ResponseEntity<>("Access denied: Admin rights required", HttpStatus.FORBIDDEN);
+        }
+
         Player player = playerService.findById(id);
         if (player == null) {
             return new ResponseEntity<>("Player not found", HttpStatus.NOT_FOUND);
@@ -107,6 +121,12 @@ public class PlayerController {
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+    }
+    //get player's id who has register for a specific tournament
+    @GetMapping("/{tournamentId}/get-all-players")
+    public ResponseEntity<List<Long>> getRegisteredPlayerIds(@PathVariable Long tournamentId) {
+        List<Long> playerIds = playerService.getRegisteredPlayerIds(tournamentId);
+        return new ResponseEntity<>(playerIds, HttpStatus.OK);
     }
 
 }

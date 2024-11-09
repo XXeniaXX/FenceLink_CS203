@@ -287,6 +287,14 @@ public class PlayerServiceImpl implements PlayerService {
                 .filter(tournament -> tournament.getRegistrationDate().isAfter(today))
                 .collect(Collectors.toList());
     }
+    //get player's id who has register for a specific tournament
+    public List<Long> getRegisteredPlayerIds(Long tournamentId) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+            .orElseThrow(() -> new IllegalArgumentException("Tournament with ID " + tournamentId + " not found!"));
+        return tournament.getPlayers().stream()
+            .map(Player::getId)
+            .collect(Collectors.toList());
+    }
 
     public Page<PlayerDTO> getTopPlayersPage(int page, int pageSize, String gender, String country) {
         PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by("points").descending());
