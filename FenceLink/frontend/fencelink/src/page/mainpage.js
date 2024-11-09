@@ -17,7 +17,7 @@ const MainPage = () => {
         try {
             const response = await fetch('http://localhost:8080/api/user'); // Replace with your backend URL
             if (!response.ok) {
-            throw new Error('Failed to fetch user data');
+                throw new Error('Failed to fetch user data');
             }
 
             const data = await response.json();

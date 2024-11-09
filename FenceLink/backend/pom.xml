@@ -49,6 +49,9 @@
 			<artifactId>java-jwt</artifactId>
 			<version>4.2.1</version> <!-- Use the latest stable version -->
 		</dependency>
+		
+
+	<!-- Other dependencies -->
 		<!-- <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>

@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.FenceLink.token.CognitoJWTValidator;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -33,20 +36,16 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    // // Add new User
-    // @PostMapping("/register")
-    // @ResponseStatus(HttpStatus.CREATED)
-    // public ResponseEntity<User> addUser(@RequestBody UserDTO userDTO) {
-    //     User savedUser = userService.registerUser(userDTO);
-    //     return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
-    // }
-
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Map<String, Object>> addUser(@RequestBody UserDTO userDTO) {
         User savedUser = userService.registerUser(userDTO);
+        String userName = savedUser.getUsername();
+        Long playerId = savedUser.getPlayer() != null ? savedUser.getPlayer().getId() : null;
+
         Map<String, Object> response = new HashMap<>();
-        response.put("playerId", savedUser.getId()); // Include player ID in the response
+        response.put("playerId", playerId); // Include player ID in the response
+        response.put("name", userName);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

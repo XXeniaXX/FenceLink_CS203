@@ -74,6 +74,7 @@ const OtpCheck = () => {
     });
 
     if (response.ok) {
+      
       const data = await response.json();
       localStorage.setItem("playerId", data.playerId);
        

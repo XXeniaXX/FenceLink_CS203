@@ -9,13 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 //import org.springframework.security.access.prepost.PreAuthorize;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import com.example.FenceLink.player.Player;
+import com.example.FenceLink.player.*;
+
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PlayerRepository playerRepository;
 
     //private BCryptPasswordEncoder passwordEncoder;
 
@@ -152,4 +156,5 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(id);
     }
+
 }
