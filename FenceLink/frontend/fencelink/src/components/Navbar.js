@@ -1,11 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './Navbar.css';
 
-const NavBar = () => {
 const NavBar = () => {
   return (
     <nav className="nav">
@@ -30,8 +26,5 @@ const NavBar = () => {
     </nav>
   );
 };
-  );
-};
 
-export default NavBar;
 export default NavBar;

@@ -106,8 +106,17 @@ const Registration = () => {
   return (
   <div>
     <nav className="nav">
-      <div className="site-title">FENCELINK</div>
-    </nav>
+            <img 
+                src="/fencelink.png" 
+                alt="FenceLink Logo" 
+                style={{
+                    width: '210px',
+                    height: '70px',
+                    borderRadius: '50%',
+                    objectFit: 'contain'
+                }} 
+            />
+        </nav>
     <div className="container">
       <h1 className="header">REGISTRATION</h1>
       <form onSubmit={handleSubmit} className="form">
