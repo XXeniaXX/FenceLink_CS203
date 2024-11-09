@@ -1,23 +1,108 @@
 .leaderboard-container {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    margin: 20px auto;
     padding: 20px;
+    max-width: 800px;
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.leaderboard-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-.rank, .id, .name, .gender, .country, .points {
-    flex: 1;
-    color: #333;
+.leaderboard-table th,
+.leaderboard-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.leaderboard-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #1C1E53;
+}
+
+.leaderboard-table tr:nth-child(even) td {
+    background-color: #f7f7f7;
+}
+
+.leaderboard-table tr:hover td {
+    background-color: #e8e8e8;
+}
+
+.no-data {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination-button {
+    margin: 0 5px;
+    padding: 8px 12px;
+    background-color: #1C1E53;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.pagination-button.active,
+.pagination-button:hover {
+    background-color: #6b6b6b;
+}
+
+/* Style for the rank column header */
+.rank-header {
+    color: #333; /* Set color */
+    font-weight: bold;
+    text-align: center;
+}
+
+.rank-cell {
+    color: #555;
+    text-align: center;
+    background-color: #f9f9f9;
+    font-size: 14px;
+}
+
+.rank-cell, .rank-header {
+    padding: 8px; 
+}
+
+.filters select {
+    margin-right: 15px;
+    padding: 10px 15px; 
+    border-radius: 30px;
+    border: 1px solid #1C1E53; 
+    background-color: #ffffff; 
+    border-color: #1C1E53;
+    color:#1C1E53;
+    font-size: 16px; 
+    outline: none; 
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Style on hover */
+.filters select:hover {
+    background-color: #1C1E53; 
+    border-color: #1C1E53; 
+    color: white;
+}
+
+/* Style on focus */
+.filters select:focus {
+    background-color: #1C1E53; 
+    border-color: #1C1E53; 
+    color: white;
 }

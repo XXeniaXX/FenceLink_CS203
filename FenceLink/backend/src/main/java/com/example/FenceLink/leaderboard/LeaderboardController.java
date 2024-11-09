@@ -16,7 +16,11 @@ public class LeaderboardController {
 
     // Endpoint for paginated leaderboard data
     @GetMapping("/top")
-    public Page<PlayerDTO> getTopPlayersPage(@RequestParam(defaultValue = "0") int page) {
-        return playerService.getTopPlayersPage(page, 20); // 20 players per page
+    public Page<PlayerDTO> getTopPlayersPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String country) {
+        
+        return playerService.getTopPlayersPage(page, 20, gender, country); // 20 players per page
     }
 }
