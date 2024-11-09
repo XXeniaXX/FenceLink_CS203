@@ -89,13 +89,13 @@ public class PlayerController {
 
     // Player view a list of upcoming tournaments they can register for
     @GetMapping("/{playerId}/upcoming-tournaments")
-    public ResponseEntity<List<Tournament>> viewUpcomingTournaments(@PathVariable Long playerId) {
+    public ResponseEntity<List<UpcomingTournamentResponse>> viewUpcomingTournaments(@PathVariable Long playerId) {
         Player player = playerService.findById(playerId);
         if (player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<Tournament> upcomingTournaments = playerService.findUpcomingTournaments(playerId);
+        List<UpcomingTournamentResponse> upcomingTournaments = playerService.findUpcomingTournaments(playerId);
         return new ResponseEntity<>(upcomingTournaments, HttpStatus.OK);
     }
 
@@ -103,7 +103,7 @@ public class PlayerController {
     @GetMapping("/{playerId}/upcoming-registered-tournaments")
     public ResponseEntity<List<Tournament>> getUpcomingRegisteredTournaments(@PathVariable Long playerId) {
         try {
-            List<Tournament> upcomingTournaments = playerService.findUpcomingTournamentsForPlayer(playerId);
+            List<Tournament> upcomingTournaments = playerService.findUpcomingRegisteredTournaments(playerId);
             return new ResponseEntity<>(upcomingTournaments, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

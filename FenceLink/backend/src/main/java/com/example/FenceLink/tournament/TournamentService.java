@@ -8,12 +8,16 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 @Service
 public class TournamentService {
 
     @Autowired
     private TournamentRepository tournamentRepository;
+    
+    // Used to record log messages (info, debug,warning, error)
+    private static final Logger logger = Logger.getLogger(TournamentService.class.getName());
 
     // Add or update tournament (JPA's save method handles both)
     public Tournament addTournament(Tournament tournament) {
@@ -32,7 +36,7 @@ public class TournamentService {
     }
 
     // Delete tournament by ID
- public void deleteTournament(Long id) {
+    public void deleteTournament(Long id) {
         tournamentRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Tournament not found for id: " + id));
         tournamentRepository.deleteById(id);
@@ -49,5 +53,26 @@ public class TournamentService {
         return tournamentRepository.findById(id).orElseThrow(() -> 
             new RuntimeException("Tournament not found for id: " + id)
         );
+    }
+
+    // Get tournaments by specfified parameters (For Search and Filter)
+    // calls the repository’s custom query
+    public List<Tournament> searchTournaments(
+        String name,
+        String location,
+        String tournamentType,
+        String genderType,
+        String weaponType,
+        LocalDate fromDate,
+        LocalDate toDate
+    ) {
+        // Handle special case for invalid date range
+        if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+            logger.warning("Invalid date range: fromDate is after toDate");
+            return List.of(); // return empty result
+        }
+
+        return tournamentRepository.searchTournaments(
+            name, location, tournamentType, genderType, weaponType, fromDate, toDate);
     }
 }
