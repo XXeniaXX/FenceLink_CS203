@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { signOut } from 'aws-amplify/auth';
 import './login.css'; // Import the CSS file
-import './HomePage.css';
+import './homepage.css';
 import { useNavigate } from "react-router-dom";
 import Navbar from '../components/Navbar';
 import fencingplayer from './assets/fencingplayer.png';
