@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import './Navbar.css';
 
 const NavBar = () => {
+
+  const storedUserName = localStorage.getItem('userName');
+
   return (
     <nav className="nav">
       <div className="logo-container">
@@ -18,11 +21,9 @@ const NavBar = () => {
 
       <div className="profile-section">
         <img src="/defaultpfp.png" alt="Profile" className="profile-pic" />
-        <Link to="/profile" className="profile-link">
-            Profile
-        </Link>
+        <li className="nav-links"><Link to="/profilepage">Hi, {storedUserName}</Link></li>
         <span className="dropdown-icon">▼</span>
-    </div>
+      </div>
     </nav>
   );
 };

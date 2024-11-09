@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 
 import java.time.*;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 
@@ -62,6 +63,12 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    public Player findByUserId(Long userId) {
+        return playerRepository.findByUserId(userId)
+                .orElseThrow(() -> new NoSuchElementException("Player not found for userId: " + userId));
+    }
+
+    @Override
     @Transactional
     public Player insertPlayer(Player player) throws IllegalArgumentException {
         // Points 0 since new player hasn't joined anything
@@ -109,15 +116,18 @@ public class PlayerServiceImpl implements PlayerService {
     @Transactional
     public Player updatePlayer(Long id, Player updatedPlayer) throws IllegalArgumentException {
         // Ensures player actually exists
-        if (!playerExists(id)) {
-            throw new IllegalArgumentException("Player with ID: " + id + " not found!");
-        }
+        Player existingPlayer = playerRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Player with ID: " + id + " not found!"));
 
         checkPlayer(updatedPlayer);
 
         // Id cannot be empty
         if (updatedPlayer.getId() == null) {
             throw new IllegalArgumentException("Player ID is required!");
+        }
+
+        if (existingPlayer.getUser() != null) {
+            existingPlayer.getUser().setUsername(updatedPlayer.getName());
         }
 
         playerRepository.saveAndFlush(updatedPlayer);

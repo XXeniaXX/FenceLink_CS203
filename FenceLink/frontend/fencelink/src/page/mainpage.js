@@ -22,13 +22,14 @@ const MainPage = () => {
 
         const fetchUserName = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/user/${storedUserId}`); // Replace with your backend URL
+            const response = await fetch(`http://localhost:8080/api/users/${storedUserId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch user data');
             }
 
             const data = await response.json();
-            setUserName(data.username); // Assume the backend returns { "name": "Admin" }
+            setUserName(data.userName); 
+            localStorage.setItem("userName", data.userName);
         } catch (error) {
             console.error('Error fetching user data:', error);
         } finally {

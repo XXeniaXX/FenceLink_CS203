@@ -94,7 +94,6 @@ const Registration = () => {
         localStorage.setItem('email', email);
         localStorage.setItem('password', password);
     
-        alert('OTP page!');
         navigate("/otpcheck");
       } catch (error) {
          console.log('error signing up:', error);

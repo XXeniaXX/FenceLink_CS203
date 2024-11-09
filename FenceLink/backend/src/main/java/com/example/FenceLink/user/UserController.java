@@ -28,14 +28,18 @@ public class UserController {
 
     //Get User by ID
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Long id) {
         User user = userService.findById(id);
         String userName = user.getUsername();
 
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", user); 
+        response.put("userName", userName);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/register")
