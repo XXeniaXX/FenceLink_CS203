@@ -16,8 +16,7 @@ const NavBar = () => {
 
       <div className="profile-section">
         <img src="/path/to/profile-pic.jpg" alt="Profile" className="profile-pic" />
-        <span>Hi, name</span>
-        <span className="dropdown-icon">▼</span>
+        <li className="nav-links"><Link to="/profilepage">Hi, name</Link></li>
       </div>
     </nav>
   );

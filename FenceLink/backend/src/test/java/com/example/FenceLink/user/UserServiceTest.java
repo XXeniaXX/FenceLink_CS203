@@ -32,7 +32,7 @@ public class UserServiceTest {
     void registerUser_NewUser_ReturnSavedUser() {
         // Arrange ***
         UserDTO userDto = new UserDTO("newuser", "newuser@example.com", "password123");
-        User newUser = new User(1L, "newuser", "password123", "newuser@example.com", "ROLE_PLAYER", new Player());
+        User newUser = new User(1L, "newuser", "newuser@example.com", "password123", "ROLE_PLAYER", new Player());
 
         when(users.findByEmail(any(String.class))).thenReturn(Optional.empty());
 
@@ -58,7 +58,7 @@ public class UserServiceTest {
         UserDTO userDto = new UserDTO("testuser", "testuser@example.com", "password123");
         
         Player newPlayer = new Player(null, "testuser", null, null, null, null, null, null, 0, new ArrayList<>(), null);
-        User newUser = new User(1L, "testuser", "password123", "testuser@example.com", "ROLE_PLAYER", newPlayer);
+        User newUser = new User(1L, "testuser",  "testuser@example.com", "password123", "ROLE_PLAYER", newPlayer);
         
         newPlayer.setUser(newUser);
 
@@ -84,7 +84,7 @@ public class UserServiceTest {
     void createAdmin_NewAdmin_ReturnSavedAdmin() {
         // Arrange ***
         UserDTO userDto = new UserDTO("adminuser", "admin@example.com", "adminpass123");
-        User newAdmin = new User(1L, "adminuser", "adminpass123", "admin@example.com", "ROLE_ADMIN", null);
+        User newAdmin = new User(1L, "adminuser",  "admin@example.com", "adminpass123", "ROLE_ADMIN", null);
 
         when(users.findByEmail(any(String.class))).thenReturn(Optional.empty());
 
@@ -107,7 +107,7 @@ public class UserServiceTest {
     void findById_UserExists_ReturnUser() {
         // Arrange ***
         Long userId = 1L;
-        User existingUser = new User(userId, "testuser", "password123", "testuser@example.com", "ROLE_PLAYER", null);
+        User existingUser = new User(userId, "testuser", "testuser@example.com", "password123", "ROLE_PLAYER", null);
 
         when(users.findById(userId)).thenReturn(Optional.of(existingUser));
 

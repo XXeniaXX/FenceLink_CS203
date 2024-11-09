@@ -5,6 +5,7 @@ import OtpCheck from './page/otpcheck';
 import Main from './page/mainpage';
 import ForgotPassword from './page/forgotpassword';
 import PlayerInfo from './page/playerinfo';
+import ProfilePage from './page/profilepage';
 import './App.css'
 import { useEffect, useState } from 'react'
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/playerinfo" element={<PlayerInfo />} />
           <Route path="/updateplayer/:id" element={<PlayerInfo />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/profilepage" element={<ProfilePage />} />
 
           <Route path="/register" element={<Registration />} />
           <Route path="/otpcheck" element={<OtpCheck />} />
