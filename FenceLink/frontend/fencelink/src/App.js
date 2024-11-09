@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 import LandingPage from './page/LandingPage';
 import Registration from './page/registration';
+import RankingPage from './page/RankingPage';
 import HomePage from './page/HomePage'; // Import HomePage
 import './App.css'
 import { useEffect, useState } from 'react'
@@ -21,6 +22,7 @@ function App() {
           <Route path="/register" element={<Registration />} />
           {/* Fallback route to redirect unknown paths */}
           <Route path="*" element={<Navigate to="/" />} />
+          <Route path="/ranking" element={<RankingPage />} />
         </Routes>
       </div>
     </BrowserRouter>

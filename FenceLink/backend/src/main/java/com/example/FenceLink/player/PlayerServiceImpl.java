@@ -1,6 +1,7 @@
 package com.example.FenceLink.player;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import com.example.FenceLink.tournament.Tournament;
@@ -287,4 +288,17 @@ public class PlayerServiceImpl implements PlayerService {
                 .collect(Collectors.toList());
     }
 
+    public Page<PlayerDTO> getTopPlayersPage(int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by("points").descending());
+        Page<Player> playerPage = playerRepository.findAll(pageRequest);
+
+        // Map Player entities to PlayerDTOs
+        return playerPage.map(player -> new PlayerDTO(
+                player.getId(),
+                player.getName(),
+                player.getGender(),
+                player.getCountry(),
+                player.getPoints()
+        ));
+    }
 }
