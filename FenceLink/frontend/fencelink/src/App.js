@@ -1,43 +1,42 @@
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
-import Login from './page/login'
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import Login from './page/login';
 import Registration from './page/registration';
 import OtpCheck from './page/otpcheck';
 import Main from './page/mainpage';
 import ForgotPassword from './page/forgotpassword';
 import PlayerInfo from './page/playerinfo';
 import ProfilePage from './page/profilepage';
-import './App.css'
-import { useEffect, useState } from 'react'
+import './App.css';
+import { useEffect, useState } from 'react';
+import MatchAdmin from './page/matchAdmin';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
+const theme = createTheme();
 
 function App() {
-
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [email, setEmail] = useState('')
-
   return (
-    <BrowserRouter>
-      <div className="App">
-        <Routes>
-          {/* Default route for the base URL */}
-          <Route path="/" element={<Login />} />
-          {/* Existing routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/playerinfo" element={<PlayerInfo />} />
-          <Route path="/updateplayer/:id" element={<PlayerInfo />} />
-          <Route path="/forgotpassword" element={<ForgotPassword />} />
-          <Route path="/profilepage" element={<ProfilePage />} />
-
-          <Route path="/register" element={<Registration />} />
-          <Route path="/otpcheck" element={<OtpCheck />} />
-          <Route path="/mainpage" element={<Main />} />
-          {/* Fallback route to redirect unknown paths */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
-    
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/playerinfo" element={<PlayerInfo />} />
+            <Route path="/updateplayer/:id" element={<PlayerInfo />} />
+            <Route path="/forgotpassword" element={<ForgotPassword />} />
+            <Route path="/profilepage" element={<ProfilePage />} />
+            <Route path="/register" element={<Registration />} />
+            <Route path="/otpcheck" element={<OtpCheck />} />
+            <Route path="/mainpage" element={<Main />} />
+            <Route path="/matchAdmin" element={<MatchAdmin />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
-export default App
+export default App;
