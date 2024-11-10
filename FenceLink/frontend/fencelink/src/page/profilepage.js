@@ -24,16 +24,6 @@ const ProfilePage = () => {
         }
     };
 
-    async function handleSignOut() {
-        try {
-            await signOut({ global: true });
-            console.log('User signed out successfully');
-            navigate('/login');
-        } catch (error) {
-            console.log('error signing out: ', error);
-        }
-    }
-
         return (
             <div>
                 {/* Render the NavBar component */}
@@ -46,18 +36,11 @@ const ProfilePage = () => {
                         alt="Profile"
                         className="profileImage"
                     />
-                    <input
-                        type="file"
-                        id="profilePicUpload"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        style={{ display: 'none' }}
-                    />
                     </label>
                     <div>
-                    <h2>{storedUserName}, {storedAge}</h2>
-                    <p>{storedCountry}, {storedLocation}</p>
-                    <p>{storedBio}</p>
+                    <h2 style={{ color: '#1C1E53', fontSize: '33px', marginBottom: '5px'}}>{storedUserName}, {storedAge}</h2>
+                    <p style={{ color: '#1C1E53', fontSize: '18px', marginBottom: '5px'}}>{storedCountry}, {storedLocation}</p>
+                    <p style={{ color: '#1C1E53', fontSize: '16px', marginBottom: '15px'}}>{storedBio}</p>
                     </div>
                 </div>
                 <div className="tournamentsContainer">
@@ -68,7 +51,7 @@ const ProfilePage = () => {
                             alt="fencingcross"
                             className="buttonImage"
                         />
-                        <p style={{ color: '#1C1E53' }} >Past Tournaments</p>
+                        <p style={{ color: '#1C1E53', fontSize: '15px', fontWeight: '600'}} >Past Tournaments</p>
                     </button>
                     <button className="tournamentButton" onClick={() => navigate('/upcomingtournaments')}>
                         <img
@@ -76,13 +59,10 @@ const ProfilePage = () => {
                             alt="fencingplayer"
                             className="buttonImage"
                         />
-                        <p style={{ color: '#1C1E53' }}>Upcoming Tournaments</p>
+                        <p style={{ color: '#1C1E53', fontSize: '15px', fontWeight: '600'}}>Upcoming Tournaments</p>
                     </button>
                     
                 </div>
-                <button onClick={handleSignOut} className="button">
-                        Sign Out
-                </button>
                 <div className="buttonContainer">
                 <button className="button" onClick={() => navigate('/editprofile')}>
                     Edit Profile
