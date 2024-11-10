@@ -360,4 +360,8 @@ public class PlayerServiceImpl implements PlayerService {
             // Add other fields if necessary
         );
     }
+
+    public List<String> getAllCountries() {
+        return playerRepository.findDistinctCountries();
+    }
 }
