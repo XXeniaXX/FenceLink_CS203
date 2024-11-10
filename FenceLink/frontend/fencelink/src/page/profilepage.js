@@ -68,9 +68,8 @@ const ProfilePage = () => {
                     Edit Profile
                 </button>
                 </div>
-                
             </div> 
-            </div>
+        </div>
             
         )
     

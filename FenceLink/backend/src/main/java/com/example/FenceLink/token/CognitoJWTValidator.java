@@ -38,6 +38,7 @@ public class CognitoJWTValidator {
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer(EXPECTED_ISSUER)
                     .withAudience(EXPECTED_AUDIENCE)
+                    .acceptLeeway(300)
                     .build();
 
             verifier.verify(token);

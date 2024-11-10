@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signIn, fetchAuthSession, confirmSignIn, signInWithRedirect} from 'aws-amplify/auth';
+import { signIn, fetchAuthSession} from 'aws-amplify/auth';
+import { signOut } from 'aws-amplify/auth';
 import './login.css'; // Import the CSS file
-import googleLogo from './assets/googlelogo.png';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,13 +19,16 @@ const Login = () => {
     await handleLogin();
   }
 
-  const handleGoogleLogin = async () => {
+  const handleSignOut = async () => {
     try {
-      await signInWithRedirect({ provider: 'Google' });
-      console.log('Redirecting to Google login...');
+      await signOut({ global: true });
+      console.log('User signed out successfully');
+
+      localStorage.removeItem('jwtToken');
+      sessionStorage.clear();
+      navigate('/login');
     } catch (error) {
-      console.error('Google sign-in failed:', error);
-      alert('Google sign-in failed: ' + error.message);
+      console.log('Error signing out: ', error);
     }
   };
 
@@ -56,9 +59,11 @@ const Login = () => {
           // Store user information in localStorage
           localStorage.setItem('userId', data.userId);
           localStorage.setItem('username', data.username);
+          localStorage.setItem('userRole', data.userRole);
   
           console.log('User ID:', data.userId);
           console.log('Username:', data.username);
+          console.log('role:', data.userRole);
           localStorage.setItem("playerId", data.playerId);
   
           // Navigate to the main page
@@ -66,11 +71,13 @@ const Login = () => {
         } else {
           console.error('Invalid token:', data);
           localStorage.removeItem('jwtToken');
+          await handleSignOut();
           navigate("/login");
         }
       } else {
         console.error('Token validation failed.');
         localStorage.removeItem('jwtToken');
+        await handleSignOut();
         navigate("/login");
       }
       
@@ -155,16 +162,6 @@ const Login = () => {
         <button type="submit" className="button">
           {'Login'}
         </button>
-        or
-        <button onClick={handleGoogleLogin} className="google-login-button">
-          <img
-            src={googleLogo}
-            alt="Google Logo"
-            className="google-logo"
-          />
-          Login with Google
-        </button>
-      
         <footer classname= "footer">
           Don't have an account? <Link to="/register">Register here</Link>
         </footer>
