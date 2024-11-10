@@ -152,7 +152,7 @@ public class PlayerServiceTest {
         Player player = new Player();
         player.setId(playerId);
         player.setName("John Doe");
-        player.setBirthdate(LocalDate.of(2008, 1, 1)); // Example birthdate for a teen
+        player.setBirthdate(LocalDate.of(2008, 1, 1)); // Example birthdate for a Youth
         player.setGender("Male");
         player.setTournamentsRegistered(new ArrayList<>()); // Initialize the list
 
@@ -162,7 +162,7 @@ public class PlayerServiceTest {
         tournament.setName("Spring Tournament");
         // Set the registration date to a future date
         tournament.setRegistrationDate(LocalDate.of(2025, 11, 11));
-        tournament.setAgeGroup("Teen"); // Set the tournament age group to Teen
+        tournament.setAgeGroup("Youth"); // Set the tournament age group to Youth
         tournament.setGenderType("Male"); // Set the tournament gender type
         tournament.setVacancy(1); // Ensure there is at least one vacancy
 
@@ -193,7 +193,7 @@ public class PlayerServiceTest {
         Player player = new Player();
         player.setId(playerId);
         player.setName("John Doe");
-        player.setBirthdate(LocalDate.of(2008, 1, 1)); // Example birthdate for a teen
+        player.setBirthdate(LocalDate.of(2008, 1, 1)); // Example birthdate for a Youth
         player.setGender("Male");
         player.setTournamentsRegistered(new ArrayList<>()); // Initialize the list
 
@@ -202,7 +202,7 @@ public class PlayerServiceTest {
         tournament.setId(tournamentId);
         tournament.setName("Spring Tournament");
         tournament.setRegistrationDate(LocalDate.of(2025, 11, 11));
-        tournament.setAgeGroup("Teen"); // Set the tournament age group to Teen
+        tournament.setAgeGroup("Youth"); // Set the tournament age group to Youth
         tournament.setGenderType("Male"); // Set the tournament gender type
         tournament.setVacancy(1); // Ensure there is at least one vacancy
 
@@ -293,7 +293,7 @@ public class PlayerServiceTest {
         tournament.setId(tournamentId);
         tournament.setName("Spring Tournament");
         tournament.setRegistrationDate(LocalDate.of(2023, 11, 11));
-        tournament.setAgeGroup("Teen");
+        tournament.setAgeGroup("Youth");
         tournament.setGenderType("Male");
         tournament.setVacancy(1);
 
@@ -331,7 +331,7 @@ public class PlayerServiceTest {
         tournament.setId(tournamentId);
         tournament.setName("Spring Tournament");
         tournament.setRegistrationDate(LocalDate.of(2025, 11, 11));
-        tournament.setAgeGroup("Teen");
+        tournament.setAgeGroup("Youth");
         tournament.setGenderType("Male");
         tournament.setVacancy(0); // No vacancies
 
@@ -364,12 +364,12 @@ public class PlayerServiceTest {
         player.setGender("Male");
         player.setTournamentsRegistered(new ArrayList<>());
 
-        // Initialize the tournament with age group set to "Teen"
+        // Initialize the tournament with age group set to "Youth"
         Tournament tournament = new Tournament();
         tournament.setId(tournamentId);
         tournament.setName("Spring Tournament");
         tournament.setRegistrationDate(LocalDate.of(2025, 11, 11));
-        tournament.setAgeGroup("Teen"); // Set to Teen
+        tournament.setAgeGroup("Youth"); // Set to Youth
         tournament.setGenderType("Male");
         tournament.setVacancy(1);
 
@@ -407,7 +407,7 @@ public class PlayerServiceTest {
         tournament.setId(tournamentId);
         tournament.setName("Spring Tournament");
         tournament.setRegistrationDate(LocalDate.of(2025, 11, 11));
-        tournament.setAgeGroup("Teen");
+        tournament.setAgeGroup("Youth");
         tournament.setGenderType("Male"); // Male-only tournament
         tournament.setVacancy(1);
 

@@ -204,13 +204,13 @@ public class PlayerServiceImpl implements PlayerService {
 
         // Check if the player's age fits the tournament's age group
         String ageGroup = tournament.getAgeGroup(); // Assuming the age group is stored in the tournament object
-        if ((ageGroup.equals("Teen") && age.getYears() >= 18) || 
-        (ageGroup.equals("Adults") && age.getYears() < 18)) {
+        if ((ageGroup.equals("Youth") && age.getYears() >= 18) || 
+        (ageGroup.equals("Adult") && age.getYears() < 18)) {
             throw new IllegalArgumentException("Player's age does not meet the tournament's age requirement!");
         }
 
-        // Check if the player's gender matches the tournament's gender type or if the tournament is "Open"
-        if (!tournament.getGenderType().equalsIgnoreCase("Open") && 
+        // Check if the player's gender matches the tournament's gender type or if the tournament is "Mixed"
+        if (!tournament.getGenderType().equalsIgnoreCase("Mixed") && 
         !tournament.getGenderType().equalsIgnoreCase(player.getGender())) {
             throw new IllegalArgumentException("Player's gender does not match the tournament's gender requirement!");
         }
@@ -247,8 +247,8 @@ public class PlayerServiceImpl implements PlayerService {
 
     // Method to check if a player is eligible for the tournament based on gender
     private boolean isPlayerEligibleForGender(Player player, String genderType) {
-        // If the tournament is "Open", any player can participate
-        if (genderType.equals("Open")) {
+        // If the tournament is "Mixed", any player can participate
+        if (genderType.equals("Mixed")) {
             return true;
         }
         // Otherwise, the player must match the gender type of the tournament
@@ -258,9 +258,9 @@ public class PlayerServiceImpl implements PlayerService {
     // Method to check if player's age fits into the tournament's age group
     private boolean isPlayerEligibleForAgeGroup(int playerAge, String ageGroup) {
         switch (ageGroup) {
-            case "Teen":
+            case "Youth":
                 return playerAge < 18;
-            case "Adults":
+            case "Adult":
                 return playerAge >= 18;
             default:
                 return true;  // If no specific age group, assume eligible
