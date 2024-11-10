@@ -261,8 +261,8 @@ const TournamentPage = () => {
               <input type="number" name="vacancy" value={formData.vacancy} onChange={handleInputChange} />
 
               <div className="modal-buttons">
-                <button type="save-button" onClick={handleSave}>{isEditing ? 'Save Changes' : 'Add Tournament'}</button>
-                <button type="cancel-button" onClick={closeModal}>Cancel</button>
+                <button onClick={handleSave} className='save-button'>{isEditing ? 'Save Changes' : 'Add Tournament'}</button>
+                <button className="cancel-button" onClick={closeModal}>Cancel</button>
               </div>
             </form>
           </div>
