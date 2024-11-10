@@ -7,15 +7,11 @@ import Navbar from '../components/Navbar';
 
 const PastTournaments = () => {
    
-
-   
-    
     return (
         <div>
             {/* Render the NavBar component */}
                 <Navbar />
         </div>
-        
     )
 }
 export default PastTournaments;

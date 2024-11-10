@@ -15,7 +15,6 @@ const UpcomingTournaments = () => {
             {/* Render the NavBar component */}
                 <Navbar />
         </div>
-        
     )
 }
 export default UpcomingTournaments;
