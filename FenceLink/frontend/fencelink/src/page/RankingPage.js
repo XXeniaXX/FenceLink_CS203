@@ -9,7 +9,9 @@ const RankingPage = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [gender, setGender] = useState(''); // Filter by gender
     const [country, setCountry] = useState(''); // Filter by country
+    const [countries, setCountries] = useState([]); // List of countries
 
+    // Fetch leaderboard data when filters or page change
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
@@ -27,6 +29,19 @@ const RankingPage = () => {
         };
         fetchLeaderboard();
     }, [currentPage, gender, country]);
+
+    // Fetch list of countries on component mount
+    useEffect(() => {
+        const fetchCountries = async () => {
+            try {
+                const response = await axios.get('/api/players/countries');
+                setCountries(response.data);
+            } catch (error) {
+                console.error("Error fetching countries:", error);
+            }
+        };
+        fetchCountries();
+    }, []);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -47,10 +62,11 @@ const RankingPage = () => {
     
                 <select value={country} onChange={(e) => setCountry(e.target.value)}>
                     <option value="">All Countries</option>
-                    <option value="USA">USA</option>
-                    <option value="Canada">Canada</option>
-                    <option value="UK">UK</option>
-                    {/* Add more countries as needed */}
+                    {countries.map((c) => (
+                        <option key={c} value={c}>
+                            {c}
+                        </option>
+                    ))}
                 </select>
             </div>
     
@@ -59,7 +75,7 @@ const RankingPage = () => {
                     <thead>
                         <tr>
                             <th className="rank-header">Rank</th>
-                            <th className="id-header"> ID</th>
+                            <th className="id-header">ID</th>
                             <th>Name</th>
                             <th>Gender</th>
                             <th>Country</th>

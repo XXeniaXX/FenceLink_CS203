@@ -158,4 +158,8 @@ public class PlayerController {
         return new ResponseEntity<>(playerIds, HttpStatus.OK);
     }
 
+    @GetMapping("/countries")
+    public List<String> getAllCountries() {
+        return playerService.getAllCountries();
+    }
 }
