@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css'; // Import the CSS file
 import Navbar from '../components/Navbar';
+import { useParams } from 'react-router-dom';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -23,7 +24,8 @@ const MatchAdmin = () => {
   const [filteredMatches, setFilteredMatches] = useState([]);
   const [selectedRound, setSelectedRound] = useState('All');
   const [predefinedRounds, setPredefinedRounds] = useState(0); // State to store the number of predefined rounds
-  const tournamentId = 1; // Assumed value for demonstration purposes
+  const [playerCount, setPlayerCount] = useState(0); // Store the total player count
+  const { tournamentId } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,6 +35,7 @@ const MatchAdmin = () => {
         const response = await fetch(`http://localhost:8080/api/players/${tournamentId}/get-all-players`);
         const playerIds = await response.json();
         const playerCount = playerIds.length;
+        setPlayerCount(playerCount);
 
         // Calculate predefined rounds based on player count
         let rounds = 2; // Minimum rounds: Round 1 + Seeding Round
@@ -110,14 +113,21 @@ const MatchAdmin = () => {
   }, [tournamentId]);
 
   const handleEditClick = (match) => {
-    setEditingRow(match.matchId);
-    setEditValues({
-      date: match.date,
-      startTime: match.startTime,
-      endTime: match.endTime,
-      player1points: match.player1points,
-      player2points: match.player2points,
-    });
+    if (editingRow === match.matchId) {
+      // If already editing this row, reset and cancel editing
+      setEditingRow(null);
+      setEditValues({});
+    } else {
+      // Enter edit mode for the selected row
+      setEditingRow(match.matchId);
+      setEditValues({
+        date: match.date,
+        startTime: match.startTime,
+        endTime: match.endTime,
+        player1points: match.player1points,
+        player2points: match.player2points,
+      });
+    }
   };
 
   const handleInputChange = (e) => {
@@ -297,13 +307,14 @@ const MatchAdmin = () => {
           <Table sx={{ minWidth: 650 }} aria-label="match table">
             <TableHead>
               <TableRow>
+                <TableCell>Round No</TableCell>
                 <TableCell>Date</TableCell>
                 <TableCell>Start Time</TableCell>
                 <TableCell>End Time</TableCell>
                 <TableCell>Player 1 Points</TableCell>
                 <TableCell>Player 2 Points</TableCell>
                 <TableCell>Matchup (Player 1 VS Player 2)</TableCell>
-                <TableCell>Round No</TableCell>
+                
                 <TableCell>Winner</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
@@ -311,6 +322,7 @@ const MatchAdmin = () => {
             <TableBody>
               {filteredMatches.map((match) => (
                 <TableRow key={match.matchId}>
+                  <TableCell>{`Round ${match.roundNo}`}</TableCell>
                   <TableCell>
                     {editingRow === match.matchId ? (
                       <TextField
@@ -374,17 +386,30 @@ const MatchAdmin = () => {
                   <TableCell>
                     {`${playerNames[match.player1Id] || 'Loading...'} VS ${playerNames[match.player2Id] || 'Loading...'}`}
                   </TableCell>
-                  <TableCell>{`Round ${match.roundNo}`}</TableCell>
+                  
                   <TableCell>{playerNames[match.winner] || 'Loading...'}</TableCell>
                   <TableCell>
-                    {editingRow === match.matchId ? (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleSaveClick(match.matchId)}
-                      >
-                        Save
-                      </Button>
+                  {editingRow === match.matchId ? (
+                      <>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => handleSaveClick(match.matchId)}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() => {
+                            setEditingRow(null); // Cancel editing
+                            setEditValues({}); // Clear edit values
+                          }}
+                          style={{ marginLeft: '10px' }}
+                        >
+                          Cancel
+                        </Button>
+                      </>
                     ) : (
                       <Button
                         variant="outlined"
@@ -402,21 +427,37 @@ const MatchAdmin = () => {
         </TableContainer>
       )}
       <div style={{ marginTop: '20px' }}>
-        {(currentRound === 1 && <Button variant="contained" color="primary" onClick={generateSLMatches}>
-          Generate Seedling Match
-        </Button>
+        {/* Condition to handle exact player counts (16, 32, 17, 33) */}
+        {currentRound === 1 && playerCount === 16 || playerCount === 32 || playerCount === 17 || playerCount === 33 ? (
+          <>
+            <Button variant="contained" color="secondary" onClick={generateDEMatches}>
+              Generate DE Matches
+            </Button>
+            <p>Due to the exact amount of players, the seeding round (Round 2) is skipped and Direct Elimination matches (Round 3) will be generated.</p>
+          </>
+        ) : (
+          <>
+            {/* Existing logic for match generation */}
+            {currentRound === 1 && (
+              <Button variant="contained" color="primary" onClick={generateSLMatches}>
+                Generate Seeding Match
+              </Button>
+            )}
+            {currentRound === 2 && (
+              <Button variant="contained" color="secondary" onClick={generateDEMatches} style={{ marginLeft: '10px' }}>
+                Generate Match
+              </Button>
+            )}
+            {currentRound > 3 && currentRound !== predefinedRounds && (
+              <Button variant="contained" color="success" onClick={promotePlayer} style={{ marginLeft: '10px' }}>
+                Generate Match
+              </Button>
+            )}
+            {currentRound === predefinedRounds && (
+              <p>All match results have been generated.</p>
+            )}
+          </>
         )}
-        {(currentRound === 2 &&<Button variant="contained" color="secondary" onClick={generateDEMatches} style={{ marginLeft: '10px' }}>
-          Generate Match
-        </Button>
-        )}
-        {(currentRound > 3 && currentRound !== predefinedRounds && <Button variant="contained" color="success" onClick={promotePlayer} style={{ marginLeft: '10px' }}>
-          Generate Match
-        </Button>
-        )}
-        {currentRound === predefinedRounds && (
-        <p>All match results has been generated.</p>
-      )}
       </div>
     </div>
   );
