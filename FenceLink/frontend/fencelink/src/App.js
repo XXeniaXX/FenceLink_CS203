@@ -6,6 +6,7 @@ import Main from './page/mainpage';
 import ForgotPassword from './page/forgotpassword';
 import PlayerInfo from './page/playerinfo';
 import ProfilePage from './page/profilepage';
+import RankingPage from './page/RankingPage';
 import TournamentPage from './page/tournamentPage';
 import './App.css'
 import { useEffect, useState } from 'react'
@@ -35,6 +36,7 @@ function App() {
           <Route path="/tournament" element={<TournamentPage />} />
           {/* Fallback route to redirect unknown paths */}
           <Route path="*" element={<Navigate to="/" />} />
+          <Route path="/ranking" element={<RankingPage />} />
         </Routes>
       </div>
     </BrowserRouter>

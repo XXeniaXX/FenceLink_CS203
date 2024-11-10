@@ -1,6 +1,7 @@
 package com.example.FenceLink.player;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import com.example.FenceLink.tournament.Tournament;
@@ -11,6 +12,7 @@ import jakarta.transaction.Transactional;
 
 import java.time.*;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 
@@ -61,6 +63,12 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    public Player findByUserId(Long userId) {
+        return playerRepository.findByUserId(userId)
+                .orElseThrow(() -> new NoSuchElementException("Player not found for userId: " + userId));
+    }
+
+    @Override
     @Transactional
     public Player insertPlayer(Player player) throws IllegalArgumentException {
         // Points 0 since new player hasn't joined anything
@@ -108,15 +116,18 @@ public class PlayerServiceImpl implements PlayerService {
     @Transactional
     public Player updatePlayer(Long id, Player updatedPlayer) throws IllegalArgumentException {
         // Ensures player actually exists
-        if (!playerExists(id)) {
-            throw new IllegalArgumentException("Player with ID: " + id + " not found!");
-        }
+        Player existingPlayer = playerRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Player with ID: " + id + " not found!"));
 
         checkPlayer(updatedPlayer);
 
         // Id cannot be empty
         if (updatedPlayer.getId() == null) {
             throw new IllegalArgumentException("Player ID is required!");
+        }
+
+        if (existingPlayer.getUser() != null) {
+            existingPlayer.getUser().setUsername(updatedPlayer.getName());
         }
 
         playerRepository.saveAndFlush(updatedPlayer);
@@ -295,4 +306,35 @@ public class PlayerServiceImpl implements PlayerService {
             .collect(Collectors.toList());
     }
 
+    public Page<PlayerDTO> getTopPlayersPage(int page, int pageSize, String gender, String country) {
+        PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by("points").descending());
+    
+        Page<Player> players;
+        
+        // Apply filters only if they are provided
+        if (gender != null && !gender.isEmpty() && country != null && !country.isEmpty()) {
+            players = playerRepository.findByGenderAndCountry(gender, country, pageRequest);
+        } else if (gender != null && !gender.isEmpty()) {
+            players = playerRepository.findByGender(gender, pageRequest);
+        } else if (country != null && !country.isEmpty()) {
+            players = playerRepository.findByCountry(country, pageRequest);
+        } else {
+            players = playerRepository.findAll(pageRequest);
+        }
+    
+        // Convert Page<Player> to Page<PlayerDTO>
+        return players.map(this::convertToPlayerDTO);
+    }
+    
+    // Conversion method to map Player to PlayerDTO
+    private PlayerDTO convertToPlayerDTO(Player player) {
+        return new PlayerDTO(
+            player.getId(),
+            player.getName(),
+            player.getGender(),
+            player.getCountry(),
+            player.getPoints()
+            // Add other fields if necessary
+        );
+    }
 }
