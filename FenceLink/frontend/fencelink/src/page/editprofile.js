@@ -93,13 +93,21 @@ const EditProfile = () => {
         }
     };
 
+    const handleBioChange = (e) => {
+        const text = e.target.value;
+        if (text.length <= 50) {
+            setBio(text); // Only update if character count is 50 or less
+            setFormError(false);
+        }
+    };
+
     return (
-    <div>
-        {/* Render the NavBar component */}
+        <div>
         <Navbar />
         <div className="container">
-                <h1 className="header">Edit Profile</h1>
-                <form className="form" onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
+            <h1 className="header">Edit Profile</h1>
+            <form className="form" onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
+                <div className="form-group">
                     <label className="label">
                         Fullname
                         <input
@@ -110,84 +118,83 @@ const EditProfile = () => {
                             placeholder="Enter your fullname"
                         />
                     </label>
-                    <div className="form-group">
-                        <label className="label">
-                            Birth Date
-                            <input
-                                type="date"
-                                value={birthdate}
-                                onChange={(e) => { setBirthDate(e.target.value); setFormError(false); }}
-                                className="input"
-                                placeholder="Enter your Birth Date"
-                            />
-                        </label>
-                        <label className="label">
-                            Gender
-                            <select
-                                value={gender}
-                                onChange={(e) => { setGender(e.target.value); setFormError(false); }}
-                                className="input select-input"
-                            >
-                                <option value="" disabled>Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                        </label>
-                    </div>
-                    <div className="form-group">
-                        <label className="label">
-                            Country
-                            <input
-                                type="text"
-                                value={country}
-                                onChange={(e) => { setCountry(e.target.value); setFormError(false); }}
-                                className="input"
-                                placeholder="Enter your Country"
-                            />
-                        </label>
-                        <label className="label">
-                            State
-                            <input
-                                type="text"
-                                value={location}
-                                onChange={(e) => { setLocation(e.target.value); setFormError(false); }}
-                                className="input"
-                                placeholder="Enter your state"
-                            />
-                        </label>
-                    </div>
                     <label className="label">
-                        Fencing Weapon
-                        <select
-                            value={fencingWeapon}
-                            onChange={(e) => { setFencingWeapon(e.target.value); setFormError(false); }}
-                            className="input select-input"
-                        >
-                            <option value="" disabled>Select Weapon</option>
-                            <option value="Epee">Epee</option>
-                            <option value="Foil">Foil</option>
-                            <option value="Saber">Saber</option>
-                        </select>
-                    </label>
-
-                    <label className="label">
-                        Bio
-                        <textarea
-                            value={bio}
-                            onChange={(e) => { setBio(e.target.value); setFormError(false); }}
-                            className="input textarea-input"
-                            placeholder="Tell us about yourself"
+                        Birth Date
+                        <input
+                            type="date"
+                            value={birthdate}
+                            onChange={(e) => { setBirthDate(e.target.value); setFormError(false); }}
+                            className="input"
                         />
                     </label>
-
-                    {formError && <p className="error-message">All fields should be filled up.</p>}
-                    
-                    <button type="submit" className="button">
-                        Update Profile
-                    </button>
-                </form>
-            </div>
+                </div>
+                <div className="form-group">
+                    <label className="label">
+                        Gender
+                        <select
+                            value={gender}
+                            onChange={(e) => { setGender(e.target.value); setFormError(false); }}
+                            className="input select-input"
+                        >
+                            <option value="" disabled>Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </label>
+                    <label className="label">
+                        Country
+                        <input
+                            type="text"
+                            value={country}
+                            onChange={(e) => { setCountry(e.target.value); setFormError(false); }}
+                            className="input"
+                            placeholder="Enter your Country"
+                        />
+                    </label>
+                    <label className="label">
+                        State
+                        <input
+                            type="text"
+                            value={location}
+                            onChange={(e) => { setLocation(e.target.value); setFormError(false); }}
+                            className="input"
+                            placeholder="Enter your state"
+                        />
+                    </label>
+                </div>
+                <label className="label">
+                    Fencing Weapon
+                    <select
+                        value={fencingWeapon}
+                        onChange={(e) => { setFencingWeapon(e.target.value); setFormError(false); }}
+                        className="input select-input"
+                    >
+                        <option value="" disabled>Select Weapon</option>
+                        <option value="Epee">Epee</option>
+                        <option value="Foil">Foil</option>
+                        <option value="Saber">Saber</option>
+                    </select>
+                </label>
+                <label className="label">
+                    Bio
+                    <input
+                        value={bio}
+                        onChange={(e) => handleBioChange(e)}
+                        className="input"
+                        placeholder="Tell us about yourself (max 50 characters)"
+                    />
+                </label>
+                <p style={{ fontSize: '0.9rem', color: '#555', marginTop: '1px', marginBottom: '5px' }}>
+                    {bio.length} / 50 characters
+                </p>
+                {formError && <p className="error-message">All fields should be filled up.</p>}
+                <button type="submit" className="button">
+                    Update Profile
+                </button>
+            </form>
+        </div>
     </div>
+    
     );
 };
 

@@ -317,9 +317,24 @@ public class PlayerServiceImpl implements PlayerService {
 
         // Filter tournaments that are scheduled after today
         return player.getTournamentsRegistered().stream()
-                .filter(tournament -> tournament.getRegistrationDate().isAfter(today))
+                .filter(tournament -> tournament.getStartDate().isAfter(today))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Tournament> findPastRegisteredTournaments(Long playerId) {
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> 
+            new IllegalArgumentException("Player with ID " + playerId + " not found!")
+        );
+
+        LocalDate today = LocalDate.now();
+
+        // Filter tournaments that have ended before today
+        return player.getTournamentsRegistered().stream()
+                .filter(tournament -> tournament.getEndDate().isBefore(today))
+                .collect(Collectors.toList());
+    }
+
     //get player's id who has register for a specific tournament
     public List<Long> getRegisteredPlayerIds(Long tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
@@ -359,5 +374,9 @@ public class PlayerServiceImpl implements PlayerService {
             player.getPoints()
             // Add other fields if necessary
         );
+    }
+
+    public List<String> getAllCountries() {
+        return playerRepository.findDistinctCountries();
     }
 }

@@ -38,16 +38,6 @@ const MainPage = () => {
 
         fetchUserName();
     }, []);
-
-    async function handleSignOut() {
-    try {
-        await signOut({ global: true });
-        console.log('User signed out successfully');
-        navigate('/login');
-    } catch (error) {
-        console.log('error signing out: ', error);
-    }
-    }
     
     return (
         <div>
@@ -64,9 +54,6 @@ const MainPage = () => {
             <p>Here you can find the latest updates and access your features.</p>
             {/* Add more content as needed */}
             </section>
-            <button onClick={handleSignOut} className="button">
-                Sign Out
-            </button>
         </div>
         
     )
