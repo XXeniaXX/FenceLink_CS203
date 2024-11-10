@@ -68,7 +68,9 @@ public class AuthController {
         String email = decodedJWT.getClaim("email").asString();
 
         // Fetch user details from the database
-        User user = userService.findByEmail(email); // Use a service method to fetch the user
+        User user = userService.findByEmail(email); // Use a service method to fetch the use
+        Long playerId = user.getPlayer() != null ? user.getPlayer().getId() : null;
+        
 
         if (user == null) {
             Map<String, Object> errorResponse = new HashMap<>();
@@ -81,6 +83,7 @@ public class AuthController {
         successResponse.put("message", "Token is valid");
         successResponse.put("userId", user.getId());
         successResponse.put("username", user.getUsername());
+        successResponse.put("playerId", playerId);
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }

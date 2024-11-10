@@ -1,29 +1,181 @@
 import React, { useState, useEffect } from 'react';
-import { signOut, getCurrentUser } from 'aws-amplify/auth';
-import { useNavigate } from 'react-router-dom';
-import './login.css'; // Import the CSS file
 import Navbar from '../components/Navbar';
+import axios from 'axios';
+import './dialoguebox.css';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Typography,
+    TextField,
+    MenuItem,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Button
+} from '@mui/material';
 
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+const UpcomingTournaments = ({ playerId }) => {
+    const [tournaments, setTournaments] = useState([]);
+    const [error, setError] = useState(null);
+    const [filterRound, setFilterRound] = useState('All');
+    const [selectedTournament, setSelectedTournament] = useState(null);
+    const [openDialog, setOpenDialog] = useState(false);
 
-const UpcomingTournaments = () => {
-   
+    useEffect(() => {
+        const fetchTournaments = async () => {
 
-   
-    
+            const storedPlayerId = localStorage.getItem('playerId');
+            console.log(storedPlayerId);
+
+            try {
+                const response = await axios.get(`http://localhost:8080/api/players/${storedPlayerId}/upcoming-registered-tournaments`);
+                setTournaments(response.data);
+            } catch (err) {
+                setError("Failed to fetch tournaments");
+                console.error(err);
+            }
+        };
+        
+        fetchTournaments();
+    }, []);
+
+    // Filter tournaments by round
+    const filteredTournaments = filterRound === 'All'
+        ? tournaments
+        : tournaments.filter((tournament) => tournament.country === parseInt(filterRound));
+
+    // Open dialog with tournament details
+    const handleRowClick = (tournament) => {
+        setSelectedTournament(tournament);
+        setOpenDialog(true);
+    };
+
+    // Close dialog
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+        setSelectedTournament(null);
+    };
+
     return (
         <div>
-            {/* Render the NavBar component */}
-                <Navbar />
+            <Navbar />
+            <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+                <h1 style={{ color: '#1C1E53', textAlign: 'center', fontWeight: '800' }}>
+                    Upcoming Tournaments
+                </h1>
+                
+                {error && (
+                    <Typography color="error" align="center" style={{ marginBottom: '20px' }}>
+                        {error}
+                    </Typography>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                    <TextField
+                        select
+                        label="Filter by Round"
+                        value={filterRound}
+                        onChange={(e) => setFilterRound(e.target.value)}
+                        variant="outlined"
+                        size="small"
+                        style={{ width: 200 }}
+                    >
+                        <MenuItem value="All">All</MenuItem>
+                        {[...new Set(tournaments.map((tournament) => tournament.roundNo))]
+                            .sort()
+                            .map((round) => (
+                                <MenuItem key={round} value={round}>
+                                    Round {round}
+                                </MenuItem>
+                            ))}
+                    </TextField>
+                </div>
+
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow sx={{ backgroundColor: '#E0EBFF' }}>
+                                <TableCell>Start Date</TableCell>
+                                <TableCell>End Date</TableCell>
+                                <TableCell>Tournament</TableCell>
+                                <TableCell>Description</TableCell>
+                                <TableCell>Location</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {filteredTournaments.map((tournament) => (
+                                <TableRow 
+                                    key={tournament.id} 
+                                    onClick={() => handleRowClick(tournament)} 
+                                    style={{ cursor: 'pointer' }}
+                                    sx={{
+                                        '&:hover': {
+                                            backgroundColor: '#d0d0d0',
+                                        },
+                                    }}
+                                >
+                                    <TableCell>{tournament.startDate}</TableCell>
+                                    <TableCell>{tournament.endDate}</TableCell>
+                                    <TableCell>{tournament.name}</TableCell>
+                                    <TableCell>{tournament.description}</TableCell>
+                                    <TableCell>{tournament.location}</TableCell>
+                                </TableRow>
+                                ))}
+                            </TableBody>
+                    </Table>
+                </TableContainer>
+
+                {/* Tournament Detail Dialog */}
+                <Dialog open={openDialog} onClose={handleCloseDialog} classes={{ paper: 'dialog-container' }}>
+                    <DialogTitle className="dialog-title">{selectedTournament?.name}</DialogTitle>
+                    <DialogContent className="dialog-content">
+                        <DialogContentText className="dialog-content-text">
+                            <strong>Description:</strong> {selectedTournament?.description}
+                        </DialogContentText>
+                        <DialogContentText className="dialog-content-text">
+                            <strong>Location:</strong> {selectedTournament?.location}
+                        </DialogContentText>
+                        <DialogContentText className="dialog-content-text">
+                            <strong>Start Date:</strong> {selectedTournament?.startDate}
+                        </DialogContentText>
+                        <DialogContentText className="dialog-content-text">
+                            <strong>End Date:</strong> {selectedTournament?.endDate}
+                        </DialogContentText>
+                        <DialogContentText className="dialog-content-text">
+                            <strong>Tournament Type:</strong> {selectedTournament?.tournamentType}
+                        </DialogContentText>
+                        <DialogContentText className="dialog-content-text">
+                            <strong>Weapon Type:</strong> {selectedTournament?.weaponType}
+                        </DialogContentText>
+                        <DialogContentText className="dialog-content-text">
+                            <strong>Age Group:</strong> {selectedTournament?.ageGroup}
+                        </DialogContentText>
+                        <DialogContentText className="dialog-content-text">
+                            <strong>Vacancy:</strong> {selectedTournament?.vacancy}
+                        </DialogContentText>
+                        <DialogContentText className="dialog-content-text">
+                            <strong>Gender:</strong> {selectedTournament?.genderType}
+                        </DialogContentText>
+                        <DialogContentText className="dialog-content-text">
+                            <strong>Registration Date:</strong> {selectedTournament?.registrationDate}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions className="dialog-actions">
+                        <Button onClick={handleCloseDialog} className="dialog-close-button">
+                            Close
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
         </div>
-    )
-}
+    );
+};
+
 export default UpcomingTournaments;

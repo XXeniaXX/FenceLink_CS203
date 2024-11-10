@@ -140,6 +140,17 @@ public class PlayerController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/{id}/past-tournaments")
+    public ResponseEntity<List<Tournament>> getPastRegisteredTournaments(@PathVariable Long id) {
+        try {
+            List<Tournament> pastTournaments = playerService.findPastRegisteredTournaments(id);
+            return new ResponseEntity<>(pastTournaments, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Player not found
+        }
+    }
+
     //get player's id who has register for a specific tournament
     @GetMapping("/{tournamentId}/get-all-players")
     public ResponseEntity<List<Long>> getRegisteredPlayerIds(@PathVariable Long tournamentId) {

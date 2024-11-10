@@ -59,6 +59,7 @@ const Login = () => {
   
           console.log('User ID:', data.userId);
           console.log('Username:', data.username);
+          localStorage.setItem("playerId", data.playerId);
   
           // Navigate to the main page
           navigate("/mainpage");

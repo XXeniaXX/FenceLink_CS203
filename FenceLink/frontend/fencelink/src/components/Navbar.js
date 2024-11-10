@@ -20,6 +20,9 @@ const NavBar = () => {
     try {
       await signOut({ global: true });
       console.log('User signed out successfully');
+
+      localStorage.removeItem('jwtToken');
+      sessionStorage.clear();
       navigate('/login');
     } catch (error) {
       console.log('Error signing out: ', error);
