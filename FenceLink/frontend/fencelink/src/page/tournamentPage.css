@@ -229,8 +229,8 @@ input[type="date"],
 
 /* Cancel Button */
 .cancel-button {
-  background-color: #dcdde1;
-  color: #333;
+  background-color: #c0392b;
+  color: white;
 }
 
 .cancel-button:hover {

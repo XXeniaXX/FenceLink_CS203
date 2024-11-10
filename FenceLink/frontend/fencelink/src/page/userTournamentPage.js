@@ -1,33 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import './tournamentPage.css';
+import axios from 'axios';
 
 const TournamentPage = () => {
   const [tournaments, setTournaments] = useState([]);
   const [joinedTournaments, setJoinedTournaments] = useState([]); // Track tournaments the user has joined
-
-  // Filter state
   const [filter, setFilter] = useState({
     name: '',
     tournamentType: '',
-    gender: '',
+    genderType: '',
     weaponType: '',
     ageGroup: '',
-    tournamentDate: '', // New filter for tournament date
+    tournamentDate: '',
   });
 
-  // Load tournaments from localStorage on component mount
-  useEffect(() => {
-    const storedTournaments = localStorage.getItem('tournaments');
-    if (storedTournaments) {
-      setTournaments(JSON.parse(storedTournaments));
-    }
-  }, []);
+  const playerId = 1; // Replace with actual player ID from context or auth system
 
-  // Save tournaments to localStorage whenever the list changes
+  // Fetch tournaments from the backend
   useEffect(() => {
-    localStorage.setItem('tournaments', JSON.stringify(tournaments));
-  }, [tournaments]);
+    axios.get('http://localhost:8080/api/tournaments')
+      .then(response => {
+        setTournaments(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching tournaments:', error);
+      });
+  }, []);
 
   // Handle filter change
   const handleFilterChange = (e) => {
@@ -40,7 +39,7 @@ const TournamentPage = () => {
     setFilter({
       name: '',
       tournamentType: '',
-      gender: '',
+      genderType: '',
       weaponType: '',
       ageGroup: '',
       tournamentDate: '',
@@ -49,7 +48,7 @@ const TournamentPage = () => {
 
   // Filter tournaments based on filter state
   const filteredTournaments = tournaments.filter((tournament) => {
-    const tournamentDate = new Date(tournament.startDate); // Assuming startDate is used for filtering
+    const tournamentDate = new Date(tournament.startDate);
     const filterDate = new Date(filter.tournamentDate);
 
     return (
@@ -58,20 +57,30 @@ const TournamentPage = () => {
       (!filter.gender || tournament.gender === filter.gender) &&
       (!filter.weaponType || tournament.weaponType === filter.weaponType) &&
       (!filter.ageGroup || tournament.ageGroup === filter.ageGroup) &&
-      (!filter.tournamentDate || tournamentDate.toDateString() === filterDate.toDateString()) // Check if tournament date matches
+      (!filter.tournamentDate || tournamentDate.toDateString() === filterDate.toDateString())
     );
   });
 
-  // Join tournament
-  const handleJoin = (tournament) => {
-    if (!joinedTournaments.includes(tournament)) {
-      setJoinedTournaments([...joinedTournaments, tournament]);
-    }
+  // Handle Join tournament
+  const handleJoin = (tournamentId) => {
+    axios.post(`http://localhost:8080/api/players/${playerId}/register/${tournamentId}`)
+      .then(response => {
+        setJoinedTournaments([...joinedTournaments, tournamentId]);
+      })
+      .catch(error => {
+        console.error('Error joining tournament:', error);
+      });
   };
 
-  // Withdraw from tournament
-  const handleWithdraw = (tournament) => {
-    setJoinedTournaments(joinedTournaments.filter(t => t !== tournament));
+  // Handle Withdraw tournament
+  const handleWithdraw = (tournamentId) => {
+    axios.delete(`http://localhost:8080/api/players/${playerId}/withdraw/${tournamentId}`)
+      .then(response => {
+        setJoinedTournaments(joinedTournaments.filter(id => id !== tournamentId));
+      })
+      .catch(error => {
+        console.error('Error withdrawing from tournament:', error);
+      });
   };
 
   return (
@@ -93,7 +102,7 @@ const TournamentPage = () => {
           <option value="Friendly">Friendly</option>
           <option value="Competitive">Competitive</option>
         </select>
-        <select name="gender" value={filter.gender} onChange={handleFilterChange}>
+        <select name="genderType" value={filter.genderType} onChange={handleFilterChange}>
           <option value="">Select Gender</option>
           <option value="Female">Female</option>
           <option value="Male">Male</option>
@@ -107,29 +116,24 @@ const TournamentPage = () => {
         </select>
         <select name="ageGroup" value={filter.ageGroup} onChange={handleFilterChange}>
           <option value="">Select Age Group</option>
-          <option value="Junior">Junior</option>
           <option value="Youth">Youth</option>
           <option value="Adult">Adult</option>
-          <option value="Senior">Senior</option>
+        
         </select>
-
-        {/* Tournament Date Filter */}
         <input
           type="date"
           name="tournamentDate"
           value={filter.tournamentDate}
           onChange={handleFilterChange}
         />
-        
         <button className="search-button">Search</button>
-        {/* Clear Filters Button */}
         <button className="clear-button" onClick={clearFilters}>Clear Filters</button>
       </div>
 
       {/* Tournament List */}
       <div className="tournament-list">
-        {filteredTournaments.map((tournament, index) => (
-          <div key={index} className="tournament-item">
+        {filteredTournaments.map((tournament) => (
+          <div key={tournament.id} className="tournament-item">
             <h3>{tournament.name}</h3>
             <p><strong>Location:</strong> {tournament.location}</p>
             <p><strong>Description:</strong> {tournament.description}</p>
@@ -137,17 +141,17 @@ const TournamentPage = () => {
             <p><strong>Type:</strong> {tournament.tournamentType}</p>
             <p><strong>Age Group:</strong> {tournament.ageGroup}</p>
             <p><strong>Weapon Type:</strong> {tournament.weaponType}</p>
-            <p><strong>Gender:</strong> {tournament.gender}</p>
+            <p><strong>Gender:</strong> {tournament.genderType}</p>
             <p><strong>Start Date:</strong> {tournament.startDate}</p>
             <p><strong>End Date:</strong> {tournament.endDate}</p>
             <p><strong>Vacancy:</strong> {tournament.vacancy}</p>
 
             {/* Join or Withdraw buttons */}
             <div className="button-group">
-              {!joinedTournaments.includes(tournament) ? (
-                <button onClick={() => handleJoin(tournament)} className="join-button">Join</button>
+              {!joinedTournaments.includes(tournament.id) ? (
+                <button onClick={() => handleJoin(tournament.id)} className="edit-button">Join</button>
               ) : (
-                <button onClick={() => handleWithdraw(tournament)} className="withdraw-button">Withdraw</button>
+                <button onClick={() => handleWithdraw(tournament.id)} className="delete-button">Withdraw</button>
               )}
             </div>
           </div>
@@ -158,3 +162,4 @@ const TournamentPage = () => {
 };
 
 export default TournamentPage;
+
