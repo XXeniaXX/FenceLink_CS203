@@ -13,6 +13,7 @@ import java.time.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import com.example.FenceLink.user.*;
 
 
 
@@ -21,6 +22,9 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     //new for join table
     @Autowired
@@ -65,6 +69,14 @@ public class PlayerServiceImpl implements PlayerService {
     public Player findByUserId(Long userId) {
         return playerRepository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("Player not found for userId: " + userId));
+    }
+
+    @Override
+    public int calculateAge(LocalDate birthdate) {
+        if (birthdate == null) {
+            throw new IllegalArgumentException("Birthdate is required to calculate age");
+        }
+        return Period.between(birthdate, LocalDate.now()).getYears();
     }
 
     @Override
@@ -120,18 +132,29 @@ public class PlayerServiceImpl implements PlayerService {
 
         checkPlayer(updatedPlayer);
 
-        // Id cannot be empty
-        if (updatedPlayer.getId() == null) {
-            throw new IllegalArgumentException("Player ID is required!");
+        // Attach the existing User instance if provided in the updated data
+        if (updatedPlayer.getUser() != null && updatedPlayer.getUser().getId() != null) {
+            User existingUser = userRepository.findById(updatedPlayer.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            existingPlayer.setUser(existingUser); // Attach the existing User instance to existingPlayer
         }
 
-        if (existingPlayer.getUser() != null) {
-            existingPlayer.getUser().setUsername(updatedPlayer.getName());
-        }
+        // Update fields in existingPlayer
+        existingPlayer.setName(updatedPlayer.getName());
+        existingPlayer.setGender(updatedPlayer.getGender());
+        existingPlayer.setLocation(updatedPlayer.getLocation());
+        existingPlayer.setCountry(updatedPlayer.getCountry());
+        existingPlayer.setFencingWeapon(updatedPlayer.getFencingWeapon());
+        existingPlayer.setBirthdate(updatedPlayer.getBirthdate());
+        existingPlayer.setBio(updatedPlayer.getBio());
 
-        playerRepository.saveAndFlush(updatedPlayer);
-        return updatedPlayer;
+        // Save the updated player
+        playerRepository.saveAndFlush(existingPlayer);
+
+        // Return the updated existingPlayer, not updatedPlayer
+        return existingPlayer;
     }
+
 
     // Admin only
     @Override

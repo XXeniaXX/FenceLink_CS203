@@ -92,6 +92,12 @@
     background-color: #090a31;
   }
 
+  .buttonContainer {
+    position: absolute;
+    top: 70px; /* Position button at top */
+    right: 30px; /* Position button to the right */
+  }
+
   .error-message {
     color: red; 
     font-size: 0.9rem; 

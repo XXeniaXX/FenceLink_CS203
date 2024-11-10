@@ -55,14 +55,26 @@ public class PlayerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updatePlayer(@PathVariable Long id, @RequestBody Player player) {
-        
+    public ResponseEntity<Map<String, Object>> updatePlayer(@PathVariable Long id, @RequestBody Player player) {
         player.setId(id);  // Ensure player ID is set
         try {
-            playerService.updatePlayer(id, player);
-            return new ResponseEntity<>("Player updated successfully", HttpStatus.OK);
+            Player updatedPlayer = playerService.updatePlayer(id, player);
+
+            // Calculate age based on birthdate
+            int age = playerService.calculateAge(updatedPlayer.getBirthdate());
+
+            // Prepare response with additional details
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Player updated successfully");
+            response.put("age", age);
+            response.put("country", updatedPlayer.getCountry());
+            response.put("location", updatedPlayer.getLocation());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
     }
 

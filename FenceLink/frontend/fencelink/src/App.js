@@ -6,6 +6,10 @@ import Main from './page/mainpage';
 import ForgotPassword from './page/forgotpassword';
 import PlayerInfo from './page/playerinfo';
 import ProfilePage from './page/profilepage';
+import EditProfile from './page/editprofile';
+import PastTournaments from './page/pasttournaments';
+import UpcomingTournaments from './page/upcomingtournaments';
+
 import './App.css'
 import { useEffect, useState } from 'react'
 
@@ -27,6 +31,9 @@ function App() {
           <Route path="/updateplayer/:id" element={<PlayerInfo />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/profilepage" element={<ProfilePage />} />
+          <Route path="/editprofile" element={<EditProfile />} />
+          <Route path="/pasttournaments" element={<PastTournaments />} />
+          <Route path="/upcomingtournaments" element={<UpcomingTournaments />} />
 
           <Route path="/register" element={<Registration />} />
           <Route path="/otpcheck" element={<OtpCheck />} />

@@ -18,7 +18,6 @@ const NavBar = () => {
       </ul>
 
       <div className="profile-section">
-        <img src="/path/to/profile-pic.jpg" alt="Profile" className="profile-pic" />
         <li className="nav-links"><Link to="/profilepage">Hi, {storedUserName}</Link></li>
       </div>
     </nav>

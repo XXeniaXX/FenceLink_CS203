@@ -6,10 +6,16 @@ import { useNavigate } from "react-router-dom";
 import Navbar from '../components/Navbar';
 import fencingplayer from './assets/fencingplayer.png';
 import fencingcross from './assets/fencingcross.png';
+import profileicon from './assets/profileicon.png';
 
 
 const ProfilePage = () => {
     const navigate = useNavigate();
+    const storedUserName = localStorage.getItem('userName');
+    const storedAge = localStorage.getItem('age');
+    const storedLocation = localStorage.getItem('location');
+    const storedCountry = localStorage.getItem('country');
+    const storedBio = localStorage.getItem('bio');
 
     const [profileImage, setProfileImage] = useState(null);
 
@@ -27,17 +33,17 @@ const ProfilePage = () => {
         } catch (error) {
             console.log('error signing out: ', error);
         }
-        }
+    }
 
         return (
             <div>
                 {/* Render the NavBar component */}
                     <Navbar />
             <div className="container2">
-                <div className="profileContainer">
+                <div>
                     <label htmlFor="profilePicUpload">
                     <img
-                        src={profileImage || "https://via.placeholder.com/150"}
+                        src={profileicon}
                         alt="Profile"
                         className="profileImage"
                     />
@@ -50,23 +56,22 @@ const ProfilePage = () => {
                     />
                     </label>
                     <div>
-                    <h2>Jerry Anderson, 28</h2>
-                    <p>New York, USA</p>
-                    <p>Bio</p>
+                    <h2>{storedUserName}, {storedAge}</h2>
+                    <p>{storedCountry}, {storedLocation}</p>
+                    <p>{storedBio}</p>
                     </div>
-                    <button className="button">Edit Profile</button>
                 </div>
                 <div className="tournamentsContainer">
 
-                    <button className="tournamentButton">
+                    <button className="tournamentButton" onClick={() => navigate('/pasttournaments')}>
                         <img
                             src={fencingcross}
                             alt="fencingcross"
                             className="buttonImage"
                         />
-                        <p style={{ color: '#1C1E53' }}>Past Tournaments</p>
+                        <p style={{ color: '#1C1E53' }} >Past Tournaments</p>
                     </button>
-                    <button className="tournamentButton">
+                    <button className="tournamentButton" onClick={() => navigate('/upcomingtournaments')}>
                         <img
                             src={fencingplayer}
                             alt="fencingplayer"
@@ -74,10 +79,16 @@ const ProfilePage = () => {
                         />
                         <p style={{ color: '#1C1E53' }}>Upcoming Tournaments</p>
                     </button>
+                    
                 </div>
                 <button onClick={handleSignOut} className="button">
                         Sign Out
                 </button>
+                <div className="buttonContainer">
+                <button className="button editButton" onClick={() => navigate('/editprofile')}>
+                    Edit Profile
+                </button>
+                </div>
                 
             </div> 
             </div>
