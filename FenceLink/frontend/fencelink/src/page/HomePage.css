@@ -4,7 +4,7 @@
   }
   
   .nav-links {
-    margin: 20px;
+    margin: 20px 0;
   }
   
   .nav-links a {
@@ -14,9 +14,9 @@
   }
   
   .nav-links a:hover {
-    color: #007BFF;
+    text-decoration: underline;
   }
   
   .content {
-    margin: 20px;
+    margin-top: 20px;
   }

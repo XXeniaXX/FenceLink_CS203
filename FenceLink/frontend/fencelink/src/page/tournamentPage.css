@@ -1,0 +1,221 @@
+/* Base Styles */
+.tournament-page {
+  font-family: Arial, sans-serif;
+  background-color: #f5f6fa;
+  color: #333;
+  min-height: 100vh;
+}
+
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  background-color: #192a56;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  color: #fbc531;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+}
+
+/* Filter Section Styles */
+.filter-section {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: #273c75;
+  color: white;
+  border-radius: 8px;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+
+.search-input,
+select,
+input[type="date"],
+.search-button {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+}
+
+.search-button {
+  background-color: #fbc531;
+  color: #273c75;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #e1b12c;
+}
+
+/* Tournament List & Add Button */
+.tournament-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.tournament-item,
+.add-tournament {
+  background-color: #dcdde1;
+  border-radius: 8px;
+  padding: 1rem;
+  width: 200px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tournament-item h3 {
+  font-size: 1.2rem;
+  color: #273c75;
+  margin: 0;
+}
+
+.tournament-item p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.tournament-item:hover,
+.add-tournament:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.add-tournament {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  background-color: #fbc531;
+  color: #273c75;
+}
+
+.add-tournament:hover {
+  background-color: #e1b12c;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  color: #273c75;
+  margin-bottom: 1rem;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal label {
+  font-weight: bold;
+  color: #333;
+}
+
+.modal input,
+.modal select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Button Styles */
+.save-button,
+.edit-button,
+.delete-button,
+.cancel-button {
+  padding: 0.5rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+/* Save Button */
+.save-button {
+  background-color: #273c75;
+  color: white;
+}
+
+.save-button:hover {
+  background-color: #192a56;
+}
+
+/* Edit Button */
+.edit-button {
+  background-color: #27ae60; /* Green for Edit */
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #1e8449; /* Darker green on hover */
+}
+
+/* Delete Button */
+.delete-button {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
+}
+
+/* Cancel Button */
+.cancel-button {
+  background-color: #dcdde1;
+  color: #333;
+}
+
+.cancel-button:hover {
+  background-color: #b2bec3;
+}
+
+
+
+

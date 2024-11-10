@@ -33,25 +33,52 @@ const Login = () => {
     try {
       // Try to sign in the user
       const user = await signIn({ 
-        username : email, 
-        password : password });
+        username: email, 
+        password: password 
+      });
+      
       console.log("Login response user:", user);
-
-      var cognitoTokens = (await fetchAuthSession()).tokens;
-      let rawToken = cognitoTokens?.idToken?.toString();
-      //let payload = cognitoTokens?.idToken?.payload;
-
+  
+      const cognitoTokens = (await fetchAuthSession()).tokens;
+      const rawToken = cognitoTokens?.idToken?.toString();
+  
       console.log("ID Token (JWT):", rawToken);
       localStorage.setItem('jwtToken', rawToken);
-
-      validateTokenOnLogin(rawToken);
-      
+  
+      // Call the backend to validate the token
+      const response = await validateTokenOnLogin(rawToken);
+  
+      if (response) {
+        // Parse the JSON response
+        const data = await response.json();
+  
+        if (data.message === 'Token is valid') {
+          // Store user information in localStorage
+          localStorage.setItem('userId', data.userId);
+          localStorage.setItem('username', data.username);
+  
+          console.log('User ID:', data.userId);
+          console.log('Username:', data.username);
+  
+          // Navigate to the main page
+          navigate("/mainpage");
+        } else {
+          console.error('Invalid token:', data);
+          localStorage.removeItem('jwtToken');
+          navigate("/login");
+        }
+      } else {
+        console.error('Token validation failed.');
+        localStorage.removeItem('jwtToken');
+        navigate("/login");
+      }
       
     } catch (error) {
       console.error('Login failed:', error);
       alert('Login failed: ' + error.message);
     }
   };
+  
 
   async function validateTokenOnLogin(token) {
     try {
@@ -59,40 +86,41 @@ const Login = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // Include token in Authorization header
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ token }),
       });
-
-      console.log('Response status:', response.status);
-    if (response.status === 401) {
-      console.log('Full response:', response);
-      const text = await response.text();
-      console.log('Response body:', text);
-    }
   
-      const result = await response.text();
-      if (result === 'Token is valid') {
-        console.log('Token is valid');
-        // Navigate to main page or update UI to show user is logged in
-        navigate("/mainpage");
-      } else {
-        console.error('Invalid token:', result);
-        // Redirect to login if invalid or expired
-        localStorage.removeItem('idToken');
-        navigate("/login");
+      console.log('Response status:', response.status);
+  
+      if (response.status === 401) {
+        console.log('Full response:', response);
+        const text = await response.text();
+        console.log('Response body:', text);
+        return null; // Token validation failed
       }
+  
+      return response; // Return the response to be processed by handleLogin
     } catch (error) {
       console.error('Token validation failed:', error);
+      return null;
     }
   }
-
   
 
   return (
   <div>
     <nav className="nav">
-      <div className="site-title">FENCELINK</div>
+        <img 
+            src="/fencelink.png" 
+            alt="FenceLink Logo" 
+            style={{
+                width: '210px',
+                height: '70px',
+                borderRadius: '50%',
+                objectFit: 'contain'
+            }} 
+        />
     </nav>
 
     <div className="container">

@@ -6,6 +6,8 @@ import Main from './page/mainpage';
 import ForgotPassword from './page/forgotpassword';
 import PlayerInfo from './page/playerinfo';
 import ProfilePage from './page/profilepage';
+import RankingPage from './page/RankingPage';
+import TournamentPage from './page/tournamentPage';
 import './App.css';
 import { useEffect, useState } from 'react';
 import MatchAdmin from './page/matchAdmin';
@@ -30,8 +32,11 @@ function App() {
             <Route path="/register" element={<Registration />} />
             <Route path="/otpcheck" element={<OtpCheck />} />
             <Route path="/mainpage" element={<Main />} />
+            <Route path="/tournament" element={<TournamentPage />} />
             <Route path="/matchAdmin" element={<MatchAdmin />} />
+            <Route path="/ranking" element={<RankingPage />} />
             <Route path="*" element={<Navigate to="/" />} />
+          
           </Routes>
         </div>
       </BrowserRouter>
