@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { signOut } from 'aws-amplify/auth';
-import './login.css'; // Import the CSS file
-import './homepage.css';
+import './profilepage.css';
 import { useNavigate } from "react-router-dom";
 import Navbar from '../components/Navbar';
 import fencingplayer from './assets/fencingplayer.png';
@@ -85,7 +84,7 @@ const ProfilePage = () => {
                         Sign Out
                 </button>
                 <div className="buttonContainer">
-                <button className="button editButton" onClick={() => navigate('/editprofile')}>
+                <button className="button" onClick={() => navigate('/editprofile')}>
                     Edit Profile
                 </button>
                 </div>

@@ -8,17 +8,20 @@ const NavBar = () => {
 
   return (
     <nav className="nav">
-      <div className="site-title">FENCELINK</div>
+      <div className="logo-container">
+        <img src="/fencelink.png" alt="Logo" className="logo" />
+      </div>
 
       <ul className="nav-links">
-        <li><Link to="/mainpage">Home</Link></li>
-        <li><Link to="/tournament">Tournament</Link></li>
-        <li><Link to="/results">Results</Link></li>
-        <li><Link to="/ranking">Ranking</Link></li>
+        <li><Link to="/homepage">HOME</Link></li>
+        <li><Link to="/tournament">TOURNAMENT</Link></li>
+        <li><Link to="/results">RESULTS</Link></li>
+        <li><Link to="/ranking">RANKING</Link></li>
       </ul>
 
       <div className="profile-section">
         <li className="nav-links"><Link to="/profilepage">Hi, {storedUserName}</Link></li>
+        <span className="dropdown-icon">▼</span>
       </div>
     </nav>
   );

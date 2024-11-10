@@ -1,6 +1,7 @@
 package com.example.FenceLink.player;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import com.example.FenceLink.tournament.Tournament;
@@ -328,4 +329,35 @@ public class PlayerServiceImpl implements PlayerService {
             .collect(Collectors.toList());
     }
 
+    public Page<PlayerDTO> getTopPlayersPage(int page, int pageSize, String gender, String country) {
+        PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by("points").descending());
+    
+        Page<Player> players;
+        
+        // Apply filters only if they are provided
+        if (gender != null && !gender.isEmpty() && country != null && !country.isEmpty()) {
+            players = playerRepository.findByGenderAndCountry(gender, country, pageRequest);
+        } else if (gender != null && !gender.isEmpty()) {
+            players = playerRepository.findByGender(gender, pageRequest);
+        } else if (country != null && !country.isEmpty()) {
+            players = playerRepository.findByCountry(country, pageRequest);
+        } else {
+            players = playerRepository.findAll(pageRequest);
+        }
+    
+        // Convert Page<Player> to Page<PlayerDTO>
+        return players.map(this::convertToPlayerDTO);
+    }
+    
+    // Conversion method to map Player to PlayerDTO
+    private PlayerDTO convertToPlayerDTO(Player player) {
+        return new PlayerDTO(
+            player.getId(),
+            player.getName(),
+            player.getGender(),
+            player.getCountry(),
+            player.getPoints()
+            // Add other fields if necessary
+        );
+    }
 }
