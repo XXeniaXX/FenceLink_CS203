@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css'; // Import the CSS file
-import './homepage.css';
 import Navbar from '../components/Navbar';
 
 import Table from '@mui/material/Table';
