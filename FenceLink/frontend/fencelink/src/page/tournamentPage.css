@@ -130,37 +130,58 @@ input[type="date"],
   z-index: 1000;
 }
 
+/* Modal Content */
 .modal {
-  background: white;
+  background: #ffffff;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 12px;
   width: 90%;
-  max-width: 400px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 500px; /* Set maximum width */
+  max-height: 80vh; /* Allow the modal to grow up to 80% of the viewport height */
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+  text-align: left;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
+/* Modal Heading */
 .modal h2 {
   color: #273c75;
+  font-size: 1.5rem;
   margin-bottom: 1rem;
+  font-weight: 600;
+  text-align: center;
 }
 
+/* Modal Form */
 .modal form {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
+/* Label Styles */
 .modal label {
   font-weight: bold;
   color: #333;
+  font-size: 1rem;
 }
 
+/* Input and Select Fields */
 .modal input,
 .modal select {
-  padding: 0.5rem;
+  padding: 0.75rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.modal input:focus,
+.modal select:focus {
+  border-color: #fbc531;
+  outline: none;
 }
 
 /* Button Styles */

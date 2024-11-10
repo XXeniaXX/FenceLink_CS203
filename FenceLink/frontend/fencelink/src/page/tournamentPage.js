@@ -173,10 +173,8 @@ const TournamentPage = () => {
           onChange={handleFilterChange}
         >
           <option value="">Select Age Group</option>
-          <option value="Junior">Junior</option>
           <option value="Youth">Youth</option>
           <option value="Adult">Adult</option>
-          <option value="Senior">Senior</option>
         </select>
         <input
           type="date"
@@ -238,10 +236,8 @@ const TournamentPage = () => {
               <label>Age Group</label>
               <select name="ageGroup" value={formData.ageGroup} onChange={handleInputChange}>
                 <option value="">Select Age Group</option>
-                <option value="Junior">Junior</option>
                 <option value="Youth">Youth</option>
                 <option value="Adult">Adult</option>
-                <option value="Senior">Senior</option>
               </select>
               <label>Weapon Type</label>
               <select name="weaponType" value={formData.weaponType} onChange={handleInputChange}>
@@ -265,8 +261,8 @@ const TournamentPage = () => {
               <input type="number" name="vacancy" value={formData.vacancy} onChange={handleInputChange} />
 
               <div className="modal-buttons">
-                <button type="button" onClick={handleSave}>{isEditing ? 'Save Changes' : 'Add Tournament'}</button>
-                <button type="button" onClick={closeModal}>Cancel</button>
+                <button type="save-button" onClick={handleSave}>{isEditing ? 'Save Changes' : 'Add Tournament'}</button>
+                <button type="cancel-button" onClick={closeModal}>Cancel</button>
               </div>
             </form>
           </div>
