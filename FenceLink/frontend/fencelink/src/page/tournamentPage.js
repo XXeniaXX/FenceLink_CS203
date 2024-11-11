@@ -162,7 +162,7 @@ const TournamentPage = () => {
           <option value="">Select Gender</option>
           <option value="Female">Female</option>
           <option value="Male">Male</option>
-          <option value="Open">Open</option>
+          <option value="Mixed">Mixed</option>
         </select>
         <select
           name="weaponType"
@@ -259,7 +259,7 @@ const TournamentPage = () => {
                 <option value="">Select Gender</option>
                 <option value="Female">Female</option>
                 <option value="Male">Male</option>
-                <option value="Open">Open</option>
+                <option value="Mixed">Mixed</option>
               </select>
               <label>Start Date</label>
               <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} />

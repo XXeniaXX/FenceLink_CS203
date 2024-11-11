@@ -14,6 +14,7 @@ import TournamentPage from './page/tournamentPage';
 import MatchAdmin from './page/matchAdmin';
 import MatchUser from './page/matchUser';
 import ResultPage from './page/result';
+import UserTournamentPage from './page/userTournamentPage';
 import './App.css';
 import { useEffect, useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -46,6 +47,7 @@ function App() {
             <Route path="/ranking" element={<RankingPage />} />
             <Route path="/results" element={<ResultPage />} />
             <Route path="/unauthorisedpage" element={<UnauthorizedPage />} />
+            <Route path="/usertournament" element={<UserTournamentPage/>} />
             
             {/* Admin-only route */}
             <Route element={<ProtectedRoute allowedRole="admin" />}>
