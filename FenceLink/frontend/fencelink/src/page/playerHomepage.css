@@ -6,6 +6,10 @@
     margin-top: 40px;
   }
 
+  .welcome {
+    font-weight: bold;
+  }
+
   .calendar-column .highlight {
     background-color: #18049d !important;
     color: white !important;

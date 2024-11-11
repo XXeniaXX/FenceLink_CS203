@@ -17,7 +17,8 @@ const PlayerHomePage = () => {
   const [availableTournaments, setAvailableTournaments] = useState([]);
   const [tournamentDates, setTournamentDates] = useState([]);
   const [joinedTournaments, setJoinedTournaments] = useState([]); // Track joined tournaments
-  const playerId = 203; // Use dynamic player ID if available
+  // const playerId = 203; // Use dynamic player ID if available
+  const playerId = localStorage.getItem('playerId');
 
   // Fetch player data
   useEffect(() => {
@@ -165,7 +166,7 @@ const normalizeDate = (date) => {
     <div className="home-page">
       <Navbar />
       <div className="content-wrapper">
-        <h1 className="text-center">{`Welcome, ${player ? player.name : 'Guest'}`}</h1>
+        <h1 className="welcome">{`Welcome, ${player ? player.name : 'Guest'}`}</h1>
         <p className="text-center text-muted">Happy fencing!</p>
 
         {/* Upcoming Tournaments Section */}
