@@ -166,7 +166,7 @@ const normalizeDate = (date) => {
     <div className="home-page">
       <Navbar />
       <div className="content-wrapper">
-        <h1 className="welcome">{`Welcome, ${player ? player.name : 'Guest'}`}</h1>
+        <h1 className="text-center">{`Welcome, ${player ? player.name : 'Guest'}`}</h1>
         <p className="text-center text-muted">Happy fencing!</p>
 
         {/* Upcoming Tournaments Section */}
