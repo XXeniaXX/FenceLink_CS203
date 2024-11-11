@@ -132,3 +132,40 @@
   height: 20px;
   margin-right: 10px;
 }
+
+.pageContainer {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  flex-direction: column;
+  align-items: right;
+  justify-content: right;
+  margin-right: 15px;
+  margin-left: 100px;
+}
+
+.pageButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border: none;
+  border-radius: 10px;
+  background-color: #E0EBFF;
+  cursor: pointer;
+  width: 150px;
+  height: 180px;
+}
+
+.pagebuttonImage {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+.mainContainer {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  padding: 20px;
+}

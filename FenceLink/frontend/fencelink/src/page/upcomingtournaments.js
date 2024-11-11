@@ -24,7 +24,7 @@ import {
 const UpcomingTournaments = ({ playerId }) => {
     const [tournaments, setTournaments] = useState([]);
     const [error, setError] = useState(null);
-    const [filterRound, setFilterRound] = useState('All');
+    const [filterLocation, setFilterLocation] = useState('All');
     const [selectedTournament, setSelectedTournament] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
 
@@ -47,9 +47,9 @@ const UpcomingTournaments = ({ playerId }) => {
     }, []);
 
     // Filter tournaments by round
-    const filteredTournaments = filterRound === 'All'
+    const filteredTournaments = filterLocation === 'All'
         ? tournaments
-        : tournaments.filter((tournament) => tournament.country === parseInt(filterRound));
+        : tournaments.filter((tournament) => tournament.location === filterLocation);
 
     // Open dialog with tournament details
     const handleRowClick = (tournament) => {
@@ -80,19 +80,19 @@ const UpcomingTournaments = ({ playerId }) => {
                 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
                     <TextField
                         select
-                        label="Filter by Round"
-                        value={filterRound}
-                        onChange={(e) => setFilterRound(e.target.value)}
+                        label="Filter by Location"
+                        value={filterLocation}
+                        onChange={(e) => setFilterLocation(e.target.value)}
                         variant="outlined"
                         size="small"
                         style={{ width: 200 }}
                     >
                         <MenuItem value="All">All</MenuItem>
-                        {[...new Set(tournaments.map((tournament) => tournament.roundNo))]
+                        {[...new Set(tournaments.map((tournament) => tournament.location))]
                             .sort()
-                            .map((round) => (
-                                <MenuItem key={round} value={round}>
-                                    Round {round}
+                            .map((location) => (
+                                <MenuItem key={location} value={location}>
+                                    {location}
                                 </MenuItem>
                             ))}
                     </TextField>

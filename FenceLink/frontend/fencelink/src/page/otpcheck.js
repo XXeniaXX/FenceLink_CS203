@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import OtpInput from "otp-input-react";
 import './otp.css'
 import './login.css'; 
+import PlainBar from '../components/plainbar';
 
 const OtpCheck = () => {
   const navigate = useNavigate();
@@ -103,18 +104,7 @@ const OtpCheck = () => {
 
   return (
   <div>
-    <nav className="nav">
-        <img 
-            src="/fencelink.png" 
-            alt="FenceLink Logo" 
-            style={{
-                width: '210px',
-                height: '70px',
-                borderRadius: '50%',
-                objectFit: 'contain'
-            }} 
-        />
-    </nav>
+    <PlainBar/>
     <div className="container">
       <h1 className = "header">OTP Verification</h1>
       <form onSubmit={handleSignUpConfirmation} className = "form">  

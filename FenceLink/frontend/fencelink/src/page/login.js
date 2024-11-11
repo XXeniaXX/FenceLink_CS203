@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { signIn, fetchAuthSession} from 'aws-amplify/auth';
 import { signOut } from 'aws-amplify/auth';
 import './login.css'; // Import the CSS file
+import PlainBar from '../components/plainbar';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -67,7 +68,12 @@ const Login = () => {
           localStorage.setItem("playerId", data.playerId);
   
           // Navigate to the main page
-          navigate("/mainpage");
+          if (data.userRole === 'admin') {
+            navigate('/adminhomepage');
+          } else {
+            navigate('/mainpage');
+          }
+
         } else {
           console.error('Invalid token:', data);
           localStorage.removeItem('jwtToken');
@@ -118,18 +124,7 @@ const Login = () => {
 
   return (
   <div>
-    <nav className="nav">
-        <img 
-            src="/fencelink.png" 
-            alt="FenceLink Logo" 
-            style={{
-                width: '210px',
-                height: '70px',
-                borderRadius: '50%',
-                objectFit: 'contain'
-            }} 
-        />
-    </nav>
+    <PlainBar/>
 
     <div className="container">
       <h1 className="header">LOGIN</h1>

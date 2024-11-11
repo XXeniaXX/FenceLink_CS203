@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './login.css';
 import { useNavigate } from "react-router-dom";
+import PlainBar from '../components/plainbar';
 
 const PlayerInfo = () => {
     const navigate = useNavigate();
@@ -66,19 +67,7 @@ const PlayerInfo = () => {
 
     return (
     <div>
-        <nav className="nav">
-            <div className="site-title">FENCELINK</div>
-            <img 
-                src="/fencelink.png" 
-                alt="FenceLink Logo" 
-                style={{
-                    width: '210px',
-                    height: '70px',
-                    borderRadius: '50%',
-                    objectFit: 'contain'
-                }} 
-            />
-        </nav>
+        <PlainBar/>
         <div className="container">
             <h1 className="header">Player Information</h1>
             <form className="form2" onSubmit={(e) => { e.preventDefault(); handlePlayerUpdate(); }}>

@@ -18,6 +18,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import ProtectedRoute from './page/protectedroute';
 import UnauthorizedPage from './page/unauthorisedpage';
+import AdminHomePage from './page/adminhomepage';
 
 const theme = createTheme();
 
@@ -42,11 +43,15 @@ function App() {
             <Route path="/tournament" element={<TournamentPage />} />
             <Route path="/ranking" element={<RankingPage />} />
             <Route path="/unauthorisedpage" element={<UnauthorizedPage />} />
+            <Route path="/mainpage" element={<Main />} />
+            <Route path="/profilepage" element={<ProfilePage />} />
             
             {/* Admin-only route */}
             <Route element={<ProtectedRoute allowedRole="admin" />}>
               <Route path="/matchAdmin" element={<MatchAdmin />} />
+              <Route path="/adminhomepage" element={<AdminHomePage />} />
             </Route>
+
 
             <Route path="*" element={<Navigate to="/" />} />
           

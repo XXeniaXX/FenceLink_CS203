@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.util.Collections;
 
@@ -20,6 +21,15 @@ public class TournamentController {
     @GetMapping
     public List<Tournament> getAllTournaments() {
         return tournamentService.getAllTournaments();
+    }
+
+    @GetMapping("/upcomingtournaments")
+    public List<Tournament> getAllUpcomingTournaments() {
+        LocalDate today = LocalDate.now();
+        return tournamentService.getAllTournaments()
+                                .stream()
+                                .filter(tournament -> tournament.getStartDate().isAfter(today))
+                                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
