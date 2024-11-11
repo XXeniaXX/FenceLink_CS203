@@ -57,11 +57,13 @@ public class UserController {
         User savedUser = userService.registerUser(userDTO);
         Long playerId = savedUser.getPlayer() != null ? savedUser.getPlayer().getId() : null;
         Long userId = savedUser.getId();
+        String userRole = "player";
 
         Map<String, Object> response = new HashMap<>();
         response.put("playerId", playerId);
         response.put("userId", userId); 
         response.put("user", savedUser); 
+        response.put("userRole", userRole);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
