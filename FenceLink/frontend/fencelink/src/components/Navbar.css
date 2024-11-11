@@ -13,18 +13,8 @@
         justify-content: space-between;
         align-items: center;
         gap: 2rem;
-        padding: 10px 20px;
-        height: 60px;
-    }
-    
-    .nav .nav-links a {
-        color: #ffffff;
-        text-decoration: none;
-        display: flex;
-        gap: 1rem;
-        list-style: none;
-        margin: 0;
-        transition: color 0.3s ease; 
+        padding: 0 30px;
+        height: 65px;
     }
     
     .nav-links {
@@ -88,6 +78,7 @@
         width: 210px;
         height: 70px;
         border-radius: 50%;
+        margin-left: 10%;
     }
     
     .dropdown-icon {
@@ -117,6 +108,7 @@
       }
       
     .dropdown-menu {
+        display: none; /* Initially hidden */
         position: absolute;
         top: 100%;
         right: 0;
@@ -126,6 +118,11 @@
         padding: 0;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         z-index: 1000;
+    }
+
+    /* Add this .show class to make the menu visible */
+    .dropdown-menu.show {
+        display: block;
     }
 
     .dropdown-item {

@@ -23,6 +23,7 @@ import ProtectedRoute from './page/protectedroute';
 import UnauthorizedPage from './page/unauthorisedpage';
 import AdminHomePage from './page/adminhomepage';
 import ManagePlayerPage from './page/managePlayerPage';
+import PlayerHomePage from './page/playerHomepage';
 
 const theme = createTheme();
 
@@ -51,6 +52,7 @@ function App() {
             <Route path="/mainpage" element={<Main />} />
             <Route path="/usertournament" element={<UserTournamentPage/>} />
             <Route path="/profilepage" element={<ProfilePage />} />
+            <Route path="/playerhomepage" element={<PlayerHomePage />} />
             
             
             {/* Admin-only route */}

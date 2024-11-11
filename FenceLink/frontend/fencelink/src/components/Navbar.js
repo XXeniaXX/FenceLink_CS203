@@ -52,11 +52,12 @@ const NavBar = () => {
 
         {/* Dropdown Menu */}
         {showDropdown && (
-          <div className="dropdown-menu">
-            <Link to="/editprofile" className="dropdown-item">Edit Profile</Link>
-            <button onClick={handleSignOut} className="dropdown-item">Sign Out</button>
-          </div>
+            <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}>
+                <Link to="/editprofile" className="dropdown-item">Edit Profile</Link>
+                <button onClick={handleSignOut} className="dropdown-item">Sign Out</button>
+            </div>
         )}
+
       </div>
     </nav>
   );
