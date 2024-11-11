@@ -23,6 +23,7 @@ import ProtectedRoute from './page/protectedroute';
 import UnauthorizedPage from './page/unauthorisedpage';
 import AdminHomePage from './page/adminhomepage';
 import ManagePlayerPage from './page/managePlayerPage';
+import PlayerHomePage from './page/playerHomepage';
 
 const theme = createTheme();
 
@@ -46,6 +47,7 @@ function App() {
             <Route path="/mainpage" element={<Main />} />
             <Route path="/match/:tournamentId" element={<MatchUser />} />
             <Route path="/ranking" element={<RankingPage />} />
+            <Route path='/playerhomepage' element={<PlayerHomePage />} />
             <Route path="/results" element={<ResultPage />} />
             <Route path="/unauthorisedpage" element={<UnauthorizedPage />} />
             <Route path="/mainpage" element={<Main />} />
