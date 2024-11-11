@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { useNavigate } from 'react-router-dom';
+import AdminNavBar from '../components/AdminNavBar';
 
 const ResultPage = () => {
     const [tournaments, setTournaments] = useState([]);
@@ -27,6 +28,8 @@ const ResultPage = () => {
     const [winners, setWinners] = useState({});
     const [openPlayerDialog, setOpenPlayerDialog] = useState(false);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
+    const [userRole, setUserRole] = useState('');
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -117,9 +120,15 @@ const ResultPage = () => {
         setSelectedPlayer(null);
     };
 
+    useEffect(() => {
+        const role = localStorage.getItem('userRole');
+        setUserRole(role);
+    }, []);
+
+
     return (
         <div>
-            <Navbar />
+            {userRole === 'admin' ? <AdminNavBar /> : <Navbar />}
             <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
                 <h1 style={{ color: '#1C1E53', textAlign: 'center', fontWeight: '800' }}>
                     Tournament Results

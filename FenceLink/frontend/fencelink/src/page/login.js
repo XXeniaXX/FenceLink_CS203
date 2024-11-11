@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { signIn, fetchAuthSession} from 'aws-amplify/auth';
 import { signOut } from 'aws-amplify/auth';
 import './login.css'; // Import the CSS file
-import PlainBar from '../components/plainbar';
+import PlainBar from '../components/AdminNavBar';
 
 const Login = () => {
   const navigate = useNavigate();

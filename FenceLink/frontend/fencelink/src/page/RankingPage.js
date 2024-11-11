@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './RankingPage.css';
 import Navbar from '../components/Navbar';
+import AdminNavBar from '../components/AdminNavBar';
 
 const RankingPage = () => {
     const playersPerPage = 20;
@@ -10,6 +11,7 @@ const RankingPage = () => {
     const [gender, setGender] = useState(''); // Filter by gender
     const [country, setCountry] = useState(''); // Filter by country
     const [countries, setCountries] = useState([]); // List of countries
+    const [userRole, setUserRole] = useState('');
 
     // Fetch leaderboard data when filters or page change
     useEffect(() => {
@@ -43,13 +45,18 @@ const RankingPage = () => {
         fetchCountries();
     }, []);
 
+    useEffect(() => {
+        const role = localStorage.getItem('userRole');
+        setUserRole(role);
+    }, []);
+
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
     return (
         <div className="leaderboard">
-            <Navbar />
+            {userRole === 'admin' ? <AdminNavBar /> : <Navbar />}
             <h1>World Leaderboard</h1>
     
             {/* Filters */}

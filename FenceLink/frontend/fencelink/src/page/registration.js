@@ -3,7 +3,7 @@ import { signUp } from 'aws-amplify/auth';
 import { Link, useNavigate } from "react-router-dom";
 import './login.css';
 import './otp.css'; // Import the CSS file
-import PlainBar from '../components/plainbar';
+import PlainBar from '../components/AdminNavBar';
 
 const Registration = () => {
   const navigate = useNavigate();

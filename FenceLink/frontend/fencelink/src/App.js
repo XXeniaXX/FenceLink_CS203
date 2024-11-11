@@ -43,12 +43,12 @@ function App() {
             <Route path="/register" element={<Registration />} />
             <Route path="/otpcheck" element={<OtpCheck />} />
             <Route path="/mainpage" element={<Main />} />
-            <Route path="/tournament" element={<TournamentPage />} />
             <Route path="/match/:tournamentId" element={<MatchUser />} />
             <Route path="/ranking" element={<RankingPage />} />
             <Route path="/results" element={<ResultPage />} />
             <Route path="/unauthorisedpage" element={<UnauthorizedPage />} />
             <Route path="/mainpage" element={<Main />} />
+            <Route path="/usertournament" element={<UserTournamentPage/>} />
             <Route path="/profilepage" element={<ProfilePage />} />
             
             
@@ -56,7 +56,7 @@ function App() {
             <Route element={<ProtectedRoute allowedRole="admin" />}>
               <Route path="/match-admin/:tournamentId" element={<MatchAdmin />} />
               <Route path="/adminhomepage" element={<AdminHomePage />} />
-              <Route path="/usertournament" element={<UserTournamentPage/>} />
+              <Route path="/tournament" element={<TournamentPage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" />} />

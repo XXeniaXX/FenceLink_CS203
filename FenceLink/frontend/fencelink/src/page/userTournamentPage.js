@@ -123,7 +123,7 @@ const UserTournamentPage = () => {
   };
 
   const handleCardClick = (tournamentId) => {
-    navigate(`/match-admin/${tournamentId}`);
+    navigate(`/match/${tournamentId}`);
   };
 
   return (

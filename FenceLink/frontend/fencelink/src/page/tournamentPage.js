@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Navbar from '../components/Navbar';
+import AdminNavBar from '../components/AdminNavBar';
 import { useNavigate } from 'react-router-dom';
 import './tournamentPage.css';
 
@@ -149,7 +149,7 @@ const TournamentPage = () => {
 
   return (
     <div className="tournament-page">
-      <Navbar />
+      <AdminNavBar />
 
       {/* Filter Section */}
       <div className="filter-section">
