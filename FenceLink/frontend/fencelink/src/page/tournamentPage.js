@@ -66,7 +66,20 @@ const TournamentPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    // Enforce minimum and maximum values for the "vacancy" field
+    if (name === 'vacancy') {
+      const intValue = parseInt(value, 10);
+      if (intValue < 10) {
+        setFormData({ ...formData, [name]: 10 });
+      } else if (intValue > 50) {
+        setFormData({ ...formData, [name]: 50 });
+      } else {
+        setFormData({ ...formData, [name]: intValue });
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSave = () => {
@@ -88,12 +101,15 @@ const TournamentPage = () => {
   };
 
   const handleDelete = (tournament) => {
-    axios.delete(`/api/tournaments/${tournament.id}`)
-      .then(() => {
-        setTournaments(tournaments.filter(t => t.id !== tournament.id));
-        closeModal();
-      })
-      .catch(error => console.error('Error deleting tournament:', error));
+    const confirmDelete = window.confirm("Are you sure you want to delete this tournament?");
+    if (confirmDelete) {
+      axios.delete(`/api/tournaments/${tournament.id}`)
+        .then(() => {
+          setTournaments(tournaments.filter(t => t.id !== tournament.id));
+          closeModal();
+        })
+        .catch(error => console.error('Error deleting tournament:', error));
+    }
   };
 
   const handleFilterChange = (e) => {
@@ -126,10 +142,10 @@ const TournamentPage = () => {
     );
   });
 
-    // Function to handle card click and navigate to MatchAdmin
-    const handleCardClick = (tournamentId) => {
-      navigate(`/match-admin/${tournamentId}`); // Adjust the path as needed for your routing setup
-    };
+  // Function to handle card click and navigate to MatchAdmin
+  const handleCardClick = (tournamentId) => {
+    navigate(`/match-admin/${tournamentId}`); // Adjust the path as needed for your routing setup
+  };
 
   return (
     <div className="tournament-page">
@@ -196,7 +212,10 @@ const TournamentPage = () => {
       {/* Tournament List and Add Button */}
       <div className="tournament-list">
         {filteredTournaments.map((tournament, index) => (
-          <div key={index} className="tournament-item" onClick={() => handleCardClick(tournament.id)} // Navigate on card click
+          <div
+            key={index}
+            className="tournament-item"
+            onClick={() => handleCardClick(tournament.id)} // Navigate on card click
           >
             <h3>{tournament.name}</h3>
             <p><strong>Location:</strong> {tournament.location}</p>
@@ -211,8 +230,8 @@ const TournamentPage = () => {
             <p><strong>Vacancy:</strong> {tournament.vacancy}</p>
 
             <div className="button-group">
-              <button onClick={(e) => {e.stopPropagation(); openModal(tournament);}}className="edit-button">Edit</button>
-              <button onClick={(e) => {e.stopPropagation();handleDelete(tournament);}}className="delete-button">Delete</button>
+              <button onClick={(e) => { e.stopPropagation(); openModal(tournament); }} className="edit-button">Edit</button>
+              <button onClick={(e) => { e.stopPropagation(); handleDelete(tournament); }} className="delete-button">Delete</button>
             </div>
           </div>
         ))}
@@ -265,12 +284,12 @@ const TournamentPage = () => {
               <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} />
               <label>End Date</label>
               <input type="date" name="endDate" value={formData.endDate} onChange={handleInputChange} />
-              <label>Vacancy</label>
+              <label>Vacancy (10-50)</label>
               <input type="number" name="vacancy" value={formData.vacancy} onChange={handleInputChange} />
 
               <div className="modal-buttons">
-                <button onClick={handleSave} className='save-button'>{isEditing ? 'Save Changes' : 'Add Tournament'}</button>
-                <button className="cancel-button" onClick={closeModal}>Cancel</button>
+                <button type="button" onClick={handleSave} className='save-button'>{isEditing ? 'Save Changes' : 'Add Tournament'}</button>
+                <button type="button" className="cancel-button" onClick={closeModal}>Cancel</button>
               </div>
             </form>
           </div>
@@ -281,6 +300,7 @@ const TournamentPage = () => {
 };
 
 export default TournamentPage;
+
 
 
 

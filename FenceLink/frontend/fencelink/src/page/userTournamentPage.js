@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import './tournamentPage.css';
 
 const UserTournamentPage = () => {
+  const storedPlayerId = localStorage.getItem('playerId');
   const [tournaments, setTournaments] = useState([]);
   const [filter, setFilter] = useState({
     name: '',
@@ -13,14 +14,14 @@ const UserTournamentPage = () => {
     weaponType: '',
     ageGroup: '',
     tournamentDate: '',
+    status: 'all' // New filter for status
   });
   const [playerId, setPlayerId] = useState(null);
-  const [registeredTournaments, setRegisteredTournaments] = useState([]); // New state for registered tournaments
+  const [registeredTournaments, setRegisteredTournaments] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the player ID (this could come from a logged-in user context or API)
-    setPlayerId(1); // Example player ID (replace with actual playerId logic)
+    setPlayerId(storedPlayerId);
 
     // Fetch all tournaments
     axios.get('/api/tournaments')
@@ -48,72 +49,81 @@ const UserTournamentPage = () => {
       weaponType: '',
       ageGroup: '',
       tournamentDate: '',
+      status: 'all' // Reset status filter
     });
   };
 
   const filteredTournaments = tournaments.filter((tournament) => {
-    const tournamentDate = new Date(tournament.startDate);
-    const filterDate = new Date(filter.tournamentDate);
+    const currentDate = new Date();
+    const registrationDate = new Date(tournament.registrationDate);
+    const endDate = new Date(tournament.endDate);
 
+    // Determine tournament status
+    let status = 'available';
+    if (currentDate > endDate) {
+      status = 'tournament-ended';
+    } else if (currentDate > registrationDate) {
+      status = 'registration-ended';
+    }
+
+    // Apply filters
     return (
       (!filter.name || tournament.name.toLowerCase().includes(filter.name.toLowerCase())) &&
       (!filter.tournamentType || tournament.tournamentType === filter.tournamentType) &&
       (!filter.genderType || tournament.genderType === filter.genderType) &&
       (!filter.weaponType || tournament.weaponType === filter.weaponType) &&
       (!filter.ageGroup || tournament.ageGroup === filter.ageGroup) &&
-      (!filter.tournamentDate || tournamentDate.toDateString() === filterDate.toDateString())
+      (!filter.tournamentDate || new Date(tournament.startDate).toDateString() === new Date(filter.tournamentDate).toDateString()) &&
+      (filter.status === 'all' || filter.status === status)
     );
   });
 
   const isPlayerRegistered = (tournamentId) => {
-    // Check if the player is registered for the tournament
     return registeredTournaments.some(tournament => tournament.id === tournamentId);
   };
 
-  // Register the player for a tournament
   const handleJoinTournament = (e, tournamentId) => {
-    e.preventDefault(); // Prevent any default behavior
-    e.stopPropagation(); // Stop the event from propagating
+    e.preventDefault();
+    e.stopPropagation();
+
 
     axios.post(`/api/players/${playerId}/register/${tournamentId}`)
       .then(response => {
-        // Update the vacancy count and the tournament registration
         setTournaments(prevTournaments =>
           prevTournaments.map(tournament =>
             tournament.id === tournamentId ? { ...tournament, vacancy: tournament.vacancy - 1 } : tournament
           )
         );
-
-        // Update the registered tournaments
         setRegisteredTournaments(prev => [...prev, { id: tournamentId }]);
       })
-      .catch(error => console.error('Error joining tournament:', error));
+      .catch(error => {
+        console.error('Error joining tournament:', error);
+        alert('You are not eligible for this tournament.');
+      });
   };
 
-  // Withdraw the player from a tournament
+
+
   const handleWithdrawTournament = (e, tournamentId) => {
-    e.preventDefault(); // Prevent any default behavior
-    e.stopPropagation(); // Stop the event from propagating
-  
-    axios.delete(`/api/players/${playerId}/withdraw/${tournamentId}`)
-      .then(response => {
-        // Update the vacancy count and the tournament registration
-        setTournaments(prevTournaments =>
-          prevTournaments.map(tournament =>
-            tournament.id === tournamentId ? { ...tournament, vacancy: tournament.vacancy + 1 } : tournament
-          )
-        );
-  
-        // Update the registered tournaments
-        setRegisteredTournaments(prev => prev.filter(tournament => tournament.id !== tournamentId));
-      })
-      .catch(error => console.error('Error withdrawing from tournament:', error));
+    e.preventDefault();
+    e.stopPropagation();
+    const confirmWithdraw = window.confirm("Are you sure you want to withdraw?");
+    if (confirmWithdraw) {
+      axios.delete(`/api/players/${playerId}/withdraw/${tournamentId}`)
+        .then(response => {
+          setTournaments(prevTournaments =>
+            prevTournaments.map(tournament =>
+              tournament.id === tournamentId ? { ...tournament, vacancy: tournament.vacancy + 1 } : tournament
+            )
+          );
+          setRegisteredTournaments(prev => prev.filter(tournament => tournament.id !== tournamentId));
+        })
+        .catch(error => console.error('Error withdrawing from tournament:', error));
+    }
   };
-  
 
-  // Function to handle card click and navigate to MatchAdmin
   const handleCardClick = (tournamentId) => {
-    navigate(`/match-admin/${tournamentId}`); // Adjust the path as needed for your routing setup
+    navigate(`/match-admin/${tournamentId}`);
   };
 
   return (
@@ -174,41 +184,77 @@ const UserTournamentPage = () => {
           value={filter.tournamentDate}
           onChange={handleFilterChange}
         />
+        <select
+          name="status"
+          value={filter.status}
+          onChange={handleFilterChange}
+        >
+          <option value="all">All</option>
+          <option value="available">Available</option>
+          <option value="registration-ended">Registration Ended</option>
+          <option value="tournament-ended">Tournament Ended</option>
+        </select>
         <button className="search-button">Search</button>
         <button className="clear-button" onClick={clearFilters}>Clear Filters</button>
       </div>
 
       {/* Tournament List */}
       <div className="tournament-list">
-        {filteredTournaments.map((tournament, index) => (
-          <div key={index} className="tournament-item" onClick={() => handleCardClick(tournament.id)}>
-            <h3>{tournament.name}</h3>
-            <p><strong>Location:</strong> {tournament.location}</p>
-            <p><strong>Description:</strong> {tournament.description}</p>
-            <p><strong>Registration Date:</strong> {tournament.registrationDate}</p>
-            <p><strong>Tournament Type:</strong> {tournament.tournamentType}</p>
-            <p><strong>Age Group:</strong> {tournament.ageGroup}</p>
-            <p><strong>Weapon Type:</strong> {tournament.weaponType}</p>
-            <p><strong>Gender:</strong> {tournament.genderType}</p>
-            <p><strong>Start Date:</strong> {tournament.startDate}</p>
-            <p><strong>End Date:</strong> {tournament.endDate}</p>
-            <p><strong>Vacancy:</strong> {tournament.vacancy}</p>
-            
-            {/* Join/Withdraw Button */}
-            {isPlayerRegistered(tournament.id) ? (
-              <button className="delete-button" onClick={(e) => handleWithdrawTournament(e, tournament.id)}>Withdraw</button>
+        {filteredTournaments.map((tournament, index) => {
+          const currentDate = new Date();
+          const registrationDate = new Date(tournament.registrationDate);
+          const endDate = new Date(tournament.endDate);
+
+          let buttonContent;
+          if (currentDate > endDate) {
+            buttonContent = (
+              <button className="grey-button" disabled>
+                Tournament's ended
+              </button>
+            );
+          } else if (currentDate > registrationDate) {
+            buttonContent = (
+              <button className="grey-button" disabled>
+                Registration over
+              </button>
+            );
+          } else {
+            buttonContent = isPlayerRegistered(tournament.id) ? (
+              <button className="delete-button" onClick={(e) => handleWithdrawTournament(e, tournament.id)}>
+                Withdraw
+              </button>
             ) : (
-              tournament.vacancy > 0 && 
-              <button className="edit-button" onClick={(e) => handleJoinTournament(e, tournament.id)}>Join</button>
-            )}
-          </div>
-        ))}
+              tournament.vacancy > 0 && (
+                <button className="edit-button" onClick={(e) => handleJoinTournament(e, tournament.id)}>
+                  Join
+                </button>
+              )
+            );
+          }
+
+          return (
+            <div key={index} className="tournament-item" onClick={() => handleCardClick(tournament.id)}>
+              <h3>{tournament.name}</h3>
+              <p><strong>Location:</strong> {tournament.location}</p>
+              <p><strong>Description:</strong> {tournament.description}</p>
+              <p><strong>Registration Date:</strong> {tournament.registrationDate}</p>
+              <p><strong>Tournament Type:</strong> {tournament.tournamentType}</p>
+              <p><strong>Age Group:</strong> {tournament.ageGroup}</p>
+              <p><strong>Weapon Type:</strong> {tournament.weaponType}</p>
+              <p><strong>Gender:</strong> {tournament.genderType}</p>
+              <p><strong>Start Date:</strong> {tournament.startDate}</p>
+              <p><strong>End Date:</strong> {tournament.endDate}</p>
+              <p><strong>Vacancy:</strong> {tournament.vacancy}</p>
+
+              {/* Join/Withdraw Button */}
+              {buttonContent}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
 export default UserTournamentPage;
-
-
 

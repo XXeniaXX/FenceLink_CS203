@@ -237,6 +237,22 @@ input[type="date"],
   background-color: #b2bec3;
 }
 
+.grey-button {
+  background-color: grey;
+  color: white;
+  cursor: not-allowed;
+}
+
+.delete-button {
+  background-color: red;
+  color: white;
+}
+
+.edit-button {
+  background-color: green;
+  color: white;
+}
+
 
 
 
