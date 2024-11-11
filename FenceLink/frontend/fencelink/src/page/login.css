@@ -135,26 +135,40 @@
 
 .pageContainer {
   display: flex;
-  gap: 30px;
+  gap: 20px;
   margin-top: 20px;
-  flex-direction: row;
+  flex-direction: column;
   align-items: right;
   justify-content: right;
   margin-right: 15px;
   margin-left: 100px;
 }
 
-.pageContainer2 {
+.pageButton {
   display: flex;
-  gap: 40px;
-  margin-top: 80px;
   flex-direction: column;
-  align-items: right;
-  justify-content: right;
-  margin-right: 15px;
-  margin-left: -10px;
+  align-items: center;
+  padding: 20px;
+  border: none;
+  border-radius: 10px;
+  background-color: #E0EBFF;
+  cursor: pointer;
+  width: 150px;
+  height: 180px;
 }
 
+.pagebuttonImage {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+.mainContainer {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  padding: 20px;
+}
 .pageButton {
   display: flex;
   flex-direction: column;
@@ -173,21 +187,6 @@
 .pageButton:hover {
   transform: scale(1.05);
 }
-
-
-.pagebuttonImage {
-  width: 100px;
-  height: 100px;
-  margin-bottom: 10px;
-}
-
-.mainContainer {
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
-  padding: 20px;
-}
-
 
 .large-button {
   font-size: 16px;

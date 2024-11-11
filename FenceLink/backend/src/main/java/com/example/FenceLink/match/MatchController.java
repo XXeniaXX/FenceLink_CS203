@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import com.example.FenceLink.tournament.Tournament;
 import com.example.FenceLink.tournament.TournamentService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
@@ -87,20 +86,18 @@ public class MatchController {
     }
 
     @PutMapping("/{matchId}/results")
-    public ResponseEntity<Map<String, Object>> updateMatchResults(
+    public ResponseEntity<String> updateMatchResults(
         @PathVariable Long matchId,
         @RequestParam int player1Points,
         @RequestParam int player2Points
     ) {
         try {
-            // Call the service method to update match results and get the response map
-            return matchService.updateMatchResults(matchId, player1Points, player2Points);
+            matchService.updateMatchResults(matchId, player1Points, player2Points);
+            return ResponseEntity.ok("Match results updated successfully.");
         } catch (IllegalArgumentException e) {
-            // Handle bad requests due to invalid input
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            // Handle unexpected errors
-            return ResponseEntity.status(500).body(Map.of("error", "An error occurred while updating match results."));
+            return ResponseEntity.status(500).body("An error occurred while updating match results.");
         }
     }
 
