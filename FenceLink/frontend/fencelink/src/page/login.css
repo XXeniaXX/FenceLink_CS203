@@ -169,3 +169,26 @@
   align-items: flex-start;
   padding: 20px;
 }
+.pageButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 180px;
+  border: none;
+  background-color: #f0f0f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.pageButton:hover {
+  transform: scale(1.05);
+}
+
+.large-button {
+  font-size: 16px;
+  padding: 20px;
+}
