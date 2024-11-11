@@ -45,10 +45,9 @@ const PlayerHomePage = () => {
         setAvailableTournaments(availableResponse.data);
 
         setTournamentDates(
-          upcomingResponse.data.map((t) => ({
-            startDate: new Date(t.startDate),
-            endDate: new Date(t.endDate),
-          }))
+          upcomingResponse.data
+            .map((t) => t?.tournament?.startDate ? new Date(t.tournament.startDate) : null)
+            .filter((date) => date !== null)
         );
       } catch (error) {
         console.error("Error fetching tournament data:", error);
@@ -149,11 +148,11 @@ const PlayerHomePage = () => {
 //     );
 //   }, []);
 
-  // // Handle Join tournament (dummy implementation)
-  // const handleJoin = (tournamentId) => {
-  //   setJoinedTournaments([...joinedTournaments, tournamentId]);
-  //   console.log(`Joined tournament with ID: ${tournamentId}`);
-  // };
+//   // Handle Join tournament (dummy implementation)
+//   const handleJoin = (tournamentId) => {
+//     setJoinedTournaments([...joinedTournaments, tournamentId]);
+//     console.log(`Joined tournament with ID: ${tournamentId}`);
+//   };
 
 // Helper function to normalize dates to midnight for comparison
 const normalizeDate = (date) => {
@@ -194,7 +193,7 @@ const normalizeDate = (date) => {
               {upcomingTournaments.length === 0 ? (
                 <p>No upcoming tournaments registered.</p>
               ) : (
-                upcomingTournaments.slice(0, 3).map((tournament) => (
+                upcomingTournaments.slice(0, 3).map(({ tournament }) => (
                   tournament ? (
                     <Card key={tournament.id} className="mb-3 shadow-sm tournament-card">
                       <Card.Body>
@@ -207,7 +206,7 @@ const normalizeDate = (date) => {
                             <span className="date-year">{new Date(tournament.startDate).getFullYear()}</span>
                           </Col>
                           <Col xs={9} className="tournament-details">
-                            <Card.Title className='upcoming-tournament-name'>{tournament.name}</Card.Title>
+                            <Card.Title>{tournament.name}</Card.Title>
                             <Card.Text>{tournament.location}</Card.Text>
                             <Card.Text className="tournament-duration">
                               {new Date(tournament.startDate).toLocaleDateString()} - {new Date(tournament.endDate).toLocaleDateString()}
@@ -250,7 +249,7 @@ const normalizeDate = (date) => {
             )}
           </Row>
           {availableTournaments.length > 0 && (
-            <Link to="/usertournament" className="view-more">View More</Link>
+            <Link to="/tournament" className="view-more">View More</Link>
           )}
         </div>
       </div>
