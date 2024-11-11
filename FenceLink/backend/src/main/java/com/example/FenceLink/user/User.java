@@ -34,7 +34,7 @@ public class User {
     @Column(name = "role")
     private String role;
 
-    @OneToOne (mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne (mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Player player;
     

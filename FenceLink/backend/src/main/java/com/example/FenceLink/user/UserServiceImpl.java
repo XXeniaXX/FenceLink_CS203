@@ -14,7 +14,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private PlayerRepository playerRepository;
+    private PlayerServiceImpl playerService;
 
     //private BCryptPasswordEncoder passwordEncoder;
 
@@ -158,4 +158,16 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
+    public void deleteUserWithPlayer(Long userId) {
+        User user = findById(userId);
+        if (user != null) {
+            // Check if this user has an associated player
+            Player associatedPlayer = user.getPlayer();
+            if (associatedPlayer != null) {
+                playerService.deletePlayerById(associatedPlayer.getId()); // Delete player first
+            }
+            userRepository.deleteById(userId); // Now delete user
+        }
+    }
+    
 }
