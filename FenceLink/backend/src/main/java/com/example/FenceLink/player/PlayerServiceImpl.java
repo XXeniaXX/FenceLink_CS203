@@ -228,22 +228,29 @@ public class PlayerServiceImpl implements PlayerService {
     // Method to withdraw player from tournament
     @Transactional
     public String withdrawPlayerFromTournament(Long playerId, Long tournamentId) {
+        // Retrieve player and tournament from the database
         Player player = playerRepository.findById(playerId).orElseThrow(() -> 
             new IllegalArgumentException("Player with ID " + playerId + " not found!")
         );
         Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> 
             new IllegalArgumentException("Tournament with ID " + tournamentId + " not found!")
         );
-
+    
         // Remove the tournament from the player's registered list if present
         if (player.getTournamentsRegistered().contains(tournament)) {
             player.getTournamentsRegistered().remove(tournament);
             playerRepository.save(player);  // Save updated player
+    
+            // Update the vacancy of the tournament
+            tournament.setVacancy(tournament.getVacancy() + 1);
+            tournamentRepository.save(tournament);  // Save updated tournament
+    
             return player.getName() + " successfully withdrawn from " + tournament.getName() + ".";
         } else {
             throw new IllegalArgumentException(player.getName() + " is not registered for " + tournament.getName() + ".");
         }
     }
+    
 
     // Method to check if a player is eligible for the tournament based on gender
     private boolean isPlayerEligibleForGender(Player player, String genderType) {
