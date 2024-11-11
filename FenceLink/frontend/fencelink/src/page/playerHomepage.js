@@ -12,146 +12,146 @@ import { Link } from 'react-router-dom';
 axios.defaults.baseURL = 'http://localhost:8080';
 
 const PlayerHomePage = () => {
-  const [player, setPlayer] = useState(null); // Local state for player data
+  // const [player, setPlayer] = useState(null); // Local state for player data
+  // const [upcomingTournaments, setUpcomingTournaments] = useState([]);
+  // const [availableTournaments, setAvailableTournaments] = useState([]);
+  // const [tournamentDates, setTournamentDates] = useState([]);
+  // const [joinedTournaments, setJoinedTournaments] = useState([]); // Track joined tournaments
+  // const playerId = 8; // Use dynamic player ID if available
+
+  // // Fetch player data
+  // useEffect(() => {
+  //   const fetchPlayer = async () => {
+  //     try {
+  //       const response = await axios.get(`/api/players/${playerId}`);
+  //       setPlayer(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching player data:", error);
+  //     }
+  //   };
+
+  //   fetchPlayer();
+  // }, [playerId]);
+
+  // // Fetch tournaments data
+  // useEffect(() => {
+  //   const fetchTournaments = async () => {
+  //     try {
+  //       const upcomingResponse = await axios.get(`/api/players/${playerId}/upcoming-registered-tournaments`);
+  //       const availableResponse = await axios.get(`/api/players/${playerId}/upcoming-tournaments`);
+
+  //       setUpcomingTournaments(upcomingResponse.data);
+  //       setAvailableTournaments(availableResponse.data);
+
+  //       setTournamentDates(
+  //         upcomingResponse.data
+  //           .map((t) => t?.tournament?.startDate ? new Date(t.tournament.startDate) : null)
+  //           .filter((date) => date !== null)
+  //       );
+  //     } catch (error) {
+  //       console.error("Error fetching tournament data:", error);
+  //     }
+  //   };
+
+  //   fetchTournaments();
+  // }, [playerId]);
+
+  // // Handle Join tournament
+  // const handleJoin = (tournamentId) => {
+  //   axios.post(`/api/players/${playerId}/register/${tournamentId}`)
+  //     .then(response => {
+  //       setJoinedTournaments([...joinedTournaments, tournamentId]);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error joining tournament:', error);
+  //     });
+  // };
+
+// DUMMY DATA
+  const [player, setPlayer] = useState({ name: 'John Doe' }); // Dummy player data
   const [upcomingTournaments, setUpcomingTournaments] = useState([]);
   const [availableTournaments, setAvailableTournaments] = useState([]);
   const [tournamentDates, setTournamentDates] = useState([]);
   const [joinedTournaments, setJoinedTournaments] = useState([]); // Track joined tournaments
-  const playerId = 202; // Use dynamic player ID if available
 
-  // Fetch player data
   useEffect(() => {
-    const fetchPlayer = async () => {
-      try {
-        const response = await axios.get(`/api/players/${playerId}`);
-        setPlayer(response.data);
-      } catch (error) {
-        console.error("Error fetching player data:", error);
-      }
-    };
+    // Dummy data for upcoming tournaments
+    const dummyUpcomingTournaments = [
+      {
+        tournament: {
+          id: 1,
+          name: 'City Fencing Championship',
+          location: 'New York',
+          startDate: '2024-12-01',
+          endDate: '2024-12-03',
+        },
+      },
+      {
+        tournament: {
+          id: 2,
+          name: 'Winter Invitational',
+          location: 'Los Angeles',
+          startDate: '2024-12-10',
+          endDate: '2024-12-12',
+        },
+      },
+      {
+        tournament: {
+          id: 3,
+          name: 'National Open',
+          location: 'Chicago',
+          startDate: '2024-12-20',
+          endDate: '2024-12-22',
+        },
+      },
+    ];
 
-    fetchPlayer();
-  }, [playerId]);
+    // Dummy data for available tournaments
+    const dummyAvailableTournaments = [
+      {
+        tournament: {
+          id: 4,
+          name: 'Spring Fencing Festival',
+          location: 'Houston',
+          startDate: '2025-03-15',
+          endDate: '2025-03-17',
+        },
+      },
+      {
+        tournament: {
+          id: 5,
+          name: 'Junior Nationals',
+          location: 'San Francisco',
+          startDate: '2025-04-05',
+          endDate: '2025-04-07',
+        },
+      },
+      {
+        tournament: {
+          id: 6,
+          name: 'Regional Challenge',
+          location: 'Miami',
+          startDate: '2025-04-20',
+          endDate: '2025-04-22',
+        },
+      },
+    ];
 
-  // Fetch tournaments data
-  useEffect(() => {
-    const fetchTournaments = async () => {
-      try {
-        const upcomingResponse = await axios.get(`/api/players/${playerId}/upcoming-registered-tournaments`);
-        const availableResponse = await axios.get(`/api/players/${playerId}/upcoming-tournaments`);
+    setUpcomingTournaments(dummyUpcomingTournaments);
+    setAvailableTournaments(dummyAvailableTournaments);
+    setTournamentDates(
+      dummyUpcomingTournaments.map((t) => ({
+        startDate: new Date(t.tournament.startDate),
+        endDate: new Date(t.tournament.endDate),
+      }))
+    );
+  }, []);
 
-        setUpcomingTournaments(upcomingResponse.data);
-        setAvailableTournaments(availableResponse.data);
-
-        setTournamentDates(
-          upcomingResponse.data
-            .map((t) => t?.tournament?.startDate ? new Date(t.tournament.startDate) : null)
-            .filter((date) => date !== null)
-        );
-      } catch (error) {
-        console.error("Error fetching tournament data:", error);
-      }
-    };
-
-    fetchTournaments();
-  }, [playerId]);
-
-  // Handle Join tournament
+  // Handle Join tournament (dummy implementation)
   const handleJoin = (tournamentId) => {
-    axios.post(`/api/players/${playerId}/register/${tournamentId}`)
-      .then(response => {
-        setJoinedTournaments([...joinedTournaments, tournamentId]);
-      })
-      .catch(error => {
-        console.error('Error joining tournament:', error);
-      });
+    setJoinedTournaments([...joinedTournaments, tournamentId]);
+    console.log(`Joined tournament with ID: ${tournamentId}`);
   };
-
-// // DUMMY DATA
-//   const [player, setPlayer] = useState({ name: 'John Doe' }); // Dummy player data
-//   const [upcomingTournaments, setUpcomingTournaments] = useState([]);
-//   const [availableTournaments, setAvailableTournaments] = useState([]);
-//   const [tournamentDates, setTournamentDates] = useState([]);
-//   const [joinedTournaments, setJoinedTournaments] = useState([]); // Track joined tournaments
-
-//   useEffect(() => {
-//     // Dummy data for upcoming tournaments
-//     const dummyUpcomingTournaments = [
-//       {
-//         tournament: {
-//           id: 1,
-//           name: 'City Fencing Championship',
-//           location: 'New York',
-//           startDate: '2024-12-01',
-//           endDate: '2024-12-03',
-//         },
-//       },
-//       {
-//         tournament: {
-//           id: 2,
-//           name: 'Winter Invitational',
-//           location: 'Los Angeles',
-//           startDate: '2024-12-10',
-//           endDate: '2024-12-12',
-//         },
-//       },
-//       {
-//         tournament: {
-//           id: 3,
-//           name: 'National Open',
-//           location: 'Chicago',
-//           startDate: '2024-12-20',
-//           endDate: '2024-12-22',
-//         },
-//       },
-//     ];
-
-//     // Dummy data for available tournaments
-//     const dummyAvailableTournaments = [
-//       {
-//         tournament: {
-//           id: 4,
-//           name: 'Spring Fencing Festival',
-//           location: 'Houston',
-//           startDate: '2025-03-15',
-//           endDate: '2025-03-17',
-//         },
-//       },
-//       {
-//         tournament: {
-//           id: 5,
-//           name: 'Junior Nationals',
-//           location: 'San Francisco',
-//           startDate: '2025-04-05',
-//           endDate: '2025-04-07',
-//         },
-//       },
-//       {
-//         tournament: {
-//           id: 6,
-//           name: 'Regional Challenge',
-//           location: 'Miami',
-//           startDate: '2025-04-20',
-//           endDate: '2025-04-22',
-//         },
-//       },
-//     ];
-
-//     setUpcomingTournaments(dummyUpcomingTournaments);
-//     setAvailableTournaments(dummyAvailableTournaments);
-//     setTournamentDates(
-//       dummyUpcomingTournaments.map((t) => ({
-//         startDate: new Date(t.tournament.startDate),
-//         endDate: new Date(t.tournament.endDate),
-//       }))
-//     );
-//   }, []);
-
-//   // Handle Join tournament (dummy implementation)
-//   const handleJoin = (tournamentId) => {
-//     setJoinedTournaments([...joinedTournaments, tournamentId]);
-//     console.log(`Joined tournament with ID: ${tournamentId}`);
-//   };
 
 // Helper function to normalize dates to midnight for comparison
 const normalizeDate = (date) => {
