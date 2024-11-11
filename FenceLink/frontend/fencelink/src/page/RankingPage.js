@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './RankingPage.css';
 import Navbar from '../components/Navbar';
+import PlayerProfileDialog from '../components/PlayerProfileDialog'; // Adjust the import path if necessary
 
 const RankingPage = () => {
     const playersPerPage = 20;
@@ -10,6 +11,8 @@ const RankingPage = () => {
     const [gender, setGender] = useState(''); // Filter by gender
     const [country, setCountry] = useState(''); // Filter by country
     const [countries, setCountries] = useState([]); // List of countries
+    const [selectedPlayer, setSelectedPlayer] = useState(null); // State to manage selected player
+    const [dialogOpen, setDialogOpen] = useState(false); // State to manage dialog open status
 
     // Fetch leaderboard data when filters or page change
     useEffect(() => {
@@ -45,6 +48,16 @@ const RankingPage = () => {
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
+    };
+
+    const handleRowClick = (player) => {
+        setSelectedPlayer(player);
+        setDialogOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setDialogOpen(false);
+        setSelectedPlayer(null);
     };
 
     return (
@@ -84,7 +97,7 @@ const RankingPage = () => {
                     </thead>
                     <tbody>
                         {players.length > 0 ? players.map((player, index) => (
-                            <tr key={player.id} className="leaderboard-row">
+                            <tr key={player.id} className="leaderboard-row" onClick={() => handleRowClick(player)}>
                                 <td className="rank-cell">{currentPage * playersPerPage + index + 1}</td>
                                 <td className="id-cell">{player.id}</td>
                                 <td>{player.name}</td>
@@ -115,8 +128,18 @@ const RankingPage = () => {
                     ))}
                 </div>
             )}
+
+            {/* Player Profile Dialog */}
+            {selectedPlayer && (
+                <PlayerProfileDialog
+                    open={dialogOpen}
+                    onClose={handleCloseDialog}
+                    player={selectedPlayer}
+                />
+            )}
         </div>
     );    
 };
 
 export default RankingPage;
+
