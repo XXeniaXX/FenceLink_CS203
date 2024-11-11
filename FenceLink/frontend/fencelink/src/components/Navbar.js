@@ -28,12 +28,13 @@ const NavBar = () => {
 
   return (
     <nav className="nav">
+      
       <div className="logo-container">
         <img src="/fencelink.png" alt="Logo" className="logo" />
       </div>
 
       <ul className="nav-links">
-        <li><Link to="/mainpage">HOME</Link></li>
+        <li><Link to="/playerHomepage">HOME</Link></li>
         <li><Link to="/usertournament">TOURNAMENT</Link></li>
         <li><Link to="/results">RESULTS</Link></li>
         <li><Link to="/ranking">RANKING</Link></li>

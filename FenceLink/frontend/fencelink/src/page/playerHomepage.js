@@ -17,55 +17,50 @@ const PlayerHomePage = () => {
   const [availableTournaments, setAvailableTournaments] = useState([]);
   const [tournamentDates, setTournamentDates] = useState([]);
   const [joinedTournaments, setJoinedTournaments] = useState([]); // Track joined tournaments
-  const storedPlayerId = localStorage.getItem('playerId');
+  // const playerId = 203; // Use dynamic player ID if available
+  const playerId = localStorage.getItem('playerId');
 
   // Fetch player data
   useEffect(() => {
     const fetchPlayer = async () => {
       try {
-        const response = await axios.get(`/api/players/${storedPlayerId}`);
+        const response = await axios.get(`/api/players/${playerId}`);
         setPlayer(response.data);
       } catch (error) {
         console.error("Error fetching player data:", error);
       }
     };
 
-    if (storedPlayerId) {
-      fetchPlayer();
-    }
-  }, [storedPlayerId]);
+    fetchPlayer();
+  }, [playerId]);
 
   // Fetch tournaments data
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
-        const upcomingResponse = await axios.get(`/api/players/${storedPlayerId}/upcoming-registered-tournaments`);
-        const availableResponse = await axios.get(`/api/players/${storedPlayerId}/upcoming-tournaments`);
-  
-        console.log('Upcoming tournaments:', upcomingResponse.data); // Log the data
-        console.log('Available tournaments:', availableResponse.data); // Log the data
-  
+        const upcomingResponse = await axios.get(`/api/players/${playerId}/upcoming-registered-tournaments`);
+        const availableResponse = await axios.get(`/api/players/${playerId}/upcoming-tournaments`);
+
         setUpcomingTournaments(upcomingResponse.data);
         setAvailableTournaments(availableResponse.data);
-  
+
         setTournamentDates(
-          upcomingResponse.data
-            .map((t) => t?.tournament?.startDate ? new Date(t.tournament.startDate) : null)
-            .filter((date) => date !== null)
+          upcomingResponse.data.map((t) => ({
+            startDate: new Date(t.startDate),
+            endDate: new Date(t.endDate),
+          }))
         );
       } catch (error) {
         console.error("Error fetching tournament data:", error);
       }
     };
-  
-    if (storedPlayerId) {
-      fetchTournaments();
-    }
-  }, [storedPlayerId]);
+
+    fetchTournaments();
+  }, [playerId]);
 
   // Handle Join tournament
   const handleJoin = (tournamentId) => {
-    axios.post(`/api/players/${storedPlayerId}/register/${tournamentId}`)
+    axios.post(`/api/players/${playerId}/register/${tournamentId}`)
       .then(response => {
         setJoinedTournaments([...joinedTournaments, tournamentId]);
       })
@@ -74,14 +69,7 @@ const PlayerHomePage = () => {
       });
   };
 
-  // Helper function to normalize dates to midnight for comparison
-  const normalizeDate = (date) => {
-    const normalized = new Date(date);
-    normalized.setHours(0, 0, 0, 0);
-    return normalized;
-  };
-
-// DUMMY DATA
+// // DUMMY DATA
 //   const [player, setPlayer] = useState({ name: 'John Doe' }); // Dummy player data
 //   const [upcomingTournaments, setUpcomingTournaments] = useState([]);
 //   const [availableTournaments, setAvailableTournaments] = useState([]);
@@ -161,24 +149,24 @@ const PlayerHomePage = () => {
 //     );
 //   }, []);
 
-//   // Handle Join tournament (dummy implementation)
-//   const handleJoin = (tournamentId) => {
-//     setJoinedTournaments([...joinedTournaments, tournamentId]);
-//     console.log(`Joined tournament with ID: ${tournamentId}`);
-//   };
+  // // Handle Join tournament (dummy implementation)
+  // const handleJoin = (tournamentId) => {
+  //   setJoinedTournaments([...joinedTournaments, tournamentId]);
+  //   console.log(`Joined tournament with ID: ${tournamentId}`);
+  // };
 
-// // Helper function to normalize dates to midnight for comparison
-// const normalizeDate = (date) => {
-//   const normalized = new Date(date);
-//   normalized.setHours(0, 0, 0, 0);
-//   return normalized;
-// };
+// Helper function to normalize dates to midnight for comparison
+const normalizeDate = (date) => {
+  const normalized = new Date(date);
+  normalized.setHours(0, 0, 0, 0);
+  return normalized;
+};
 
   return (
     <div className="home-page">
       <Navbar />
       <div className="content-wrapper">
-        <h1 className="text-center">{`Welcome, ${player ? player.name : 'Guest'}`}</h1>
+        <h1 className="welcome">{`Welcome, ${player ? player.name : 'Guest'}`}</h1>
         <p className="text-center text-muted">Happy fencing!</p>
 
         {/* Upcoming Tournaments Section */}
@@ -186,7 +174,7 @@ const PlayerHomePage = () => {
         <div className="section">
           <Row>
             <Col md={4} className="calendar-column mb-3">
-              {/* <Calendar
+              <Calendar
                 tileClassName={({ date, view }) => {
                   if (view === 'month') {
                     const normalizedDate = normalizeDate(date);
@@ -200,13 +188,13 @@ const PlayerHomePage = () => {
                   }
                   return null;
                 }}
-              /> */}
+              />
             </Col>
             <Col md={8}>
               {upcomingTournaments.length === 0 ? (
                 <p>No upcoming tournaments registered.</p>
               ) : (
-                upcomingTournaments.slice(0, 3).map(({ tournament }) => (
+                upcomingTournaments.slice(0, 3).map((tournament) => (
                   tournament ? (
                     <Card key={tournament.id} className="mb-3 shadow-sm tournament-card">
                       <Card.Body>
@@ -219,7 +207,7 @@ const PlayerHomePage = () => {
                             <span className="date-year">{new Date(tournament.startDate).getFullYear()}</span>
                           </Col>
                           <Col xs={9} className="tournament-details">
-                            <Card.Title>{tournament.name}</Card.Title>
+                            <Card.Title className='upcoming-tournament-name'>{tournament.name}</Card.Title>
                             <Card.Text>{tournament.location}</Card.Text>
                             <Card.Text className="tournament-duration">
                               {new Date(tournament.startDate).toLocaleDateString()} - {new Date(tournament.endDate).toLocaleDateString()}
@@ -262,7 +250,7 @@ const PlayerHomePage = () => {
             )}
           </Row>
           {availableTournaments.length > 0 && (
-            <Link to="/tournament" className="view-more">View More</Link>
+            <Link to="/usertournament" className="view-more">View More</Link>
           )}
         </div>
       </div>
