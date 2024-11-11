@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './RankingPage.css';
 import Navbar from '../components/Navbar';
+import AdminNavBar from '../components/AdminNavBar';
 import PlayerProfileDialog from '../components/PlayerProfileDialog'; // Adjust the import path if necessary
 
 const RankingPage = () => {
@@ -11,6 +12,7 @@ const RankingPage = () => {
     const [gender, setGender] = useState(''); // Filter by gender
     const [country, setCountry] = useState(''); // Filter by country
     const [countries, setCountries] = useState([]); // List of countries
+    const [userRole, setUserRole] = useState('');
     const [selectedPlayer, setSelectedPlayer] = useState(null); // State to manage selected player
     const [dialogOpen, setDialogOpen] = useState(false); // State to manage dialog open status
 
@@ -46,6 +48,11 @@ const RankingPage = () => {
         fetchCountries();
     }, []);
 
+    useEffect(() => {
+        const role = localStorage.getItem('userRole');
+        setUserRole(role);
+    }, []);
+
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
@@ -62,7 +69,7 @@ const RankingPage = () => {
 
     return (
         <div className="leaderboard">
-            <Navbar />
+            {userRole === 'admin' ? <AdminNavBar /> : <Navbar />}
             <h1>World Leaderboard</h1>
     
             {/* Filters */}

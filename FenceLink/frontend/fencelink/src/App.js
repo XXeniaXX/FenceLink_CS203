@@ -52,6 +52,7 @@ function App() {
             <Route path="/usertournament" element={<UserTournamentPage/>} />
             <Route path="/profilepage" element={<ProfilePage />} />
             
+            
             {/* Admin-only route */}
             <Route element={<ProtectedRoute allowedRole="admin" />}>
               <Route path="/match-admin/:tournamentId" element={<MatchAdmin />} />

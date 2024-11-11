@@ -192,3 +192,41 @@
   font-size: 16px;
   padding: 20px;
 }
+
+.back-button-container {
+  position: absolute;
+  top: 80px;
+  left: 30px;
+}
+
+/* Styling for the back button itself */
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Resize the image inside the button */
+.backbuttonimg {
+  width: 20px;
+  height: 20px;
+}
+
+.back-button-container {
+  position: absolute;
+  top: 80px;
+  left: 30px;
+}
+
+/* Styling for the back button itself */
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Resize the image inside the button */
+.backbuttonimg {
+  width: 20px;
+  height: 20px;
+}

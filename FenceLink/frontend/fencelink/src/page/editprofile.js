@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './login.css';
 import { useNavigate } from "react-router-dom";
 import Navbar from '../components/Navbar';
+import backarrow from './assets/arrow.png'
 
 const EditProfile = () => {
     const navigate = useNavigate();
@@ -105,6 +106,13 @@ const EditProfile = () => {
         <div>
         <Navbar />
         <div className="container">
+
+            <div className="back-button-container">
+                <back-button onClick={() => navigate('/profilepage')} className="back-button">
+                    <img src={backarrow} className="backbuttonimg" />
+                </back-button>
+            </div>  
+    
             <h1 className="header">Edit Profile</h1>
             <form className="form" onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
                 <div className="form-group">

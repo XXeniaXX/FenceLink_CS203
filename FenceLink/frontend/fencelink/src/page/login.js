@@ -124,8 +124,18 @@ const Login = () => {
 
   return (
   <div>
-    <PlainBar/>
-
+    <nav className="nav">
+        <img 
+          src="/fencelink.png" 
+          alt="FenceLink Logo" 
+          style={{
+              width: '210px',
+              height: '70px',
+              borderRadius: '50%',
+              objectFit: 'contain'
+          }} 
+        />
+      </nav>
     <div className="container">
       <h1 className="header">LOGIN</h1>
       <form onSubmit={handleSubmit} className="form">
