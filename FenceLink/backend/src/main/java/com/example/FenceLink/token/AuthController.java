@@ -9,8 +9,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.FenceLink.user.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -65,10 +65,14 @@ public class AuthController {
         }
     
         DecodedJWT decodedJWT = JWT.decode(jwtToken);
+        List<String> roles = decodedJWT.getClaim("cognito:groups").asList(String.class);
+        String userRole = roles != null && roles.contains("admin") ? "admin" : "player";
         String email = decodedJWT.getClaim("email").asString();
 
         // Fetch user details from the database
-        User user = userService.findByEmail(email); // Use a service method to fetch the user
+        User user = userService.findByEmail(email); // Use a service method to fetch the use
+        Long playerId = user.getPlayer() != null ? user.getPlayer().getId() : null;
+        
 
         if (user == null) {
             Map<String, Object> errorResponse = new HashMap<>();
@@ -81,6 +85,8 @@ public class AuthController {
         successResponse.put("message", "Token is valid");
         successResponse.put("userId", user.getId());
         successResponse.put("username", user.getUsername());
+        successResponse.put("playerId", playerId);
+        successResponse.put("userRole", userRole);
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }

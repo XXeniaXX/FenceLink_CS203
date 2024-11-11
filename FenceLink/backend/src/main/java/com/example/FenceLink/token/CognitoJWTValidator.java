@@ -5,9 +5,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import org.springframework.web.client.RestTemplate;
-import java.util.*;
 
 import java.security.interfaces.RSAPublicKey;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class CognitoJWTValidator {
@@ -15,16 +16,16 @@ public class CognitoJWTValidator {
     private static final Logger logger = Logger.getLogger(CognitoJWTValidator.class.getName());
     private static final String COGNITO_JWKS_URL = "https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_akO3biVkp/.well-known/jwks.json";
     private static final String EXPECTED_ISSUER = "https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_akO3biVkp";
-    private static final String EXPECTED_AUDIENCE = "5uo259ncntke03gq3s27cei7k8"; // Set to your Cognito App Client ID
+    private static final String EXPECTED_AUDIENCE = "5uo259ncntke03gq3s27cei7k8"; // Cognito App Client ID
 
     public static String validateToken(String token) {
         try {
-            // Step 1: Decode token and get key ID (kid)
+            // Decode token to get key ID (kid)
             DecodedJWT decodedJWT = JWT.decode(token);
             String kid = decodedJWT.getKeyId();
             logger.info("Decoded Key ID: " + kid);
 
-            // Step 2: Fetch the JWKS (public keys) from Cognito
+            // Fetch the public key from Cognito
             RSAPublicKey publicKey = getCognitoPublicKey(kid);
             if (publicKey == null) {
                 String errorMessage = "Public key not found for key ID: " + kid;
@@ -32,17 +33,18 @@ public class CognitoJWTValidator {
                 return errorMessage;
             }
 
-            // Step 3: Verify JWT using the retrieved public key
+            // Verify JWT
             Algorithm algorithm = Algorithm.RSA256(publicKey, null);
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer(EXPECTED_ISSUER)
                     .withAudience(EXPECTED_AUDIENCE)
+                    .acceptLeeway(300)
                     .build();
 
             verifier.verify(token);
 
-            // Check additional claims (optional)
-            if (!decodedJWT.getIssuer().equals(EXPECTED_ISSUER)) {
+            // Check additional claims
+            if (!EXPECTED_ISSUER.equals(decodedJWT.getIssuer())) {
                 String errorMessage = "Issuer mismatch. Expected: " + EXPECTED_ISSUER + ", but got: " + decodedJWT.getIssuer();
                 logger.warning(errorMessage);
                 return errorMessage;
@@ -86,19 +88,19 @@ public class CognitoJWTValidator {
     public static boolean isAdmin(String token) {
         try {
             logger.info("Received token: " + token);
-    
-            // Ensure the token is valid before checking claims
+
+            // Validate token before checking claims
             String validationResult = validateToken(token);
             if (!"Token is valid".equals(validationResult)) {
                 logger.warning("Token validation failed: " + validationResult);
                 return false;
             }
-    
-            // Extract the 'cognito:groups' claim and check if it contains 'Admin'
+
+            // Decode the token and check 'cognito:groups' for 'Admin' role
             DecodedJWT decodedJWT = JWT.decode(token);
             List<String> groups = decodedJWT.getClaim("cognito:groups").asList(String.class);
             logger.info("Extracted groups claim: " + groups);
-    
+
             return groups != null && groups.contains("admin");
         } catch (IllegalArgumentException e) {
             logger.warning("Failed to decode token: " + e.getMessage());

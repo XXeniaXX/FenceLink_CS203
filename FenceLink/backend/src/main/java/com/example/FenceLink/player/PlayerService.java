@@ -1,5 +1,6 @@
 package com.example.FenceLink.player;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import com.example.FenceLink.tournament.Tournament;
@@ -14,4 +15,7 @@ public interface PlayerService {
     void deletePlayerById(Long id);
     List<UpcomingTournamentResponse> findUpcomingTournaments(Long playerId);
     List<Tournament> findUpcomingRegisteredTournaments(Long playerId);
+    List<Tournament> findPastRegisteredTournaments(Long playerId);
+    int calculateAge(LocalDate birthdate);
+    
 }

@@ -1,0 +1,50 @@
+.dialog-container {
+    max-width: 600px;
+    width: 100%;
+}
+
+.dialog-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: #1C1E53;
+    text-align: center;
+}
+
+.dialog-content {
+    padding: 20px;
+}
+
+.dialog-content-text {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.dialog-content-text strong {
+    color: #1C1E53;
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.dialog-close-button {
+    background-color: #1C1E53;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: none;
+}
+
+.dialog-close-button:hover {
+    background-color: #090a31;
+}
+
+.text {
+    font-weight: 1000;
+    color: #1C1E53;
+}

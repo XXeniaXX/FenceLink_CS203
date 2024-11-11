@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { signOut, getCurrentUser } from 'aws-amplify/auth';
 import { useNavigate } from 'react-router-dom';
 import './login.css'; // Import the CSS file
-import './homepage.css';
 import Navbar from '../components/Navbar';
 
 const MainPage = () => {
@@ -39,16 +38,6 @@ const MainPage = () => {
 
         fetchUserName();
     }, []);
-
-    async function handleSignOut() {
-    try {
-        await signOut({ global: true });
-        console.log('User signed out successfully');
-        navigate('/login');
-    } catch (error) {
-        console.log('error signing out: ', error);
-    }
-    }
     
     return (
         <div>
@@ -65,9 +54,6 @@ const MainPage = () => {
             <p>Here you can find the latest updates and access your features.</p>
             {/* Add more content as needed */}
             </section>
-            <button onClick={handleSignOut} className="button">
-                Sign Out
-            </button>
         </div>
         
     )

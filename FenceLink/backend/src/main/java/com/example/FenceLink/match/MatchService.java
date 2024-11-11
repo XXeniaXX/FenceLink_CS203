@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 
@@ -105,7 +107,8 @@ public class MatchService {
     }
 
     private void generateRoundRobinMatches(Tournament tournament, List<Long> playerIds, int roundNo) {
-        List<List<Long>> pools = createPools(playerIds);
+        String tournamentType = tournament.getTournamentType();
+        List<List<Long>> pools = createPools(playerIds, tournamentType); // Pass tournamentType as an argument
     
         for (int poolIndex = 0; poolIndex < pools.size(); poolIndex++) {
             List<Long> pool = pools.get(poolIndex);
@@ -136,12 +139,23 @@ public class MatchService {
         }
     }
 
-    private List<List<Long>> createPools(List<Long> playerIds) {
+    private List<List<Long>> createPools(List<Long> playerIds, String tournamentType) {
         List<List<Long>> pools = new ArrayList<>();
-        List<Long> shuffledPlayers = new ArrayList<>(playerIds);
-        Collections.shuffle(shuffledPlayers);
+        List<Long> orderedPlayers;
     
-        int totalPlayers = shuffledPlayers.size();
+        if ("competitive".equalsIgnoreCase(tournamentType)) {
+            // Sort players by ELO points in descending order
+            orderedPlayers = new ArrayList<>(playerIds);
+            orderedPlayers.sort((p1, p2) -> Integer.compare(
+                playerService.findById(p2).getPoints(),
+                playerService.findById(p1).getPoints()
+            ));
+        } else {
+            // Shuffle players for friendly tournaments
+            orderedPlayers = new ArrayList<>(playerIds);
+            Collections.shuffle(orderedPlayers);
+        }
+        int totalPlayers = orderedPlayers.size();
         int minPoolSize = 5;
         int maxPoolSize = 7;
     
@@ -160,7 +174,7 @@ public class MatchService {
         for (int i = 0; i < numPools; i++) {
             int currentPoolSize = basePoolSize + (i < extraPlayers ? 1 : 0); // Distribute extra players
             int endIndex = startIndex + currentPoolSize;
-            pools.add(new ArrayList<>(shuffledPlayers.subList(startIndex, endIndex)));
+            pools.add(new ArrayList<>(orderedPlayers.subList(startIndex, endIndex)));
             startIndex = endIndex;
         }
     
@@ -227,8 +241,12 @@ public class MatchService {
     public void generateSLMatches(Tournament tournament) {
         Long tournamentId = tournament.getId();
 
-        // Update current rankings for players in this tournament
-        matchRankService.updateCurrentRank(tournamentId);
+        String tournamentType = tournament.getTournamentType();
+        if("Competitive".equalsIgnoreCase(tournamentType)){
+            matchRankService.updateCMCurrentRank(tournamentId);
+        }else{
+            matchRankService.updateCurrentRank(tournamentId);
+        }
 
         // Get ranked player IDs after updating ranks
         List<Long> rankedPlayerIds = matchRankService.getRankedPlayerIds(tournamentId);
@@ -270,6 +288,11 @@ public class MatchService {
             match.setPlayer2points(0); // Default 0 points for the "Pass" opponent
             match.setWinner(playerId); // The player with the pass is the winner
             matchRepository.save(match);
+             // Increment the win count for the player with the pass
+            MatchRank playerRank = matchRankRepository.findByTournamentIdAndPlayerId(tournamentId, playerId)
+                .orElseThrow(() -> new IllegalArgumentException("MatchRank not found for player ID: " + playerId));
+            playerRank.setWinCount(playerRank.getWinCount() + 1);
+            matchRankRepository.save(playerRank);
         }
     
         // Log the players who get a direct pass
@@ -279,8 +302,25 @@ public class MatchService {
     public void generateDEMatches(Tournament tournament) {
         Long tournamentId = tournament.getId();
         // Update player ranks before starting the DE matches
-        matchRankService.updateCurrentRank(tournamentId);
+
+        String tournamentType = tournament.getTournamentType();
+        if("Competitive".equalsIgnoreCase(tournamentType)){
+            matchRankService.updateCMCurrentRank(tournamentId);
+        }else{
+            matchRankService.updateCurrentRank(tournamentId);
+        }
+        
         List<Long> rankedPlayerIds = matchRankService.getRankedPlayerIds(tournamentId);
+
+        // If there's an odd number of players, the last one is excluded and considered eliminated
+        if (rankedPlayerIds.size() % 2 != 0) {
+            Long excludedPlayerId = rankedPlayerIds.remove(rankedPlayerIds.size() - 1); // Remove the last player
+            // Update the MatchRank for the excluded player to mark them as eliminated
+            MatchRank excludedPlayerRank = matchRankRepository.findByTournamentIdAndPlayerId(tournamentId, excludedPlayerId)
+                .orElseThrow(() -> new IllegalArgumentException("MatchRank not found for player ID: " + excludedPlayerId));
+            excludedPlayerRank.setEliminated(true);
+            matchRankRepository.save(excludedPlayerRank);
+        }
     
         int roundId = 3; // Starting round for DE matches
         List<Match> basket1 = new ArrayList<>();
@@ -427,4 +467,40 @@ public class MatchService {
         return finalMatchList;
     }  
 
+    public Map<String, Long> fetchWinner(Long tournamentId) {
+        // Fetch the predefined number of rounds for the tournament
+        int predefinedRounds = predefinedRounds(tournamentId);
+
+        // Find the current max round number for the tournament
+        Integer currentRound = matchRepository.findMaxRoundByTournamentId(tournamentId);
+        
+        // If the current round matches the predefined rounds, the match is completed
+        if (currentRound != null && currentRound.equals(predefinedRounds)) {
+            // Fetch the last two matches of the completed tournament, ordered by matchId descending
+            List<Match> lastMatches = matchRepository.findTop2ByTournamentIdOrderByMatchIdDesc(tournamentId);
+
+            if (lastMatches.size() >= 2) {
+                // Assuming matches are sorted by matchId in descending order
+                Match goldSilverMatch = lastMatches.get(0);
+                Match bronzeMatch = lastMatches.get(1);
+
+                // Determine the winners and losers
+                Long goldWinnerId = goldSilverMatch.getWinner();
+                Long silverLoserId = goldSilverMatch.getPlayer1Id().equals(goldWinnerId) ? goldSilverMatch.getPlayer2Id() : goldSilverMatch.getPlayer1Id();
+                Long bronzeWinnerId = bronzeMatch.getWinner();
+
+                // Prepare the result map
+                Map<String, Long> winners = new HashMap<>();
+                winners.put("Gold", goldWinnerId);
+                winners.put("Silver", silverLoserId);
+                winners.put("Bronze", bronzeWinnerId);
+
+                return winners;
+            } else {
+                throw new IllegalStateException("Not enough matches to determine winners.");
+            }
+        } else {
+            throw new IllegalStateException("Tournament is not yet completed.");
+        }
+}
 }

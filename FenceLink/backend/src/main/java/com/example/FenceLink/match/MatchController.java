@@ -10,6 +10,7 @@ import com.example.FenceLink.tournament.TournamentService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/matches")
@@ -53,14 +54,9 @@ public class MatchController {
 
         if (match.isPresent()) {
             Match updatedMatch = match.get();
-            updatedMatch.setPlayer1Id(matchDetails.getPlayer1Id());
-            updatedMatch.setPlayer2Id(matchDetails.getPlayer2Id());
             updatedMatch.setDate(matchDetails.getDate());
             updatedMatch.setStartTime(matchDetails.getStartTime());
             updatedMatch.setEndTime(matchDetails.getEndTime());
-            updatedMatch.setPlayer1points(matchDetails.getPlayer1points());
-            updatedMatch.setPlayer2points(matchDetails.getPlayer2points());
-            updatedMatch.setWinner(matchDetails.getWinner());
 
             matchService.updateMatch(updatedMatch);
             return ResponseEntity.ok(updatedMatch);
@@ -145,6 +141,15 @@ public class MatchController {
             return ResponseEntity.ok("Players promoted successfully. Winners: " + winners);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error promoting players: " + e.getMessage());
+        }
+    }
+    @GetMapping("/{tournamentId}/winners")
+    public ResponseEntity<Map<String, Long>> fetchWinners(@PathVariable Long tournamentId) {
+        try {
+            Map<String, Long> winners = matchService.fetchWinner(tournamentId);
+            return ResponseEntity.ok(winners);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 }

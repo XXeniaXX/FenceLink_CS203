@@ -14,6 +14,7 @@ import java.time.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import com.example.FenceLink.user.*;
 
 
 
@@ -22,6 +23,9 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     //new for join table
     @Autowired
@@ -66,6 +70,14 @@ public class PlayerServiceImpl implements PlayerService {
     public Player findByUserId(Long userId) {
         return playerRepository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("Player not found for userId: " + userId));
+    }
+
+    @Override
+    public int calculateAge(LocalDate birthdate) {
+        if (birthdate == null) {
+            throw new IllegalArgumentException("Birthdate is required to calculate age");
+        }
+        return Period.between(birthdate, LocalDate.now()).getYears();
     }
 
     @Override
@@ -121,18 +133,29 @@ public class PlayerServiceImpl implements PlayerService {
 
         checkPlayer(updatedPlayer);
 
-        // Id cannot be empty
-        if (updatedPlayer.getId() == null) {
-            throw new IllegalArgumentException("Player ID is required!");
+        // Attach the existing User instance if provided in the updated data
+        if (updatedPlayer.getUser() != null && updatedPlayer.getUser().getId() != null) {
+            User existingUser = userRepository.findById(updatedPlayer.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            existingPlayer.setUser(existingUser); // Attach the existing User instance to existingPlayer
         }
 
-        if (existingPlayer.getUser() != null) {
-            existingPlayer.getUser().setUsername(updatedPlayer.getName());
-        }
+        // Update fields in existingPlayer
+        existingPlayer.setName(updatedPlayer.getName());
+        existingPlayer.setGender(updatedPlayer.getGender());
+        existingPlayer.setLocation(updatedPlayer.getLocation());
+        existingPlayer.setCountry(updatedPlayer.getCountry());
+        existingPlayer.setFencingWeapon(updatedPlayer.getFencingWeapon());
+        existingPlayer.setBirthdate(updatedPlayer.getBirthdate());
+        existingPlayer.setBio(updatedPlayer.getBio());
 
-        playerRepository.saveAndFlush(updatedPlayer);
-        return updatedPlayer;
+        // Save the updated player
+        playerRepository.saveAndFlush(existingPlayer);
+
+        // Return the updated existingPlayer, not updatedPlayer
+        return existingPlayer;
     }
+
 
     // Admin only
     @Override
@@ -181,13 +204,13 @@ public class PlayerServiceImpl implements PlayerService {
 
         // Check if the player's age fits the tournament's age group
         String ageGroup = tournament.getAgeGroup(); // Assuming the age group is stored in the tournament object
-        if ((ageGroup.equals("Teen") && age.getYears() >= 18) || 
-        (ageGroup.equals("Adults") && age.getYears() < 18)) {
+        if ((ageGroup.equals("Youth") && age.getYears() >= 18) || 
+        (ageGroup.equals("Adult") && age.getYears() < 18)) {
             throw new IllegalArgumentException("Player's age does not meet the tournament's age requirement!");
         }
 
-        // Check if the player's gender matches the tournament's gender type or if the tournament is "Open"
-        if (!tournament.getGenderType().equalsIgnoreCase("Open") && 
+        // Check if the player's gender matches the tournament's gender type or if the tournament is "Mixed"
+        if (!tournament.getGenderType().equalsIgnoreCase("Mixed") && 
         !tournament.getGenderType().equalsIgnoreCase(player.getGender())) {
             throw new IllegalArgumentException("Player's gender does not match the tournament's gender requirement!");
         }
@@ -224,8 +247,8 @@ public class PlayerServiceImpl implements PlayerService {
 
     // Method to check if a player is eligible for the tournament based on gender
     private boolean isPlayerEligibleForGender(Player player, String genderType) {
-        // If the tournament is "Open", any player can participate
-        if (genderType.equals("Open")) {
+        // If the tournament is "Mixed", any player can participate
+        if (genderType.equals("Mixed")) {
             return true;
         }
         // Otherwise, the player must match the gender type of the tournament
@@ -235,9 +258,9 @@ public class PlayerServiceImpl implements PlayerService {
     // Method to check if player's age fits into the tournament's age group
     private boolean isPlayerEligibleForAgeGroup(int playerAge, String ageGroup) {
         switch (ageGroup) {
-            case "Teen":
+            case "Youth":
                 return playerAge < 18;
-            case "Adults":
+            case "Adult":
                 return playerAge >= 18;
             default:
                 return true;  // If no specific age group, assume eligible
@@ -294,9 +317,24 @@ public class PlayerServiceImpl implements PlayerService {
 
         // Filter tournaments that are scheduled after today
         return player.getTournamentsRegistered().stream()
-                .filter(tournament -> tournament.getRegistrationDate().isAfter(today))
+                .filter(tournament -> tournament.getStartDate().isAfter(today))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Tournament> findPastRegisteredTournaments(Long playerId) {
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> 
+            new IllegalArgumentException("Player with ID " + playerId + " not found!")
+        );
+
+        LocalDate today = LocalDate.now();
+
+        // Filter tournaments that have ended before today
+        return player.getTournamentsRegistered().stream()
+                .filter(tournament -> tournament.getEndDate().isBefore(today))
+                .collect(Collectors.toList());
+    }
+
     //get player's id who has register for a specific tournament
     public List<Long> getRegisteredPlayerIds(Long tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
@@ -336,5 +374,9 @@ public class PlayerServiceImpl implements PlayerService {
             player.getPoints()
             // Add other fields if necessary
         );
+    }
+
+    public List<String> getAllCountries() {
+        return playerRepository.findDistinctCountries();
     }
 }

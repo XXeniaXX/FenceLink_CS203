@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { signOut } from 'aws-amplify/auth';
-import './login.css'; // Import the CSS file
-import './homepage.css';
+import './profilepage.css';
 import { useNavigate } from "react-router-dom";
 import Navbar from '../components/Navbar';
 import fencingplayer from './assets/fencingplayer.png';
 import fencingcross from './assets/fencingcross.png';
+import profileicon from './assets/profileicon.png';
 
 
 const ProfilePage = () => {
     const navigate = useNavigate();
+    const storedUserName = localStorage.getItem('userName');
+    const storedAge = localStorage.getItem('age');
+    const storedLocation = localStorage.getItem('location');
+    const storedCountry = localStorage.getItem('country');
+    const storedBio = localStorage.getItem('bio');
 
     const [profileImage, setProfileImage] = useState(null);
 
@@ -19,68 +24,52 @@ const ProfilePage = () => {
         }
     };
 
-    async function handleSignOut() {
-        try {
-            await signOut({ global: true });
-            console.log('User signed out successfully');
-            navigate('/login');
-        } catch (error) {
-            console.log('error signing out: ', error);
-        }
-        }
-
         return (
             <div>
                 {/* Render the NavBar component */}
                     <Navbar />
             <div className="container2">
-                <div className="profileContainer">
+                <div>
                     <label htmlFor="profilePicUpload">
                     <img
-                        src={profileImage || "https://via.placeholder.com/150"}
+                        src={profileicon}
                         alt="Profile"
                         className="profileImage"
                     />
-                    <input
-                        type="file"
-                        id="profilePicUpload"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        style={{ display: 'none' }}
-                    />
                     </label>
                     <div>
-                    <h2>Jerry Anderson, 28</h2>
-                    <p>New York, USA</p>
-                    <p>Bio</p>
+                    <h2 style={{ color: '#1C1E53', fontSize: '33px', marginBottom: '5px'}}>{storedUserName}, {storedAge}</h2>
+                    <p style={{ color: '#1C1E53', fontSize: '18px', marginBottom: '5px'}}>{storedCountry}, {storedLocation}</p>
+                    <p style={{ color: '#1C1E53', fontSize: '16px', marginBottom: '15px'}}>{storedBio}</p>
                     </div>
-                    <button className="button">Edit Profile</button>
                 </div>
                 <div className="tournamentsContainer">
 
-                    <button className="tournamentButton">
+                    <button className="tournamentButton" onClick={() => navigate('/pasttournaments')}>
                         <img
                             src={fencingcross}
                             alt="fencingcross"
                             className="buttonImage"
                         />
-                        <p style={{ color: '#1C1E53' }}>Past Tournaments</p>
+                        <p style={{ color: '#1C1E53', fontSize: '15px', fontWeight: '600'}} >Past Tournaments</p>
                     </button>
-                    <button className="tournamentButton">
+                    <button className="tournamentButton" onClick={() => navigate('/upcomingtournaments')}>
                         <img
                             src={fencingplayer}
                             alt="fencingplayer"
                             className="buttonImage"
                         />
-                        <p style={{ color: '#1C1E53' }}>Upcoming Tournaments</p>
+                        <p style={{ color: '#1C1E53', fontSize: '15px', fontWeight: '600'}}>Upcoming Tournaments</p>
                     </button>
+                    
                 </div>
-                <button onClick={handleSignOut} className="button">
-                        Sign Out
+                <div className="buttonContainer">
+                <button className="button" onClick={() => navigate('/editprofile')}>
+                    Edit Profile
                 </button>
-                
+                </div>
             </div> 
-            </div>
+        </div>
             
         )
     

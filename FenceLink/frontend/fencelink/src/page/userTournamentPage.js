@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
+import { useNavigate } from 'react-router-dom';
 import './tournamentPage.css';
 import axios from 'axios';
 
@@ -45,6 +46,7 @@ const TournamentPage = () => {
       tournamentDate: '',
     });
   };
+  const navigate = useNavigate();
 
   // Filter tournaments based on filter state
   const filteredTournaments = tournaments.filter((tournament) => {
@@ -82,6 +84,11 @@ const TournamentPage = () => {
         console.error('Error withdrawing from tournament:', error);
       });
   };
+  
+    // Function to handle card click and navigate to MatchUser
+const handleCardClick = (tournamentId) => {
+  navigate(`/match/${tournamentId}`); // Adjust the path as needed for your routing setup
+};
 
   return (
     <div className="tournament-page">
@@ -133,7 +140,8 @@ const TournamentPage = () => {
       {/* Tournament List */}
       <div className="tournament-list">
         {filteredTournaments.map((tournament) => (
-          <div key={tournament.id} className="tournament-item">
+          <div key={tournament.id} className="tournament-item" onClick={() => handleCardClick(tournament.id)} // Navigate on card click
+          >
             <h3>{tournament.name}</h3>
             <p><strong>Location:</strong> {tournament.location}</p>
             <p><strong>Description:</strong> {tournament.description}</p>
@@ -148,11 +156,8 @@ const TournamentPage = () => {
 
             {/* Join or Withdraw buttons */}
             <div className="button-group">
-              {!joinedTournaments.includes(tournament.id) ? (
-                <button onClick={() => handleJoin(tournament.id)} className="edit-button">Join</button>
-              ) : (
-                <button onClick={() => handleWithdraw(tournament.id)} className="delete-button">Withdraw</button>
-              )}
+              <button onClick={(e) => {e.stopPropagation(); openModal(tournament);}}className="edit-button">Edit</button>
+              <button onClick={(e) => {e.stopPropagation();handleDelete(tournament);}}className="delete-button">Delete</button>
             </div>
           </div>
         ))}
