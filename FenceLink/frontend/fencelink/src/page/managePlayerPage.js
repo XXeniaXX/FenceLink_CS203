@@ -58,35 +58,47 @@ const ManagePlayerPage = () => {
     // Delete player
     const handleDelete = async (player) => {
         const confirmDelete = window.confirm('Are you sure you want to delete this player?');
-        if (confirmDelete) {
-            try {
-                const token = localStorage.getItem('jwtToken');
-                console.log('Token being sent:', token); // Debugging output
-                const response = await fetch(`http://localhost:8080/api/players/${player.id}`, {
+        if (!confirmDelete) return;
+    
+        try {
+            const token = localStorage.getItem('jwtToken');
+            let response;
+            
+            // Check if the player has an associated user
+            if (player.user && player.user.id) {
+                // Delete both user and player
+                response = await fetch(`http://localhost:8080/api/users/${player.user.id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
+            } else {
+                // Only delete the player
+                response = await fetch(`http://localhost:8080/api/players/${player.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            }
     
-                if (response.ok) {
-                    setPlayers(players.filter(p => p.id !== player.id));
-                    setSnackbarMessage('Player deleted successfully!');
-                    setShowSnackbar(true);
-                } else {
-                    const errorText = await response.text();
-                    console.error('Error deleting player:', errorText);
-                    setSnackbarMessage(`Error deleting player: ${errorText}`);
-                    setShowSnackbar(true);
-                }
-            } catch (error) {
-                console.error('Error deleting player:', error);
-                setSnackbarMessage('Error deleting player.');
+            if (response.ok) {
+                setPlayers(players.filter(p => p.id !== player.id));
+                setSnackbarMessage('Player deleted successfully!');
+                setShowSnackbar(true);
+            } else {
+                const errorText = await response.text();
+                console.error('Error deleting player:', errorText);
+                setSnackbarMessage(`Error deleting player: ${errorText}`);
                 setShowSnackbar(true);
             }
+        } catch (error) {
+            console.error('Error deleting player:', error);
+            setSnackbarMessage('Error deleting player.');
+            setShowSnackbar(true);
         }
     };
-    
 
     return (
         <div>
