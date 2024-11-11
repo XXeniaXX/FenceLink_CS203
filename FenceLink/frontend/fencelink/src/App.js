@@ -11,9 +11,12 @@ import PastTournaments from './page/pasttournaments';
 import UpcomingTournaments from './page/upcomingtournaments';
 import RankingPage from './page/RankingPage';
 import TournamentPage from './page/tournamentPage';
+import MatchAdmin from './page/matchAdmin';
+import MatchUser from './page/matchUser';
+import ResultPage from './page/result';
+import UserTournamentPage from './page/userTournamentPage';
 import './App.css';
 import { useEffect, useState } from 'react';
-import MatchAdmin from './page/matchAdmin';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import ProtectedRoute from './page/protectedroute';
@@ -41,17 +44,19 @@ function App() {
             <Route path="/otpcheck" element={<OtpCheck />} />
             <Route path="/mainpage" element={<Main />} />
             <Route path="/tournament" element={<TournamentPage />} />
+            <Route path="/match/:tournamentId" element={<MatchUser />} />
             <Route path="/ranking" element={<RankingPage />} />
+            <Route path="/results" element={<ResultPage />} />
             <Route path="/unauthorisedpage" element={<UnauthorizedPage />} />
             <Route path="/mainpage" element={<Main />} />
             <Route path="/profilepage" element={<ProfilePage />} />
             
             {/* Admin-only route */}
             <Route element={<ProtectedRoute allowedRole="admin" />}>
-              <Route path="/matchAdmin" element={<MatchAdmin />} />
+              <Route path="/match-admin/:tournamentId" element={<MatchAdmin />} />
               <Route path="/adminhomepage" element={<AdminHomePage />} />
+              <Route path="/usertournament" element={<UserTournamentPage/>} />
             </Route>
-
 
             <Route path="*" element={<Navigate to="/" />} />
           

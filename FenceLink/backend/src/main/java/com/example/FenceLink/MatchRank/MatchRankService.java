@@ -1,6 +1,7 @@
 package com.example.FenceLink.MatchRank;
 
 import com.example.FenceLink.tournament.Tournament;
+import com.example.FenceLink.player.Player;
 import com.example.FenceLink.player.PlayerServiceImpl;
 import com.example.FenceLink.tournament.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,50 @@ public class MatchRankService {
             nonEliminatedPlayers.get(rank).setCurrentRank(rank + 1);
             matchRankRepository.save(nonEliminatedPlayers.get(rank));
         }
+    }
+    public void updateCMCurrentRank(Long tournamentId) {
+        // Retrieve all MatchRank records for the tournament
+        List<MatchRank> matchRanks = matchRankRepository.findByTournamentId(tournamentId);
+    
+        // Filter out eliminated players
+        List<MatchRank> nonEliminatedPlayers = matchRanks.stream()
+            .filter(rank -> !rank.isEliminated())
+            .collect(Collectors.toList());
+    
+        // Create a Random instance for tiebreaker
+        Random random = new Random();
+    
+        // Sort players: first by wins (descending), then by losses (ascending), then by ELO points (descending)
+        nonEliminatedPlayers.sort((r1, r2) -> {
+            // Compare by win count (descending)
+            int winCompare = Integer.compare(r2.getWinCount(), r1.getWinCount());
+            if (winCompare != 0) {
+                return winCompare; // If wins are different, sort by wins
+            }
+    
+            // Compare by loss count (ascending)
+            int lossCompare = Integer.compare(r1.getLossCount(), r2.getLossCount());
+            if (lossCompare != 0) {
+                return lossCompare; // If losses are different, sort by losses
+            }
+    
+            // Retrieve the Player objects for ELO comparison
+            Player player1 = playerService.findById(r1.getPlayerId());
+            Player player2 = playerService.findById(r2.getPlayerId());
+            int eloCompare = Integer.compare(player2.getPoints(), player1.getPoints());
+            if (eloCompare != 0) {
+                return eloCompare; // If ELO points are different, sort by ELO
+            }
+    
+            // Randomize if all criteria are the same
+            return random.nextBoolean() ? 1 : -1;
+        });
+    
+        // Update ranks
+        for (int i = 0; i < nonEliminatedPlayers.size(); i++) {
+            nonEliminatedPlayers.get(i).setCurrentRank(i + 1);
+        }
+        matchRankRepository.saveAll(nonEliminatedPlayers);
     }
 
     public List<Long> getRankedPlayerIds(Long tournamentId) {

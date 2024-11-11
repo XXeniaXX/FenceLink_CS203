@@ -10,6 +10,7 @@ import com.example.FenceLink.tournament.TournamentService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/matches")
@@ -140,6 +141,15 @@ public class MatchController {
             return ResponseEntity.ok("Players promoted successfully. Winners: " + winners);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error promoting players: " + e.getMessage());
+        }
+    }
+    @GetMapping("/{tournamentId}/winners")
+    public ResponseEntity<Map<String, Long>> fetchWinners(@PathVariable Long tournamentId) {
+        try {
+            Map<String, Long> winners = matchService.fetchWinner(tournamentId);
+            return ResponseEntity.ok(winners);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 }

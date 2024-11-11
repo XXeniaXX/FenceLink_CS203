@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import { useNavigate } from 'react-router-dom';
 import './tournamentPage.css';
 
 const TournamentPage = () => {
@@ -30,6 +31,7 @@ const TournamentPage = () => {
     ageGroup: '',
     tournamentDate: '',
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get('/api/tournaments')
@@ -124,6 +126,11 @@ const TournamentPage = () => {
     );
   });
 
+    // Function to handle card click and navigate to MatchAdmin
+    const handleCardClick = (tournamentId) => {
+      navigate(`/match-admin/${tournamentId}`); // Adjust the path as needed for your routing setup
+    };
+
   return (
     <div className="tournament-page">
       <Navbar />
@@ -155,7 +162,7 @@ const TournamentPage = () => {
           <option value="">Select Gender</option>
           <option value="Female">Female</option>
           <option value="Male">Male</option>
-          <option value="Open">Open</option>
+          <option value="Mixed">Mixed</option>
         </select>
         <select
           name="weaponType"
@@ -189,7 +196,8 @@ const TournamentPage = () => {
       {/* Tournament List and Add Button */}
       <div className="tournament-list">
         {filteredTournaments.map((tournament, index) => (
-          <div key={index} className="tournament-item">
+          <div key={index} className="tournament-item" onClick={() => handleCardClick(tournament.id)} // Navigate on card click
+          >
             <h3>{tournament.name}</h3>
             <p><strong>Location:</strong> {tournament.location}</p>
             <p><strong>Description:</strong> {tournament.description}</p>
@@ -203,8 +211,8 @@ const TournamentPage = () => {
             <p><strong>Vacancy:</strong> {tournament.vacancy}</p>
 
             <div className="button-group">
-              <button onClick={() => openModal(tournament)} className="edit-button">Edit</button>
-              <button onClick={() => handleDelete(tournament)} className="delete-button">Delete</button>
+              <button onClick={(e) => {e.stopPropagation(); openModal(tournament);}}className="edit-button">Edit</button>
+              <button onClick={(e) => {e.stopPropagation();handleDelete(tournament);}}className="delete-button">Delete</button>
             </div>
           </div>
         ))}
@@ -251,7 +259,7 @@ const TournamentPage = () => {
                 <option value="">Select Gender</option>
                 <option value="Female">Female</option>
                 <option value="Male">Male</option>
-                <option value="Open">Open</option>
+                <option value="Mixed">Mixed</option>
               </select>
               <label>Start Date</label>
               <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} />

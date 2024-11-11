@@ -1,5 +1,6 @@
 package com.example.FenceLink.MatchRank;
 
+import com.example.FenceLink.player.Player;
 import com.example.FenceLink.player.PlayerServiceImpl;
 import com.example.FenceLink.tournament.Tournament;
 import com.example.FenceLink.tournament.TournamentRepository;
@@ -12,12 +13,14 @@ import org.mockito.MockitoAnnotations;
 
 
 import java.util.List;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.*;
 
@@ -203,5 +206,42 @@ public class MatchRankServiceTest {
         assertEquals(103L, rankedPlayerIds.get(2));
     }
 
+    @Test
+    public void testUpdateCMCurrentRank() {
+        // Arrange
+        Long tournamentId = 1L;
+        Tournament tournament = new Tournament();
+        tournament.setId(tournamentId);
+
+        // Create sample Player objects
+        Player player1 = new Player(1L, "Player1", "Male", "USA", LocalDate.of(1990, 1, 1), 
+                                    "New York", "Epee", "A brief bio", 1000, new ArrayList<>(), null);
+        Player player2 = new Player(2L, "Player2", "Male", "USA", LocalDate.of(1990, 1, 1), 
+                                    "New York", "Epee", "A brief bio", 950, new ArrayList<>(), null);
+        Player player3 = new Player(3L, "Player3", "Male", "USA", LocalDate.of(1990, 1, 1), 
+                                    "New York", "Epee", "A brief bio", 900, new ArrayList<>(), null);
+
+        // Create sample MatchRank records with distinct names to avoid conflicts
+        MatchRank matchRank1 = new MatchRank(1L, tournament, 101L, 2, 1, 0, false); // 2 wins, 1 loss
+        MatchRank matchRank2 = new MatchRank(2L, tournament, 102L, 1, 1, 0, false); // 1 win, 1 loss
+        MatchRank matchRank3 = new MatchRank(3L, tournament, 103L, 1, 1, 0, false); // 1 win, 1 loss
+        List<MatchRank> matchRanks = Arrays.asList(matchRank1, matchRank2, matchRank3);
+
+        // Mock behavior for repository and service
+        when(tournamentRepository.findById(tournamentId)).thenReturn(Optional.of(tournament));
+        when(matchRankRepository.findByTournamentId(tournamentId)).thenReturn(matchRanks);
+        when(playerService.findById(101L)).thenReturn(player1);
+        when(playerService.findById(102L)).thenReturn(player2);
+        when(playerService.findById(103L)).thenReturn(player3);
+
+        // Act
+        matchRankService.updateCMCurrentRank(tournamentId);
+
+        // Assert
+        assertEquals(1, matchRank1.getCurrentRank()); // matchRank1 should have rank 1
+        assertEquals(2, matchRank2.getCurrentRank()); // matchRank2 should have rank 2
+        assertEquals(3, matchRank3.getCurrentRank()); // matchRank3 should have rank 3
+        verify(matchRankRepository, times(1)).saveAll(anyList()); // Ensure saveAll is called
+    }
     
 }
