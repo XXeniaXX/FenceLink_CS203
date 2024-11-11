@@ -7,7 +7,7 @@
   }
 
   .calendar-column .highlight {
-    background-color: #18049d !important;
+    background-color: #1d02ce !important;
     color: white !important;
     border-radius: 1px !important;
     padding: 0.5em 0.8em !important;
@@ -20,14 +20,16 @@
     margin-top: 3em;
     margin-bottom: 5em;
   }
-    
+  
+  /* .search-bar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  } */
+  
   .player-upcoming {
     padding-top: 2em;
     padding-bottom: 1em;
-  }
-
-  .upcoming-tournament-name{
-    font-weight: bold;
   }
 
   .tournament-card {
