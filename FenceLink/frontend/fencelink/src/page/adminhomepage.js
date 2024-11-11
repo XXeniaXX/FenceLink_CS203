@@ -112,6 +112,7 @@ const AdminHomePage = () => {
             
             <div className="mainContainer">
                 {/* Buttons */}
+            <div className="pageContainer2">
                 <div className="pageContainer">
                     <button className="pageButton" onClick={() => navigate('/tournament')}>
                         <img src={fencingcross} alt="fencingcross" className="pagebuttonImage" />
@@ -121,6 +122,8 @@ const AdminHomePage = () => {
                         <img src={rankings} alt="rankings" className="pagebuttonImage" />
                         <p style={{ color: '#1C1E53', fontSize: '15px', fontWeight: '600' }}>Rankings</p>
                     </button>
+                </div>
+                <div className="pageContainer">
                     <button className="pageButton" onClick={() => navigate('/results')}>
                         <img src={results} alt="results" className="pagebuttonImage" />
                         <p style={{ color: '#1C1E53', fontSize: '15px', fontWeight: '600' }}>Results</p>
@@ -130,17 +133,15 @@ const AdminHomePage = () => {
                         <p style={{ color: '#1C1E53', fontSize: '15px', fontWeight: '600' }}>Manage Players</p>
                     </button>
                 </div>
-
-                {/* Divider */}
-                <div className="divider"></div>
+            </div>
 
                 {/* Table */}
-                <div className="tableContainer">
+                <div>
                     <h1 style={{ color: '#1C1E53', textAlign: 'center', fontWeight: '800' }}>
                         Upcoming Tournaments
                     </h1>
                     
-                    <TableContainer component={Paper} sx={{ width: '1000px' }}>
+                    <TableContainer component={Paper} sx={{ width: '800px' }}>
                         <Table>
                             <TableHead>
                                 <TableRow sx={{ backgroundColor: '#E0EBFF' }}>
