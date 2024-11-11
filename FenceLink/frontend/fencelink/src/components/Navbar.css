@@ -1,14 +1,11 @@
-    /* Global Box Sizing */
     * {
         box-sizing: border-box;
     }
   
-    /* Body Reset */
     body {
         margin: 0;
     }
     
-    /* Navbar Styling */
     .nav {
         background-color: #1C1E53;
         color: white;
@@ -20,18 +17,16 @@
         height: 60px;
     }
     
-    /* Navbar Links */
     .nav .nav-links a {
-        color: #ffffff; /* Set link color to white */
+        color: #ffffff;
         text-decoration: none;
         display: flex;
         gap: 1rem;
         list-style: none;
         margin: 0;
-        transition: color 0.3s ease; /* Transition for color */
+        transition: color 0.3s ease; 
     }
     
-    /* Navbar Links Container */
     .nav-links {
         display: flex;
         gap: 3rem;
@@ -39,9 +34,8 @@
         margin: 0;
     }
 
-    /* Navbar Links */
     .nav .nav-links a {
-        color: #ffffff; /* Set link color to white */
+        color: #ffffff; 
         text-decoration: none;
         display: flex;
         gap: 1rem;
@@ -52,7 +46,6 @@
         transition: all 0.3s ease; 
     }
 
-    /* Hover Effect - Rounded Rectangle Highlight */
     .nav-links a:hover {
         color: #ffffff;
         background-color: #2a2d79; 
@@ -61,59 +54,61 @@
         transition: all 0.3s ease;
     }
   
-    /* Active Link */
     .nav-link.active {
         color: white;
     }
   
-    /* Profile Section */
     .profile-section {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .profile-section:hover .dropdown-icon,
+    .dropdown-menu:hover .dropdown-icon {
+        transform: rotate(180deg);
+        transition: transform 0.3s ease;
     }
     
-    /* Profile Picture */
     .profile-pic {
         width: 35px;
         height: 35px;
         border-radius: 50%;
+        vertical-align: middle;
+        margin-right: 16px;
         transition: transform 0.3s ease;
     }
     
-    /* Profile Picture Hover Effect */
     .profile-pic:hover {
         transform: scale(1.1);
     }
     
-    /* Logo */
     .logo {
         width: 210px;
         height: 70px;
         border-radius: 50%;
     }
     
-    /* Dropdown Icon */
     .dropdown-icon {
         font-size: 0.8rem;
         margin-left: 0.2rem;
         transition: transform 0.3s ease;
     }
     
-    /* Dropdown Icon Hover Effect */
     .dropdown-icon:hover {
         transform: rotate(180deg);
     }
 
     .profile-link {
-        color: white; /* Matches the text color */
-        text-decoration: none; /* Removes underline */
-        font-weight: bold; /* Optional: makes it stand out */
-        margin-left: 0.5rem; /* Adjusts spacing */
+        color: white;
+        text-decoration: none;
+        font-weight: bold; 
+        margin-left: 0.5rem;
     }
     
     .profile-link:hover {
-        color: white; /* Optional hover effect */
+        color: white;
     }
 
     .profile-section {
@@ -121,32 +116,38 @@
         cursor: pointer;
       }
       
-      .dropdown-menu {
+    .dropdown-menu {
         position: absolute;
         top: 100%;
         right: 0;
         background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 0;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 4px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        z-index: 10;
-        width: 150px; /* Adjust width as needed */
-      }
-      
-      .dropdown-item {
-        padding: 15px 25px; /* Increase padding for a larger button */
-        text-align: left;
-        border: none;
-        background: none;
+        z-index: 1000;
+    }
+
+    .dropdown-item {
+        display: block;
+        color: #333;
+        padding: 8px 12px;
+        text-decoration: none;
         cursor: pointer;
-        font-size: 16px; /* Increase font size */
+        background-color: white;
+        border: none;
         width: 100%;
         text-align: left;
-      }
-      
-      .dropdown-item:hover {
+        font-size: 16px;
+    }
+
+    .dropdown-item:hover {
         background-color: #f0f0f0;
-      }
+        color: #333;
+    }
+
+    .dropdown-item:not(:last-child) {
+        border-bottom: 1px solid #eee;
+    }
+
     
