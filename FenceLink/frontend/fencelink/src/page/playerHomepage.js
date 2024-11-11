@@ -73,8 +73,6 @@ const PlayerHomePage = () => {
   const [availableTournaments, setAvailableTournaments] = useState([]);
   const [tournamentDates, setTournamentDates] = useState([]);
   const [joinedTournaments, setJoinedTournaments] = useState([]); // Track joined tournaments
-  // const playerId = 552; // Use dynamic player ID if available
-  const playerId = localStorage.getItem('playerId');
 
   useEffect(() => {
     // Dummy data for upcoming tournaments

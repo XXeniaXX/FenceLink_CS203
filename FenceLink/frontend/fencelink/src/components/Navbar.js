@@ -28,7 +28,6 @@ const NavBar = () => {
 
   return (
     <nav className="nav">
-      
       <div className="logo-container">
         <img src="/fencelink.png" alt="Logo" className="logo" />
       </div>
