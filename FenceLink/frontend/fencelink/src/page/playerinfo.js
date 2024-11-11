@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './login.css';
 import { useNavigate } from "react-router-dom";
-import PlainBar from '../components/plainbar';
+import PlainBar from '../components/AdminNavBar';
 
 const PlayerInfo = () => {
     const navigate = useNavigate();

@@ -6,6 +6,7 @@ import rankings from './assets/rankings.png';
 import fencingcross from './assets/fencingcross.png';
 import results from './assets/results.png';
 import axios from 'axios';
+import AdminNavBar from '../components/AdminNavBar';
 import {
     Table,
     TableBody,
@@ -123,29 +124,7 @@ const AdminHomePage = () => {
     
     return (
         <div>
-            {/* Render the NavBar component */}
-            
-            <nav className="nav">
-                <img 
-                    src="/fencelink.png" 
-                    alt="FenceLink Logo" 
-                    style={{
-                        width: '210px',
-                        height: '70px',
-                        borderRadius: '50%',
-                        objectFit: 'contain'
-                    }} 
-                />
-                <div className="profile-section" onClick={toggleDropdown}>
-                    <li className="nav-links">Hi, Admin {storedUserName}</li>
-                    <span className={`dropdown-icon ${dropdownOpen ? 'rotate' : ''}`}>▼</span>
-                    {dropdownOpen && (
-                    <div className="dropdown-menu">
-                        <button onClick={handleSignOut} className="dropdown-item">Sign Out</button>
-                    </div>
-                    )}
-                </div>
-            </nav>
+            <AdminNavBar />                       
             
             <div className="mainContainer">
             {/* Buttons */}

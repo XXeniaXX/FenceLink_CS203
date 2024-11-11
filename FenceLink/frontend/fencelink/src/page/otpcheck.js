@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import OtpInput from "otp-input-react";
 import './otp.css'
 import './login.css'; 
-import PlainBar from '../components/plainbar';
+import PlainBar from '../components/AdminNavBar';
 
 const OtpCheck = () => {
   const navigate = useNavigate();
