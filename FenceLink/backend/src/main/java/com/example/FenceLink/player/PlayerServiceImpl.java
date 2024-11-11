@@ -297,7 +297,7 @@ public class PlayerServiceImpl implements PlayerService {
 
         // Fetch all tournaments and filter based on the current date, exclude the ones the player is already registered for
         return tournamentRepository.findAll().stream()
-                .filter(tournament -> !tournament.getRegistrationDate().isBefore(today) && 
+                .filter(tournament -> tournament.getRegistrationDate().isAfter(today) && 
                                       !registeredTournaments.contains(tournament) &&
                                       isPlayerEligibleForGender(player, tournament.getGenderType()) &&
                                       isPlayerEligibleForAgeGroup(playerAge, tournament.getAgeGroup()) //&&
