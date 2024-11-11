@@ -112,13 +112,28 @@ public class UserController {
 
      }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        if (!userService.userExists(id)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        userService.deleteUserById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    //     if (!userService.userExists(id)) {
+    //         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    //     }
+    //     userService.deleteUserById(id);
+    //     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    // }
     
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUserWithPlayer(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "").trim();
+
+        if(!CognitoJWTValidator.isAdmin(token)) {
+            return new ResponseEntity<>("Access denied: Admin rights required", HttpStatus.FORBIDDEN);
+        }
+
+        if (!userService.userExists(id)) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+
+        userService.deleteUserWithPlayer(id);
+        return new ResponseEntity<>("User and associated Player deleted successfully", HttpStatus.OK);
+    }
 }
