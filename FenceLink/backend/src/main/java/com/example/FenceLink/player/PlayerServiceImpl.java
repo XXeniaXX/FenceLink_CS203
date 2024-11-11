@@ -204,8 +204,8 @@ public class PlayerServiceImpl implements PlayerService {
 
         // Check if the player's age fits the tournament's age group
         String ageGroup = tournament.getAgeGroup(); // Assuming the age group is stored in the tournament object
-        if ((ageGroup.equals("Youth") && age.getYears() >= 18) || 
-        (ageGroup.equals("Adult") && age.getYears() < 18)) {
+        if ((ageGroup.equalsIgnoreCase("Youth") && age.getYears() >= 18) || 
+        (ageGroup.equalsIgnoreCase("Adult") && age.getYears() < 18)) {
             throw new IllegalArgumentException("Player's age does not meet the tournament's age requirement!");
         }
 

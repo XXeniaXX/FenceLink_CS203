@@ -153,7 +153,7 @@ public class PlayerServiceTest {
         player.setId(playerId);
         player.setName("John Doe");
         player.setBirthdate(LocalDate.of(2008, 1, 1)); // Example birthdate for a Youth
-        player.setGender("Male");
+        player.setGender("Female");
         player.setTournamentsRegistered(new ArrayList<>()); // Initialize the list
 
         // Initialize the tournament
@@ -163,7 +163,7 @@ public class PlayerServiceTest {
         // Set the registration date to a future date
         tournament.setRegistrationDate(LocalDate.of(2025, 11, 11));
         tournament.setAgeGroup("Youth"); // Set the tournament age group to Youth
-        tournament.setGenderType("Male"); // Set the tournament gender type
+        tournament.setGenderType("mixed"); // Set the tournament gender type
         tournament.setVacancy(1); // Ensure there is at least one vacancy
 
         // Mock the repository responses
