@@ -186,13 +186,12 @@ public class MatchService {
         return pools;
     }
     
-    public ResponseEntity<Map<String, Object>> updateMatchResults(Long matchId, int player1Points, int player2Points) {
-        Map<String, Object> response = new HashMap<>();
+    public Match updateMatchResults(Long matchId, int player1Points, int player2Points) {
         Match match = matchRepository.findById(matchId)
             .orElseThrow(() -> new IllegalArgumentException("Match not found for ID: " + matchId));
     
         // Check if both player's points are provided
-        if (player1Points <= 0 || player2Points <= 0) {
+        if (player1Points <= -1 || player2Points <= -1) {
             throw new IllegalArgumentException("Both players' points must be provided and cannot be negative.");
         }
     
@@ -253,27 +252,17 @@ public class MatchService {
             Leaderboard leaderboard = new Leaderboard();
             leaderboard.updatePlayerPointsByElo(player1, player2, result1);
     
-            String eloLog = String.format("ELO update for match ID %d: Player %d (new points: %d), Player %d (new points: %d)",
+            // Log ELO updates
+            logger.info("ELO update for match ID {}: Player {} (new points: {}), Player {} (new points: {})",
             matchId, player1.getId(), player1.getPoints(), player2.getId(), player2.getPoints());
-            logger.info(eloLog);
-            // Add Elo log to the response
-            response.put("eloLog", eloLog);
     
             // Save the updated player points
             playerRepository.save(player1);
             playerRepository.save(player2);
     
-            // Add updated player points to the response
-            response.put("player1NewPoints", player1.getPoints());
-            response.put("player2NewPoints", player2.getPoints());
-        }
+            
+        }return matchRepository.save(match);
     
-        response.put("matchId", matchId);
-        response.put("winnerId", winnerId);
-        response.put("player1Points", player1Points);
-        response.put("player2Points", player2Points);
-    
-        return ResponseEntity.ok(response);
     }
     
 

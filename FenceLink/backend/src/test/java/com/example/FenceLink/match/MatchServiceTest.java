@@ -223,7 +223,7 @@ public class MatchServiceTest {
         assertEquals(1, player2Rank.getLossCount()); // Player 2 should have 1 loss
 
         verify(matchRepository, times(1)).findById(matchId);
-        verify(matchRepository, times(1)).save(match);
+        verify(matchRepository, times(2)).save(match);
         verify(matchRankRepository, times(1)).save(player1Rank);
         verify(matchRankRepository, times(1)).save(player2Rank);
     }
@@ -277,7 +277,7 @@ public class MatchServiceTest {
         assertTrue(player2.getPoints() < 1400); // Player 2's Elo should decrease
 
         verify(matchRepository, times(1)).findById(matchId);
-        verify(matchRepository, times(1)).save(match);
+        verify(matchRepository, times(2)).save(match);
         verify(matchRankRepository, times(1)).save(player1Rank);
         verify(matchRankRepository, times(1)).save(player2Rank);
         verify(playerService, times(1)).findById(101L);
@@ -379,7 +379,7 @@ public class MatchServiceTest {
         assertFalse(player2Rank.isEliminated()); // Player 2 should not be eliminated
 
         verify(matchRepository, times(1)).findById(matchId);
-        verify(matchRepository, times(1)).save(match);
+        verify(matchRepository, times(2)).save(match);
         verify(matchRankRepository, times(1)).save(player1Rank);
         verify(matchRankRepository, times(1)).save(player2Rank);
     }

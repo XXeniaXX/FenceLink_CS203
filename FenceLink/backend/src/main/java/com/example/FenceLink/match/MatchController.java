@@ -87,20 +87,18 @@ public class MatchController {
     }
 
     @PutMapping("/{matchId}/results")
-    public ResponseEntity<Map<String, Object>> updateMatchResults(
+    public ResponseEntity<Match> updateMatchResults(
         @PathVariable Long matchId,
         @RequestParam int player1Points,
         @RequestParam int player2Points
     ) {
         try {
-            // Call the service method to update match results and get the response map
-            return matchService.updateMatchResults(matchId, player1Points, player2Points);
+            Match updatedMatch = matchService.updateMatchResults(matchId, player1Points, player2Points);
+            return ResponseEntity.ok(updatedMatch);
         } catch (IllegalArgumentException e) {
-            // Handle bad requests due to invalid input
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(null);
         } catch (Exception e) {
-            // Handle unexpected errors
-            return ResponseEntity.status(500).body(Map.of("error", "An error occurred while updating match results."));
+            return ResponseEntity.status(500).body(null);
         }
     }
 

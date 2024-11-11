@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css'; // Import the CSS file
-import Navbar from '../components/Navbar';
+import AdminNavBar from '../components/AdminNavBar';
 import { useParams } from 'react-router-dom';
+import RankingsCard from '../components/RankingsCard';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,22 +15,47 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+
 const MatchAdmin = () => {
   const [matches, setMatches] = useState([]);
+  const [filteredMatches, setFilteredMatches] = useState([]);
   const [playerNames, setPlayerNames] = useState({});
   const [editingRow, setEditingRow] = useState(null);
   const [editValues, setEditValues] = useState({});
+  const [editMode, setEditMode] = useState(null);
   const [tournamentName, setTournamentName] = useState('Loading...');
   const [currentRound, setCurrentRound] = useState(null);
-  const [filteredMatches, setFilteredMatches] = useState([]);
   const [selectedRound, setSelectedRound] = useState('All');
-  const [predefinedRounds, setPredefinedRounds] = useState(0); // State to store the number of predefined rounds
-  const [playerCount, setPlayerCount] = useState(0); // Store the total player count
+  const [predefinedRounds, setPredefinedRounds] = useState(0);
+  const [playerCount, setPlayerCount] = useState(0);
   const { tournamentId } = useParams();
-  const navigate = useNavigate();
+  const [rankingsData, setRankingsData] = useState([]);
+  const [showRankingsCard, setShowRankingsCard] = useState(false);
+  const [isGenerateClicked, setIsGenerateClicked] = useState(false);
+  const [isGenerateSLClicked, setIsGenerateSLClicked] = useState(false);
+  const [isGenerateDEClicked, setIsGenerateDEClicked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); 
 
+  // Function to handle loading and perform the action
+
+  const navigate = useNavigate();
+  const handleLoadingAndAction = async (action) => {
+    try {
+      setIsLoading(true); // Show loading screen
+      await action(); // Wait for the action to complete
+    } catch (error) {
+      console.error('Error during action:', error);
+    } finally {
+      refetchMatches();
+      setIsLoading(false); // Hide loading screen once the action completes
+    }
+  };
+  
+  // Fetch player data and set initial states
   useEffect(() => {
-    // Fetch the list of player IDs who registered for the tournament
+    
     const fetchPlayerIds = async () => {
       try {
         const response = await fetch(`http://localhost:8080/api/players/${tournamentId}/get-all-players`);
@@ -37,15 +63,10 @@ const MatchAdmin = () => {
         const playerCount = playerIds.length;
         setPlayerCount(playerCount);
 
-        // Calculate predefined rounds based on player count
-        let rounds = 2; // Minimum rounds: Round 1 + Seeding Round
-        if (playerCount >= 32) {
-          rounds += 6;
-        } else if (playerCount >= 16) {
-          rounds += 5;
-        } else if (playerCount >= 10) {
-          rounds += 4;
-        }
+        let rounds = 2;
+        if (playerCount >= 32) rounds += 6;
+        else if (playerCount >= 16) rounds += 5;
+        else if (playerCount >= 10) rounds += 4;
         setPredefinedRounds(rounds);
       } catch (error) {
         console.error('Error fetching player IDs:', error);
@@ -55,7 +76,24 @@ const MatchAdmin = () => {
   }, [tournamentId]);
 
   useEffect(() => {
-    // Fetch tournament name based on tournamentId
+    if (matches.length > 0) {
+      fetchPlayerNames(); // Automatically fetch names when matches state is updated
+    }
+  }, [matches]);
+
+  // Synchronize filteredMatches with matches
+  useEffect(() => {
+    if (selectedRound === 'All') {
+      setFilteredMatches(matches);
+    } else {
+      const round = parseInt(selectedRound, 10);
+      const filtered = matches.filter(match => match.roundNo === round);
+      setFilteredMatches(filtered);
+    }
+  }, [matches, selectedRound]);
+
+  // Fetch tournament name
+  useEffect(() => {
     const fetchTournamentName = async () => {
       try {
         const response = await fetch(`http://localhost:8080/api/tournaments/${tournamentId}`);
@@ -69,8 +107,8 @@ const MatchAdmin = () => {
     fetchTournamentName();
   }, [tournamentId]);
 
+  // Fetch matches and player names
   useEffect(() => {
-    // Fetch match data for the tournament
     const fetchMatches = async () => {
       try {
         const response = await fetch(`http://localhost:8080/api/matches/tournament/${tournamentId}`);
@@ -78,11 +116,9 @@ const MatchAdmin = () => {
         setMatches(data);
         setFilteredMatches(data);
 
-        // Calculate the current round based on the max round number in matches
         const maxRound = data.reduce((max, match) => Math.max(max, match.roundNo), 0);
         setCurrentRound(maxRound);
 
-        // Fetch unique player names
         const uniquePlayerIds = new Set(data.flatMap(match => [match.player1Id, match.player2Id]));
         const fetchPlayerNames = async () => {
           const names = {};
@@ -94,11 +130,11 @@ const MatchAdmin = () => {
                   const playerData = await response.json();
                   names[id] = playerData.name;
                 } else {
-                  names[id] = `Player ${id}`; // Fallback
+                  names[id] = `Player ${id}`;
                 }
               } catch (error) {
                 console.error(`Error fetching player with ID ${id}:`, error);
-                names[id] = `Player ${id}`; // Fallback
+                names[id] = `Player ${id}`;
               }
             })
           );
@@ -112,14 +148,14 @@ const MatchAdmin = () => {
     fetchMatches();
   }, [tournamentId]);
 
-  const handleEditClick = (match) => {
-    if (editingRow === match.matchId) {
-      // If already editing this row, reset and cancel editing
+  const handleEditClick = (match, mode) => {
+    if (editingRow === match.matchId && editMode === mode) {
       setEditingRow(null);
+      setEditMode(null);
       setEditValues({});
     } else {
-      // Enter edit mode for the selected row
       setEditingRow(match.matchId);
+      setEditMode(mode);
       setEditValues({
         date: match.date,
         startTime: match.startTime,
@@ -138,151 +174,262 @@ const MatchAdmin = () => {
     }));
   };
 
-  const handleSaveClick = (matchId) => {
-    // Check if both points are provided
-    if (!editValues.player1points || !editValues.player2points) {
-      alert('Both player points must be filled before saving.');
-      return; // Prevent the save operation
-    }
-
-    // Prepare the updated fields for date/time
-    const updatedFields = {};
-    if (editValues.date) updatedFields.date = editValues.date;
-    if (editValues.startTime) {
-      updatedFields.startTime = `${editValues.startTime}:00`; // Ensure format HH:mm:ss
-    }
-    if (editValues.endTime) {
-      updatedFields.endTime = `${editValues.endTime}:00`; // Ensure format HH:mm:ss
-    }
-
-    // Only make the request if there are fields to update
-    if (Object.keys(updatedFields).length > 0) {
-      fetch(`http://localhost:8080/api/matches/${matchId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedFields),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.json(); // Assuming the response is JSON
-        })
-        .then((updatedMatchData) => {
-          if (updatedMatchData) {
-            // Update state with the new match data
-            setMatches((prevMatches) =>
-              prevMatches.map((match) =>
-                match.matchId === matchId ? { ...match, ...updatedMatchData } : match
-              )
-            );
-            setEditValues({});
-          }
-          setEditingRow(null); // Exit editing mode
-        })
-        .catch((error) => {
-          console.error('Error updating match:', error);
+  const handleSaveClick = async (matchId) => {
+    try {
+      let response;
+      let updatedMatchData;
+  
+      if (editMode === 'score') {
+        // Validate input values
+        if (!editValues.player1points || !editValues.player2points) {
+          alert('Both player points must be filled before saving.');
+          return;
+        }
+        if (isNaN(editValues.player1points) || isNaN(editValues.player2points)) {
+          alert('Please enter valid numeric values for both players\' points.');
+          return;
+        }
+  
+        // Make the network request to update scores
+        response = await fetch(`http://localhost:8080/api/matches/${matchId}/results?player1Points=${editValues.player1points}&player2Points=${editValues.player2points}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
         });
-    }
-  };
-
-  const generateMatches = () => {
-    fetch(`http://localhost:8080/api/matches/generate/${tournamentId}`, {
-      method: 'POST',
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Match generation response:', data);
-        // Optionally, re-fetch the matches or update the state with the new data
-        alert('First Round match generated successfully!');
-      })
-      .catch((error) => {
-        console.error('Error generating matches:', error);
-      });
-  };
-
-  const generateSLMatches = () => {
-    fetch(`http://localhost:8080/api/matches/generate-seeding?tournamentId=${tournamentId}`, {
-      method: 'POST',
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        // Optionally handle any response data if needed
-        alert('Seeding matches generated successfully!');
-      })
-      .catch((error) => {
-        console.error('Error generating seeding matches:', error);
-      });
-  };
-
-  const generateDEMatches = () => {
-    fetch(`http://localhost:8080/api/matches/generate-de-matches/${tournamentId}`, {
-      method: 'POST',
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        alert('DE matches generated successfully!');
-      })
-      .catch((error) => {
-        console.error('Error generating DE matches:', error);
-      });
-  };
-
-  const promotePlayer = () => {
-    fetch(`http://localhost:8080/api/matches/promote-players/${tournamentId}`, {
-      method: 'POST',
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.text(); // Assuming the response is plain text
-      })
-      .then((message) => {
+      } else if (editMode === 'dateTime') {
+        const updatedFields = {};
+        if (editValues.date) updatedFields.date = editValues.date;
+        if (editValues.startTime) updatedFields.startTime = `${editValues.startTime}:00`;
+        if (editValues.endTime) updatedFields.endTime = `${editValues.endTime}:00`;
+  
+        response = await fetch(`http://localhost:8080/api/matches/${matchId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedFields),
+        });
+      }
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      // Determine response format
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        updatedMatchData = await response.json();
+        console.log('Updated match data (JSON):', updatedMatchData);
+      } else {
+        const message = await response.text();
+        console.log('Server response (string):', message);
         alert(message);
-      })
-      .catch((error) => {
-        console.error('Error promoting players:', error);
-      });
-  };
-
-  const isEditingPointsAllowed = (match) => {
-    return !(match.winner && editValues.player1points && editValues.player2points);
+        return; // Exit function if there's no JSON data to update state with
+      }
+  
+      // Update the state directly
+      setMatches((prevMatches) =>
+        prevMatches.map((match) =>
+          match.matchId === matchId ? { ...match, ...updatedMatchData } : match
+        )
+      );
+  
+      // Reset editing state
+      setEditingRow(null);
+      setEditMode(null);
+      setEditValues({});
+    } catch (error) {
+      console.error('Error updating match:', error);
+    }
   };
   
+
+  const refetchMatches = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/matches/tournament/${tournamentId}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch matches. Status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('Re-fetched matches data:', data);
+      setMatches([...data]); // Ensure new array reference
+    } catch (error) {
+      console.error('Error fetching match data:', error);
+    }
+  };
+
+  const fetchPlayerNames = async () => {
+    try {
+      const uniquePlayerIds = new Set(matches.flatMap(match => [match.player1Id, match.player2Id]));
+      const names = {};
+  
+      await Promise.all(
+        Array.from(uniquePlayerIds).map(async (id) => {
+          try {
+            const response = await fetch(`http://localhost:8080/api/players/${id}`);
+            if (response.ok) {
+              const playerData = await response.json();
+              names[id] = playerData.name; // Assuming `name` is a field in the response
+            } else {
+              console.warn(`Failed to fetch player with ID ${id}: Status ${response.status}`);
+              names[id] = `Player ${id}`; // Fallback value
+            }
+          } catch (error) {
+            console.error(`Error fetching player with ID ${id}:`, error);
+            names[id] = `Player ${id}`; // Fallback value in case of error
+          }
+        })
+      );
+  
+      // Update state with fetched names
+      setPlayerNames(names);
+    } catch (error) {
+      console.error('Error fetching player names:', error);
+    }
+  };
+  
+
+
+  const generateMatches = async () => {
+    if (isGenerateClicked) return;
+    setIsGenerateClicked(true);
+  
+    try {
+      const response = await fetch(`http://localhost:8080/api/matches/generate/${tournamentId}`, {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      setMatches(data); // Update state with new match data
+      fetchPlayerNames();
+    } catch (error) {
+      console.error('Error generating matches:', error);
+    } finally {
+      setIsGenerateClicked(false);
+
+    }
+  };
+  
+  
+  const generateSLMatches = async () => {
+    if (isGenerateSLClicked) return; // Prevent multiple clicks
+    setIsGenerateSLClicked(true);
+  
+    try {
+      const response = await fetch(`http://localhost:8080/api/matches/generate-seeding?tournamentId=${tournamentId}`, {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const contentType = response.headers.get('content-type');
+      let data;
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+        setMatches(data); // Update state with new match data
+        fetchPlayerNames();
+      }
+
+    } catch (error) {
+      console.error('Error generating seeding matches:', error);
+    } finally {
+      setIsGenerateSLClicked(false);
+    }
+  };
+  
+  const generateDEMatches = async () => {
+    if (isGenerateDEClicked) return; // Prevent multiple clicks
+    setIsGenerateDEClicked(true);
+  
+    try {
+      const response = await fetch(`http://localhost:8080/api/matches/generate-de-matches/${tournamentId}`, {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const contentType = response.headers.get('content-type');
+      let data;
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+        setMatches(data); // Update state with new match data
+        fetchPlayerNames();
+      }
+    } catch (error) {
+      console.error('Error generating DE matches:', error);
+    } finally {
+      setIsGenerateDEClicked(false);
+    }
+  };
+  
+  const promoteNextMatches = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/matches/promote-players/${tournamentId}`, {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const contentType = response.headers.get('content-type');
+      let data;
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+        setMatches(data); // Update state with new match data
+        fetchPlayerNames();
+      }
+    } catch (error) {
+      console.error('Error promoting players:', error);
+    }
+  };
+
+
+  const fetchCurrentRankings = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/match-rank/tournament/${tournamentId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const matchRanks = await response.json();
+      setRankingsData(matchRanks);
+      setShowRankingsCard(true); // Show the card
+    } catch (error) {
+      console.error('Error fetching match rankings:', error);
+      alert('An error occurred while fetching match rankings.');
+    }
+  };
+  
+
   const handleRoundChange = (event) => {
     const selectedValue = event.target.value;
     setSelectedRound(selectedValue);
-  
-    // Debugging log
-    console.log("Selected Round:", selectedValue);
-  
     if (selectedValue === 'All') {
       setFilteredMatches(matches);
     } else {
       const round = parseInt(selectedValue, 10);
-      // Ensure round value is parsed correctly and matches have correct roundNo values
       const filtered = matches.filter(match => match.roundNo === round);
-      console.log("Filtered Matches for Round:", round, filtered); // Debugging log
       setFilteredMatches(filtered);
     }
   };
 
-  // Generate options for the dropdown based on available rounds
   const roundOptions = Array.from(new Set(matches.map(match => match.roundNo))).sort((a, b) => a - b);
+  const allWinnersAssigned = matches.every(match => match.winner !== null);
 
   return (
     <div>
-      <Navbar />
+       {isLoading && (
+        <div className="loading-screen"> {/* Style this class in CSS */}
+          <Box sx={{ display: 'flex' }}>
+            <CircularProgress size="3rem"/>
+            <h2>Generating Matches...</h2>
+          </Box>
+          
+        </div>
+      )}
+      <AdminNavBar />
       <h2>{tournamentName}</h2>
       <div>
         <label htmlFor="round-filter">Filter by Round:</label>
@@ -298,7 +445,7 @@ const MatchAdmin = () => {
       {matches.length === 0 ? (
         <div>
           <p>No match has been created yet.</p>
-          <Button variant="contained" color="primary" onClick={generateMatches}>
+          <Button variant="contained" color="primary" onClick={() => handleLoadingAndAction(generateMatches)}>
             Generate Matches
           </Button>
         </div>
@@ -311,20 +458,20 @@ const MatchAdmin = () => {
                 <TableCell>Date</TableCell>
                 <TableCell>Start Time</TableCell>
                 <TableCell>End Time</TableCell>
+                <TableCell>Matchup (Player 1 VS Player 2)</TableCell>
                 <TableCell>Player 1 Points</TableCell>
                 <TableCell>Player 2 Points</TableCell>
-                <TableCell>Matchup (Player 1 VS Player 2)</TableCell>
-                
                 <TableCell>Winner</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
+            {console.log('Rendering matches:', matches)}
               {filteredMatches.map((match) => (
                 <TableRow key={match.matchId}>
                   <TableCell>{`Round ${match.roundNo}`}</TableCell>
                   <TableCell>
-                    {editingRow === match.matchId ? (
+                    {editingRow === match.matchId && editMode === 'dateTime' ? (
                       <TextField
                         name="date"
                         type="date"
@@ -336,7 +483,7 @@ const MatchAdmin = () => {
                     )}
                   </TableCell>
                   <TableCell>
-                    {editingRow === match.matchId ? (
+                    {editingRow === match.matchId && editMode === 'dateTime' ? (
                       <TextField
                         name="startTime"
                         type="time"
@@ -348,7 +495,7 @@ const MatchAdmin = () => {
                     )}
                   </TableCell>
                   <TableCell>
-                    {editingRow === match.matchId ? (
+                    {editingRow === match.matchId && editMode === 'dateTime' ? (
                       <TextField
                         name="endTime"
                         type="time"
@@ -358,9 +505,12 @@ const MatchAdmin = () => {
                     ) : (
                       match.endTime
                     )}
+                  </TableCell>  
+                  <TableCell>
+                    {`${playerNames[match.player1Id] || 'Loading...'} VS ${playerNames[match.player2Id] || 'Loading...'}`}
                   </TableCell>
                   <TableCell>
-                    {editingRow === match.matchId && isEditingPointsAllowed(match) ? (
+                    {editingRow === match.matchId && editMode === 'score' ? (
                       <TextField
                         name="player1points"
                         type="number"
@@ -372,7 +522,7 @@ const MatchAdmin = () => {
                     )}
                   </TableCell>
                   <TableCell>
-                    {editingRow === match.matchId && isEditingPointsAllowed(match) ? (
+                    {editingRow === match.matchId && editMode === 'score' ? (
                       <TextField
                         name="player2points"
                         type="number"
@@ -383,13 +533,9 @@ const MatchAdmin = () => {
                       match.player2points
                     )}
                   </TableCell>
-                  <TableCell>
-                    {`${playerNames[match.player1Id] || 'Loading...'} VS ${playerNames[match.player2Id] || 'Loading...'}`}
-                  </TableCell>
-                  
                   <TableCell>{playerNames[match.winner] || 'Loading...'}</TableCell>
                   <TableCell>
-                  {editingRow === match.matchId ? (
+                    {editingRow === match.matchId ? (
                       <>
                         <Button
                           variant="contained"
@@ -400,24 +546,31 @@ const MatchAdmin = () => {
                         </Button>
                         <Button
                           variant="outlined"
-                          color="secondary"
                           onClick={() => {
-                            setEditingRow(null); // Cancel editing
-                            setEditValues({}); // Clear edit values
+                            setEditingRow(null);
+                            setEditValues({});
+                            setEditMode(null);
                           }}
-                          style={{ marginLeft: '10px' }}
                         >
                           Cancel
                         </Button>
                       </>
                     ) : (
-                      <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={() => handleEditClick(match)}
-                      >
-                        Edit
-                      </Button>
+                      <>
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleEditClick(match, 'score')}
+                          disabled={match.winner !== null} // Disable if winner is not null
+                        >
+                          Edit Scores
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleEditClick(match, 'dateTime')}
+                        >
+                          Edit Date/Time
+                        </Button>
+                      </>
                     )}
                   </TableCell>
                 </TableRow>
@@ -427,36 +580,63 @@ const MatchAdmin = () => {
         </TableContainer>
       )}
       <div style={{ marginTop: '20px' }}>
-        {/* Condition to handle exact player counts (16, 32, 17, 33) */}
-        {currentRound === 1 && playerCount === 16 || playerCount === 32 || playerCount === 17 || playerCount === 33 ? (
+        {/* Button to Show Current Rankings */}
+              {(currentRound === 2 || currentRound === 3) && (
+                <Button
+                  variant="contained"
+                  color="info"
+                  onClick={fetchCurrentRankings}
+                  style={{
+                    marginTop: '80px',
+                    position: 'absolute',
+                    top: '10px',
+                    left: '10px',
+                  }}
+                >
+                  Current Rankings
+                </Button>
+              )}
+              {/* Conditionally render the RankingsCard */}
+              {showRankingsCard && (
+                <RankingsCard
+                  rankingsData={rankingsData}
+                  onClose={() => setShowRankingsCard(false)}
+                />
+              )}
+        {currentRound === 1 && (playerCount === 16 || playerCount === 32 || playerCount === 17 || playerCount === 33) ? (
           <>
-            <Button variant="contained" color="secondary" onClick={generateDEMatches}>
+            <Button variant="contained" color="secondary" onClick={() => handleLoadingAndAction(generateDEMatches)}>
               Generate DE Matches
             </Button>
             <p>Due to the exact amount of players, the seeding round (Round 2) is skipped and Direct Elimination matches (Round 3) will be generated.</p>
           </>
         ) : (
-          <>
-            {/* Existing logic for match generation */}
-            {currentRound === 1 && (
-              <Button variant="contained" color="primary" onClick={generateSLMatches}>
-                Generate Seeding Match
-              </Button>
-            )}
-            {currentRound === 2 && (
-              <Button variant="contained" color="secondary" onClick={generateDEMatches} style={{ marginLeft: '10px' }}>
-                Generate Match
-              </Button>
-            )}
-            {currentRound > 3 && currentRound !== predefinedRounds && (
-              <Button variant="contained" color="success" onClick={promotePlayer} style={{ marginLeft: '10px' }}>
-                Generate Match
-              </Button>
-            )}
-            {currentRound === predefinedRounds && (
-              <p>All match results have been generated.</p>
-            )}
-          </>
+          allWinnersAssigned && (
+            <>
+              {currentRound === 1 && (
+                <Button variant="contained" color="primary" onClick={() => handleLoadingAndAction(generateSLMatches)}>
+                  Generate Seeding Match
+                </Button>
+              )}
+              {currentRound === 2 && (
+                <Button variant="contained" color="secondary" onClick={() => handleLoadingAndAction(generateDEMatches)} style={{ marginLeft: '10px' }}>
+                  Generate Match
+                </Button>
+              )}
+              {currentRound >= 3 && currentRound !== predefinedRounds && (
+                <Button variant="contained" color="success" onClick={() => handleLoadingAndAction(promoteNextMatches)} style={{ marginLeft: '10px' }}>
+                  Generate Match
+                </Button>
+              )}
+               {currentRound === predefinedRounds && (
+                <p>All match results have been generated.</p>
+              )}
+
+              
+
+              
+            </>
+          )
         )}
       </div>
     </div>
@@ -464,6 +644,8 @@ const MatchAdmin = () => {
 };
 
 export default MatchAdmin;
+
+
 
 
 
