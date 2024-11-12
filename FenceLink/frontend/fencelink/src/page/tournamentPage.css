@@ -116,8 +116,8 @@ input[type="date"],
   background-color: #e1b12c;
 }
 
-/* Modal Styles */
 .modal-overlay {
+  display: block !important;
   position: fixed;
   top: 0;
   left: 0;
@@ -127,11 +127,13 @@ input[type="date"],
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 10000;
 }
 
 /* Modal Content */
 .modal {
+  display: block !important;
+  position: fixed;
   background: #ffffff;
   padding: 2rem;
   border-radius: 12px;
@@ -143,7 +145,10 @@ input[type="date"],
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  z-index: 10001;
+
 }
+
 
 /* Modal Heading */
 .modal h2 {
