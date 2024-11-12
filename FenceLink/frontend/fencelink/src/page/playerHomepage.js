@@ -9,17 +9,15 @@ import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
 import playerTournamentCardImage from './assets/playertournamentcard.jpg';
 
-
 // Configure axios defaults
 axios.defaults.baseURL = 'http://localhost:8080';
 
 const PlayerHomePage = () => {
-  const [player, setPlayer] = useState(null); // Local state for player data
+  const [player, setPlayer] = useState(null);
   const [upcomingTournaments, setUpcomingTournaments] = useState([]);
   const [availableTournaments, setAvailableTournaments] = useState([]);
   const [tournamentDates, setTournamentDates] = useState([]);
-  const [joinedTournaments, setJoinedTournaments] = useState([]); // Track joined tournaments
-  // const playerId = 203; // Use dynamic player ID if available
+  const [joinedTournaments, setJoinedTournaments] = useState([]);
   const playerId = localStorage.getItem('playerId');
 
   // Fetch player data
@@ -32,7 +30,6 @@ const PlayerHomePage = () => {
         console.error("Error fetching player data:", error);
       }
     };
-
     fetchPlayer();
   }, [playerId]);
 
@@ -56,123 +53,14 @@ const PlayerHomePage = () => {
         console.error("Error fetching tournament data:", error);
       }
     };
-
     fetchTournaments();
   }, [playerId]);
 
-  // Handle Join tournament
-  const handleJoin = (tournamentId) => {
-    axios.post(`/api/players/${playerId}/register/${tournamentId}`)
-      .then(response => {
-        setJoinedTournaments([...joinedTournaments, tournamentId]);
-      })
-      .catch(error => {
-        console.error('Error joining tournament:', error);
-      });
+  const normalizeDate = (date) => {
+    const normalized = new Date(date);
+    normalized.setHours(0, 0, 0, 0);
+    return normalized;
   };
-
-// // DUMMY DATA
-//   const [player, setPlayer] = useState({ name: 'John Doe' }); // Dummy player data
-//   const [upcomingTournaments, setUpcomingTournaments] = useState([]);
-//   const [availableTournaments, setAvailableTournaments] = useState([]);
-//   const [tournamentDates, setTournamentDates] = useState([]);
-//   const [joinedTournaments, setJoinedTournaments] = useState([]); // Track joined tournaments
-
-//   useEffect(() => {
-//     // Dummy data for upcoming tournaments
-//     const dummyUpcomingTournaments = [
-//       {
-//         tournament: {
-//           id: 1,
-//           name: 'City Fencing Championship',
-//           location: 'New York',
-//           startDate: '2024-12-01',
-//           endDate: '2024-12-03',
-//         },
-//       },
-//       {
-//         tournament: {
-//           id: 2,
-//           name: 'Winter Invitational',
-//           location: 'Los Angeles',
-//           startDate: '2024-12-10',
-//           endDate: '2024-12-12',
-//         },
-//       },
-//       {
-//         tournament: {
-//           id: 3,
-//           name: 'National Open',
-//           location: 'Chicago',
-//           startDate: '2024-12-20',
-//           endDate: '2024-12-22',
-//         },
-//       },
-//       {
-//         tournament: {
-//           id: 3,
-//           name: 'National Open',
-//           location: 'Chicago',
-//           startDate: '2024-12-20',
-//           endDate: '2024-12-22',
-//         },
-//       },
-//     ];
-
-//     // Dummy data for available tournaments
-//     const dummyAvailableTournaments = [
-//       {
-//         tournament: {
-//           id: 4,
-//           name: 'Spring Fencing Festival',
-//           location: 'Houston',
-//           startDate: '2025-03-15',
-//           endDate: '2025-03-17',
-//         },
-//       },
-//       {
-//         tournament: {
-//           id: 5,
-//           name: 'Junior Nationals',
-//           location: 'San Francisco',
-//           startDate: '2025-04-05',
-//           endDate: '2025-04-07',
-//         },
-//       },
-//       {
-//         tournament: {
-//           id: 6,
-//           name: 'Regional Challenge',
-//           location: 'Miami',
-//           startDate: '2025-04-20',
-//           endDate: '2025-04-22',
-//         },
-//       },
-//     ];
-
-//     setUpcomingTournaments(dummyUpcomingTournaments);
-//     setAvailableTournaments(dummyAvailableTournaments);
-//     setTournamentDates(
-//       dummyUpcomingTournaments.map((t) => ({
-//         startDate: new Date(t.tournament.startDate),
-//         endDate: new Date(t.tournament.endDate),
-//       }))
-//     );
-//   }, []);
-
-//   // Handle Join tournament (dummy implementation)
-//   const handleJoin = (tournamentId) => {
-//     setJoinedTournaments([...joinedTournaments, tournamentId]);
-//     console.log(`Joined tournament with ID: ${tournamentId}`);
-//   };
-
-// Helper function to normalize dates to midnight for comparison
-
-const normalizeDate = (date) => {
-  const normalized = new Date(date);
-  normalized.setHours(0, 0, 0, 0);
-  return normalized;
-};
 
   return (
     <div className="home-page">
@@ -221,6 +109,7 @@ const normalizeDate = (date) => {
                           <Col xs={9} className="tournament-details">
                             <Card.Title className='upcoming-tournament-name'>{tournament.name}</Card.Title>
                             <Card.Text>{tournament.location}</Card.Text>
+                            <Card.Text>Weapon Type: {tournament.weaponType}</Card.Text>
                             <Card.Text className="tournament-duration">
                               {new Date(tournament.startDate).toLocaleDateString()} - {new Date(tournament.endDate).toLocaleDateString()}
                             </Card.Text>
@@ -240,7 +129,7 @@ const normalizeDate = (date) => {
 
         {/* Available Tournaments Section */}
         <div className="section">
-          <h2 className='join-tournaments'>Join Tournaments</h2>
+          <h2 className='join-tournaments'>Recommended Tournaments</h2>
           <Row>
             {availableTournaments.length === 0 ? (
               <p>No available tournaments to join.</p>
@@ -249,15 +138,18 @@ const normalizeDate = (date) => {
                 tournament ? (
                   <Col md={4} key={tournament.id}>
                     <Card className="mb-3 shadow-sm tournament-card">
-                      {/* Hardcoded image for all tournament cards */}
                       <Card.Img variant="top" src={playerTournamentCardImage} alt="Tournament Image" />
                       <Card.Body>
                         <Card.Title className="join-tournament-name">{tournament.name}</Card.Title>
-                        <Card.Text>Location: {tournament.location}</Card.Text>
-                        <Card.Text>
-                          {new Date(tournament.startDate).toLocaleDateString()} - {new Date(tournament.endDate).toLocaleDateString()}
-                        </Card.Text>
-                        <Button variant="primary" onClick={() => handleJoin(tournament.id)}>Join</Button>
+                        <Card.Text><strong>Location:</strong> {tournament.location}</Card.Text>
+                        <Card.Text><strong>Tournament Type:</strong> {tournament.tournamentType}</Card.Text>
+                        <Card.Text><strong>Age Group:</strong> {tournament.ageGroup}</Card.Text>
+                        <Card.Text><strong>Weapon Type:</strong> {tournament.weaponType}</Card.Text>
+                        <Card.Text><strong>Gender:</strong> {tournament.genderType}</Card.Text>
+                        <Card.Text><strong>Start Date:</strong> {new Date(tournament.startDate).toLocaleDateString()}</Card.Text>
+                        <Card.Text><strong>End Date:</strong> {new Date(tournament.endDate).toLocaleDateString()}</Card.Text>
+                        <Card.Text><strong>Vacancy:</strong> {tournament.vacancy}</Card.Text>
+                        <Card.Text><strong>Register By:</strong> {tournament.registrationDate}</Card.Text>
                       </Card.Body>
                     </Card>
                   </Col>
@@ -266,7 +158,7 @@ const normalizeDate = (date) => {
             )}
           </Row>
           {availableTournaments.length > 0 && (
-            <Link to="/usertournament" className="view-more">View More</Link>
+            <Link to="/usertournament" className="view-more">View All Available Tournaments</Link>
           )}
         </div>
       </div>
