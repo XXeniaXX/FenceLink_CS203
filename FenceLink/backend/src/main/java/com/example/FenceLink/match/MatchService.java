@@ -1,19 +1,19 @@
 package com.example.FenceLink.match;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-
+import com.example.FenceLink.player.Player;
 import com.example.FenceLink.player.PlayerServiceImpl;
 import com.example.FenceLink.tournament.Tournament;
 import com.example.FenceLink.tournament.TournamentRepository;
 import com.example.FenceLink.MatchRank.MatchRank;
 import com.example.FenceLink.MatchRank.MatchRankService;
+import com.example.FenceLink.leaderboard.Leaderboard;
 import com.example.FenceLink.MatchRank.MatchRankRepository;
+import com.example.FenceLink.player.PlayerRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,14 +37,16 @@ public class MatchService {
     private final PlayerServiceImpl playerService; 
     private final MatchRankService matchRankService;
     private final MatchRankRepository matchRankRepository;
+    private final PlayerRepository playerRepository;
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, TournamentRepository tournamentRepository, PlayerServiceImpl playerService,MatchRankService matchRankService, MatchRankRepository matchRankRepository) {
+    public MatchService(MatchRepository matchRepository, TournamentRepository tournamentRepository, PlayerServiceImpl playerService,MatchRankService matchRankService, MatchRankRepository matchRankRepository,PlayerRepository playerRepository) {
         this.matchRepository = matchRepository;
         this.tournamentRepository = tournamentRepository;
         this.playerService = playerService;
         this.matchRankService=matchRankService;
         this.matchRankRepository=matchRankRepository;
+        this.playerRepository=playerRepository;
     }
 
     public List<Match> getAllMatches() {
@@ -181,24 +183,24 @@ public class MatchService {
         return pools;
     }
     
-    public void updateMatchResults(Long matchId, int player1Points, int player2Points) {
+    public Match updateMatchResults(Long matchId, int player1Points, int player2Points) {
         Match match = matchRepository.findById(matchId)
             .orElseThrow(() -> new IllegalArgumentException("Match not found for ID: " + matchId));
-
+    
         // Check if both player's points are provided
-        if (player1Points <= 0 || player2Points <= 0) {
+        if (player1Points <= -1 || player2Points <= -1) {
             throw new IllegalArgumentException("Both players' points must be provided and cannot be negative.");
         }
-
+    
         // Check if the points are equal
         if (player1Points == player2Points) {
             throw new IllegalArgumentException("Points cannot be equal. A winner must be determined.");
         }
-
+    
         // Set points for both players
         match.setPlayer1points(player1Points);
         match.setPlayer2points(player2Points);
-
+    
         // Determine and set the winner
         Long winnerId, loserId;
         if (player1Points > player2Points) {
@@ -209,34 +211,58 @@ public class MatchService {
             loserId = match.getPlayer1Id();
         }
         match.setWinner(winnerId);
-
+    
         // Save the updated match
         matchRepository.save(match);
-
+    
         // Determine if the current round is the semi-final round
         int currentRoundNo = match.getRoundNo();
-        int predefinedRounds=predefinedRounds(match.getTournament().getId());
-
-
+        int predefinedRounds = predefinedRounds(match.getTournament().getId());
+    
         // Update MatchRank for the winner
         MatchRank winnerRank = matchRankRepository.findByTournamentIdAndPlayerId(match.getTournament().getId(), winnerId)
             .orElseThrow(() -> new IllegalArgumentException("MatchRank not found for player ID: " + winnerId));
         winnerRank.setWinCount(winnerRank.getWinCount() + 1);
         matchRankRepository.save(winnerRank);
-
+    
         // Update MatchRank for the loser with elimination conditions
         MatchRank loserRank = matchRankRepository.findByTournamentIdAndPlayerId(match.getTournament().getId(), loserId)
             .orElseThrow(() -> new IllegalArgumentException("MatchRank not found for player ID: " + loserId));
         loserRank.setLossCount(loserRank.getLossCount() + 1);
-
+    
         // Apply elimination conditions
-        if (currentRoundNo > 1 && currentRoundNo != predefinedRounds-2) { // Only eliminate if it's not the semi-final round
+        if (currentRoundNo > 1 && currentRoundNo != predefinedRounds - 2) { // Only eliminate if it's not the semi-final round
             loserRank.setEliminated(true);
         }
-
+    
         // Save the updated MatchRank object for the loser
         matchRankRepository.save(loserRank);
+    
+        // ELO point update logic (only for competitive tournaments)
+        if ("competitive".equalsIgnoreCase(match.getTournament().getTournamentType())) {
+            Player player1 = playerService.findById(match.getPlayer1Id());
+            Player player2 = playerService.findById(match.getPlayer2Id());
+    
+            double result1 = (winnerId.equals(player1.getId())) ? 1.0 : 0.0; // Determine match result for Player 1
+    
+            // Update ELO points using Leaderboard class
+            Leaderboard leaderboard = new Leaderboard();
+            leaderboard.updatePlayerPointsByElo(player1, player2, result1);
+    
+            // Log ELO updates
+            logger.info("ELO update for match ID {}: Player {} (new points: {}), Player {} (new points: {})",
+            matchId, player1.getId(), player1.getPoints(), player2.getId(), player2.getPoints());
+    
+            // Save the updated player points
+            playerRepository.save(player1);
+            playerRepository.save(player2);
+    
+            
+        }return matchRepository.save(match);
+    
     }
+    
+
 
     public void generateSLMatches(Tournament tournament) {
         Long tournamentId = tournament.getId();

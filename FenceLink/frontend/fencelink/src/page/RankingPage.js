@@ -70,7 +70,7 @@ const RankingPage = () => {
     return (
         <div className="leaderboard">
             {userRole === 'admin' ? <AdminNavBar /> : <Navbar />}
-            <h1>World Leaderboard</h1>
+            <h1 className='world-leaderboard'>World Leaderboard</h1>
     
             {/* Filters */}
             <div className="filters">

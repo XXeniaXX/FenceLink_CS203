@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.FenceLink.tournament.Tournament;
 import com.example.FenceLink.tournament.TournamentService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
@@ -17,12 +18,12 @@ import java.util.Map;
 public class MatchController {
 
     private final MatchService matchService;
-    private final TournamentService tournamentService; // Ensure this is declared
+    private final TournamentService tournamentService; 
 
     @Autowired
     public MatchController(MatchService matchService, TournamentService tournamentService) {
         this.matchService = matchService;
-        this.tournamentService = tournamentService; // Ensure this is injected
+        this.tournamentService = tournamentService; 
     }
 
     @GetMapping
@@ -86,18 +87,18 @@ public class MatchController {
     }
 
     @PutMapping("/{matchId}/results")
-    public ResponseEntity<String> updateMatchResults(
+    public ResponseEntity<Match> updateMatchResults(
         @PathVariable Long matchId,
         @RequestParam int player1Points,
         @RequestParam int player2Points
     ) {
         try {
-            matchService.updateMatchResults(matchId, player1Points, player2Points);
-            return ResponseEntity.ok("Match results updated successfully.");
+            Match updatedMatch = matchService.updateMatchResults(matchId, player1Points, player2Points);
+            return ResponseEntity.ok(updatedMatch);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while updating match results.");
+            return ResponseEntity.status(500).body(null);
         }
     }
 
@@ -109,7 +110,6 @@ public class MatchController {
             throw new IllegalArgumentException("Tournament not found with ID: " + tournamentId);
         }
 
-        // Call the method to generate seeding matches
         matchService.generateSLMatches(tournament);
     }
 
@@ -121,7 +121,6 @@ public class MatchController {
             return ResponseEntity.badRequest().body("Invalid tournament ID");
         }
 
-        // Call the service method to generate DE matches
         matchService.generateDEMatches(tournament);
         return ResponseEntity.ok("DE matches generated successfully");
     }
@@ -129,13 +128,11 @@ public class MatchController {
     @PostMapping("/promote-players/{tournamentId}")
     public ResponseEntity<String> promotePlayersToNextRound(@PathVariable Long tournamentId) {
         try {
-            // Fetch the Tournament object by ID
             Tournament tournament = tournamentService.getTournamentById(tournamentId);
             if (tournament == null) {
                 return ResponseEntity.badRequest().body("Invalid tournament ID");
             }
 
-            // Call the service method to promote players
             List<Long> winners = matchService.promotePlayersToNextRound(tournament);
 
             return ResponseEntity.ok("Players promoted successfully. Winners: " + winners);

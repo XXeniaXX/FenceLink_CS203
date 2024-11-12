@@ -1,11 +1,13 @@
 package com.example.FenceLink.match;
 
 import com.example.FenceLink.MatchRank.MatchRankService;
+import com.example.FenceLink.player.Player;
 import com.example.FenceLink.player.PlayerServiceImpl;
 import com.example.FenceLink.tournament.Tournament;
 import com.example.FenceLink.tournament.TournamentRepository;
 import com.example.FenceLink.MatchRank.MatchRank;
 import com.example.FenceLink.MatchRank.MatchRankRepository;
+import com.example.FenceLink.player.PlayerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -44,9 +46,12 @@ public class MatchServiceTest {
 
     @Mock
     private MatchRankRepository matchRankRepository;
+    
+    @Mock
+    private PlayerRepository playerRepository;
 
     @Mock
-    private PlayerServiceImpl playerService; // Use PlayerService, not PlayerServiceImpl
+    private PlayerServiceImpl playerService;
 
     @InjectMocks
     private MatchService matchService;
@@ -218,10 +223,69 @@ public class MatchServiceTest {
         assertEquals(1, player2Rank.getLossCount()); // Player 2 should have 1 loss
 
         verify(matchRepository, times(1)).findById(matchId);
-        verify(matchRepository, times(1)).save(match);
+        verify(matchRepository, times(2)).save(match);
         verify(matchRankRepository, times(1)).save(player1Rank);
         verify(matchRankRepository, times(1)).save(player2Rank);
     }
+    @Test
+    public void testUpdateMatchResults_WithEloUpdate_Success() {
+        // Arrange
+        Long matchId = 1L;
+        Tournament tournament = new Tournament();
+        tournament.setId(1L);
+        tournament.setTournamentType("competitive"); // Set the tournament type to competitive
+
+        Match match = new Match();
+        match.setMatchId(matchId);
+        match.setTournament(tournament);
+        match.setPlayer1Id(101L);
+        match.setPlayer2Id(102L);
+
+        MatchRank player1Rank = new MatchRank(1L, tournament, 101L, 0, 0, 0, false);
+        MatchRank player2Rank = new MatchRank(2L, tournament, 102L, 0, 0, 0, false);
+
+        Player player1 = new Player();
+        player1.setId(101L);
+        player1.setPoints(1500); // Initial Elo points for Player 1
+
+        Player player2 = new Player();
+        player2.setId(102L);
+        player2.setPoints(1400); // Initial Elo points for Player 2
+
+        when(matchRepository.findById(matchId)).thenReturn(Optional.of(match));
+        when(matchRankRepository.findByTournamentIdAndPlayerId(1L, 101L)).thenReturn(Optional.of(player1Rank));
+        when(matchRankRepository.findByTournamentIdAndPlayerId(1L, 102L)).thenReturn(Optional.of(player2Rank));
+        when(playerService.findById(101L)).thenReturn(player1);
+        when(playerService.findById(102L)).thenReturn(player2);
+
+        // Act
+        matchService.updateMatchResults(matchId, 5, 3);
+
+        // Assert
+        assertEquals(5, match.getPlayer1points());
+        assertEquals(3, match.getPlayer2points());
+        assertEquals(101L, match.getWinner()); // Player 1 wins
+
+        // Check if the win and loss counts are updated
+        assertEquals(1, player1Rank.getWinCount()); // Player 1 should have 1 win
+        assertEquals(0, player1Rank.getLossCount());
+        assertEquals(0, player2Rank.getWinCount());
+        assertEquals(1, player2Rank.getLossCount()); // Player 2 should have 1 loss
+
+        // Check if Elo points are updated
+        assertTrue(player1.getPoints() > 1500); // Player 1's Elo should increase
+        assertTrue(player2.getPoints() < 1400); // Player 2's Elo should decrease
+
+        verify(matchRepository, times(1)).findById(matchId);
+        verify(matchRepository, times(2)).save(match);
+        verify(matchRankRepository, times(1)).save(player1Rank);
+        verify(matchRankRepository, times(1)).save(player2Rank);
+        verify(playerService, times(1)).findById(101L);
+        verify(playerService, times(1)).findById(102L);
+        verify(playerRepository, times(1)).save(player1);
+        verify(playerRepository, times(1)).save(player2);
+    }
+
 
     @Test
     public void testUpdateMatchResults_MatchNotFound() {
@@ -315,7 +379,7 @@ public class MatchServiceTest {
         assertFalse(player2Rank.isEliminated()); // Player 2 should not be eliminated
 
         verify(matchRepository, times(1)).findById(matchId);
-        verify(matchRepository, times(1)).save(match);
+        verify(matchRepository, times(2)).save(match);
         verify(matchRankRepository, times(1)).save(player1Rank);
         verify(matchRankRepository, times(1)).save(player2Rank);
     }

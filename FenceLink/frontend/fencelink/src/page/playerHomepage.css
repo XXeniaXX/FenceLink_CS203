@@ -3,11 +3,11 @@
   }
   
   .section {
-    margin-top: 40px;
+    padding-top: 1em;
   }
 
   .welcome {
-    font-weight: bold;
+    font-weight: bolder;
   }
 
   .calendar-column .highlight {
@@ -28,6 +28,8 @@
   .player-upcoming {
     padding-top: 2em;
     padding-bottom: 1em;
+    color: #1C1E53;
+    font-weight: bold;
   }
 
   .upcoming-tournament-name{
@@ -40,6 +42,13 @@
     background-color: #f8f8f8;
     display: flex;
     align-items: left;
+    border: none;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+
+  .tournament-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   }
   
   .tournament-date {
@@ -83,19 +92,37 @@
   
   .view-more {
     display: block;
-    margin-top: 15px;
+    margin-top: 1em;
     color: #007bff;
     text-decoration: none;
     font-weight: bold;
+    transition: color 0.2s ease-in-out; /* Smooth color transition */
+  }
+
+  .view-all {
+    display: block;
+    margin-top: 2em;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease-in-out; /* Smooth color transition */
+  }
+
+  .view-all:hover, .view-more:hover {
+    color: #0056b3; /* Color on hover */
   }
   
   .join-tournaments {
     padding-top: 2em;
     padding-bottom: 1em;
+    color: #1C1E53;
+    font-weight: bold;
   }
 
   .join-tournament-name {
     font-weight: bold;
+    padding-top: 1em;
+    font-size: 24px;
   }
 
   .join-button {
