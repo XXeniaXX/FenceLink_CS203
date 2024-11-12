@@ -7,6 +7,9 @@
     }
     
     .nav {
+        position: sticky; /* Makes the navbar "stick" to the top */
+        top: 0; /* Keeps it at the top of the viewport */
+        z-index: 1000;
         background-color: #1C1E53;
         color: white;
         display: flex;
@@ -15,6 +18,7 @@
         gap: 2rem;
         padding: 0 30px;
         height: 65px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     
     .nav-links {

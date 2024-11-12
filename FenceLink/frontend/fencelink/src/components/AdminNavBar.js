@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
 const AdminNavBar = () => {
-  const [showDropdown, setShowDropdown] = useState(false); // State to manage dropdown visibility
+  const [showDropdown, setShowDropdown] = useState(false); // For profile dropdown visibility
   const navigate = useNavigate();
   const storedUserName = localStorage.getItem('userName') || "Admin"; // Fallback if userName is missing
 
@@ -20,9 +20,15 @@ const AdminNavBar = () => {
   return (
     <nav className="nav">
       <div className="logo-container">
-        <img src="/fencelink.png" alt="Logo" className="logo" />
+        <img src="/fencelink.png" alt="Logo" className="logo" style={{
+          width: '210px',
+          height: '70px',
+          borderRadius: '50%',
+          objectFit: 'contain'
+        }} />
       </div>
 
+      {/* Navigation Links */}
       <ul className="nav-links">
         <li><Link to="/adminhomepage">HOME</Link></li>
         <li><Link to="/tournament">TOURNAMENT</Link></li>
@@ -36,13 +42,7 @@ const AdminNavBar = () => {
         onMouseEnter={() => setShowDropdown(true)} // Show dropdown on hover
         onMouseLeave={() => setShowDropdown(false)} // Hide dropdown when leaving the section
       >
-        {/* Link to Profile Page */}
-        <Link to="/profilepage" className="profile-link">
-          <img src="./profileicon.png" alt="Profile" className="profile-pic" />
-          <span className="profile-name">Hi, Admin {storedUserName}</span>
-        </Link>
-
-        {/* Dropdown Icon */}
+        <li className="nav-links">Hi, Admin {storedUserName}</li>
         <span
           className={`dropdown-icon ${showDropdown ? 'rotate' : ''}`}
           onClick={toggleDropdown} // Toggle dropdown on click
@@ -52,12 +52,11 @@ const AdminNavBar = () => {
 
         {/* Dropdown Menu */}
         {showDropdown && (
-            <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}>
-                <Link to="/editprofile" className="dropdown-item">Edit Profile</Link>
-                <button onClick={handleSignOut} className="dropdown-item">Sign Out</button>
-            </div>
+          <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}>
+            <Link to="/editprofile" className="dropdown-item">Edit Profile</Link>
+            <button onClick={handleSignOut} className="dropdown-item">Sign Out</button>
+          </div>
         )}
-
       </div>
     </nav>
   );
