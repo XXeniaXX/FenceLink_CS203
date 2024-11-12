@@ -1,0 +1,58 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-fencelink-dev-e136b-authRole",
+      "UnauthRoleArn": "arn:aws:iam::976193220058:role/amplify-fencelink-dev-e136b-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::976193220058:role/amplify-fencelink-dev-e136b-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-fencelink-dev-e136b-deployment",
+      "UnauthRoleName": "amplify-fencelink-dev-e136b-unauthRole",
+      "StackName": "amplify-fencelink-dev-e136b",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:976193220058:stack/amplify-fencelink-dev-e136b/ceed1280-8788-11ef-94ea-02142df23065",
+      "AmplifyAppId": "d1ztkja6ecvr1h"
+    }
+  },
+  "auth": {
+    "fencelinkb5260db5": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-fencelink-dev-e136b-deployment/amplify-cfn-templates/auth/fencelinkb5260db5-cloudformation-template.json",
+        "logicalId": "authfencelinkb5260db5"
+      },
+      "lastPushTimeStamp": "2024-10-11T07:45:01.922Z",
+      "output": {
+        "UserPoolId": "ap-southeast-1_akO3biVkp",
+        "AppClientIDWeb": "5uo259ncntke03gq3s27cei7k8",
+        "AppClientID": "1sg9fnu3s5vfp2tjmpv2hlm1nb",
+        "IdentityPoolId": "ap-southeast-1:aa6023ce-7645-4697-8b0c-6b1073938ce1",
+        "UserPoolArn": "arn:aws:cognito-idp:ap-southeast-1:976193220058:userpool/ap-southeast-1_akO3biVkp",
+        "IdentityPoolName": "fencelinkb5260db5_identitypool_b5260db5__dev",
+        "UserPoolName": "fencelinkb5260db5_userpool_b5260db5"
+      },
+      "lastPushDirHash": "feptbJpncD5Tj/TdGpr9Qytln/s="
+    }
+  }
+}

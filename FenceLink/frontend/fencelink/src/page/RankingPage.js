@@ -20,7 +20,7 @@ const RankingPage = () => {
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
-                const response = await axios.get('/api/leaderboard/top', {
+                const response = await axios.get('http://13.213.45.2:8080/api/leaderboard/top', {
                     params: {
                         page: currentPage,
                         gender: gender || undefined, // Only send if gender is selected
@@ -39,7 +39,7 @@ const RankingPage = () => {
     useEffect(() => {
         const fetchCountries = async () => {
             try {
-                const response = await axios.get('/api/players/countries');
+                const response = await axios.get('http://13.213.45.2:8080/api/players/countries');
                 setCountries(response.data);
             } catch (error) {
                 console.error("Error fetching countries:", error);

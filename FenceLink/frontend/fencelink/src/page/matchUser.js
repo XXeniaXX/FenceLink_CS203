@@ -27,7 +27,7 @@ const MatchUser = () => {
     // Fetch the list of player IDs who registered for the tournament
     const fetchPlayerIds = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/players/${tournamentId}/get-all-players`);
+        const response = await fetch(`http://13.213.45.2:8080/api/players/${tournamentId}/get-all-players`);
         const playerIds = await response.json();
         const playerCount = playerIds.length;
 
@@ -52,7 +52,7 @@ const MatchUser = () => {
     // Fetch tournament name based on tournamentId
     const fetchTournamentName = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/tournaments/${tournamentId}`);
+        const response = await fetch(`http://13.213.45.2:8080/api/tournaments/${tournamentId}`);
         const data = await response.json();
         setTournamentName(data.name || 'Unknown Tournament');
       } catch (error) {
@@ -67,7 +67,7 @@ const MatchUser = () => {
     // Fetch match data for the tournament
     const fetchMatches = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/matches/tournament/${tournamentId}`);
+        const response = await fetch(`http://13.213.45.2:8080/api/matches/tournament/${tournamentId}`);
         const data = await response.json();
         setMatches(data);
         setFilteredMatches(data);
@@ -83,7 +83,7 @@ const MatchUser = () => {
           await Promise.all(
             Array.from(uniquePlayerIds).map(async (id) => {
               try {
-                const response = await fetch(`http://localhost:8080/api/players/${id}`);
+                const response = await fetch(`http://13.213.45.2:8080/api/players/${id}`);
                 if (response.ok) {
                   const playerData = await response.json();
                   names[id] = playerData.name;
