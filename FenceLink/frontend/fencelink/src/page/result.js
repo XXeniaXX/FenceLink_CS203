@@ -134,12 +134,6 @@ const ResultPage = () => {
                     Tournament Results
                 </h1>
 
-                {error && (
-                    <Typography color="error" align="center" style={{ marginBottom: '20px' }}>
-                        {error}
-                    </Typography>
-                )}
-
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
@@ -207,7 +201,7 @@ const ResultPage = () => {
                                                             </div>
                                                         ) : (
                                                             <Typography variant="body2">
-                                                                Loading winners...
+                                                                No winners for this match yet...
                                                             </Typography>
                                                         )}
                                                         <div style={{ marginTop: '20px', textAlign: 'center' }}>
