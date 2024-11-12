@@ -8,7 +8,7 @@ import com.example.FenceLink.player.*;
 
 @RestController
 @RequestMapping("/api/leaderboard")
-@CrossOrigin(origins = "http://fencelink-frontend.s3-website-ap-southeast-1.amazonaws.com")
+@CrossOrigin(origins = "http://localhost:3000")
 public class LeaderboardController {
 
     @Autowired

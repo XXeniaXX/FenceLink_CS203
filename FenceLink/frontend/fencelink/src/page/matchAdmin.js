@@ -32,7 +32,7 @@ const MatchAdmin = () => {
     // Fetch the list of player IDs who registered for the tournament
     const fetchPlayerIds = async () => {
       try {
-        const response = await fetch(`http://13.213.45.2:8080/api/players/${tournamentId}/get-all-players`);
+        const response = await fetch(`http://localhost:8080/api/players/${tournamentId}/get-all-players`);
         const playerIds = await response.json();
         const playerCount = playerIds.length;
         setPlayerCount(playerCount);
@@ -58,7 +58,7 @@ const MatchAdmin = () => {
     // Fetch tournament name based on tournamentId
     const fetchTournamentName = async () => {
       try {
-        const response = await fetch(`http://13.213.45.2:8080/api/tournaments/${tournamentId}`);
+        const response = await fetch(`http://localhost:8080/api/tournaments/${tournamentId}`);
         const data = await response.json();
         setTournamentName(data.name || 'Unknown Tournament');
       } catch (error) {
@@ -73,7 +73,7 @@ const MatchAdmin = () => {
     // Fetch match data for the tournament
     const fetchMatches = async () => {
       try {
-        const response = await fetch(`http://13.213.45.2:8080/api/matches/tournament/${tournamentId}`);
+        const response = await fetch(`http://localhost:8080/api/matches/tournament/${tournamentId}`);
         const data = await response.json();
         setMatches(data);
         setFilteredMatches(data);
@@ -89,7 +89,7 @@ const MatchAdmin = () => {
           await Promise.all(
             Array.from(uniquePlayerIds).map(async (id) => {
               try {
-                const response = await fetch(`http://13.213.45.2:8080/api/players/${id}`);
+                const response = await fetch(`http://localhost:8080/api/players/${id}`);
                 if (response.ok) {
                   const playerData = await response.json();
                   names[id] = playerData.name;
@@ -157,7 +157,7 @@ const MatchAdmin = () => {
 
     // Only make the request if there are fields to update
     if (Object.keys(updatedFields).length > 0) {
-      fetch(`http://13.213.45.2:8080/api/matches/${matchId}`, {
+      fetch(`http://localhost:8080/api/matches/${matchId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFields),
@@ -187,7 +187,7 @@ const MatchAdmin = () => {
   };
 
   const generateMatches = () => {
-    fetch(`http://13.213.45.2:8080/api/matches/generate/${tournamentId}`, {
+    fetch(`http://localhost:8080/api/matches/generate/${tournamentId}`, {
       method: 'POST',
     })
       .then((response) => {
@@ -207,7 +207,7 @@ const MatchAdmin = () => {
   };
 
   const generateSLMatches = () => {
-    fetch(`http://13.213.45.2:8080/api/matches/generate-seeding?tournamentId=${tournamentId}`, {
+    fetch(`http://localhost:8080/api/matches/generate-seeding?tournamentId=${tournamentId}`, {
       method: 'POST',
     })
       .then((response) => {
@@ -223,7 +223,7 @@ const MatchAdmin = () => {
   };
 
   const generateDEMatches = () => {
-    fetch(`http://13.213.45.2:8080/api/matches/generate-de-matches/${tournamentId}`, {
+    fetch(`http://localhost:8080/api/matches/generate-de-matches/${tournamentId}`, {
       method: 'POST',
     })
       .then((response) => {
@@ -238,7 +238,7 @@ const MatchAdmin = () => {
   };
 
   const promotePlayer = () => {
-    fetch(`http://13.213.45.2:8080/api/matches/promote-players/${tournamentId}`, {
+    fetch(`http://localhost:8080/api/matches/promote-players/${tournamentId}`, {
       method: 'POST',
     })
       .then((response) => {

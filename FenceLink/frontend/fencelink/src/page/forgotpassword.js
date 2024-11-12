@@ -53,7 +53,7 @@ const ForgotPassword = () => {
         });
         console.log('Password reset successful');
 
-        const response = await fetch('http://13.213.45.2:8080/users/updatepassword', {
+        const response = await fetch('http://localhost:8080/users/updatepassword', {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',

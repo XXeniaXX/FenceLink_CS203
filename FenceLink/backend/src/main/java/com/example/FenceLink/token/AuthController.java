@@ -14,7 +14,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://fencelink-frontend.s3-website-ap-southeast-1.amazonaws.com")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     private final UserAuthService userAuthService;

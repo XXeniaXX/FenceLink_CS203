@@ -24,13 +24,13 @@ const UserTournamentPage = () => {
     setPlayerId(storedPlayerId);
 
     // Fetch all tournaments
-    axios.get('http://13.213.45.2:8080/api/tournaments')
+    axios.get('http://localhost:8080/api/tournaments')
       .then(response => setTournaments(response.data))
       .catch(error => console.error('Error fetching tournaments:', error));
 
     // Fetch the player's registered tournaments
     if (playerId) {
-      axios.get(`http://13.213.45.2:8080/api/players/${playerId}/upcoming-registered-tournaments`)
+      axios.get(`http://localhost:8080/api/players/${playerId}/upcoming-registered-tournaments`)
         .then(response => setRegisteredTournaments(response.data))
         .catch(error => console.error('Error fetching registered tournaments:', error));
     }
@@ -87,7 +87,7 @@ const UserTournamentPage = () => {
     e.stopPropagation();
 
 
-    axios.post(`http://13.213.45.2:8080/api/players/${playerId}/register/${tournamentId}`)
+    axios.post(`http://localhost:8080/api/players/${playerId}/register/${tournamentId}`)
       .then(response => {
         setTournaments(prevTournaments =>
           prevTournaments.map(tournament =>
@@ -109,7 +109,7 @@ const UserTournamentPage = () => {
     e.stopPropagation();
     const confirmWithdraw = window.confirm("Are you sure you want to withdraw?");
     if (confirmWithdraw) {
-      axios.delete(`http://13.213.45.2:8080/api/players/${playerId}/withdraw/${tournamentId}`)
+      axios.delete(`http://localhost:8080/api/players/${playerId}/withdraw/${tournamentId}`)
         .then(response => {
           setTournaments(prevTournaments =>
             prevTournaments.map(tournament =>

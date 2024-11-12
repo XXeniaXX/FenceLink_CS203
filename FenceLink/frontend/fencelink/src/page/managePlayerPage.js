@@ -27,7 +27,7 @@ const ManagePlayerPage = () => {
         // Fetch all players
         const fetchPlayers = async () => {
             try {
-                const response = await fetch('http://13.213.45.2:8080/api/players/all');
+                const response = await fetch('http://localhost:8080/api/players/all');
                 if (response.ok) {
                     const data = await response.json();
                     setPlayers(data);
@@ -67,7 +67,7 @@ const ManagePlayerPage = () => {
             // Check if the player has an associated user
             if (player.user && player.user.id) {
                 // Delete both user and player
-                response = await fetch(`http://13.213.45.2:8080/api/users/${player.user.id}`, {
+                response = await fetch(`http://localhost:8080/api/users/${player.user.id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -75,7 +75,7 @@ const ManagePlayerPage = () => {
                 });
             } else {
                 // Only delete the player
-                response = await fetch(`http://13.213.45.2:8080/api/players/${player.id}`, {
+                response = await fetch(`http://localhost:8080/api/players/${player.id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`

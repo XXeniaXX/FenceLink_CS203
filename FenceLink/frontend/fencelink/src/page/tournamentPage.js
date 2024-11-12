@@ -34,7 +34,7 @@ const TournamentPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://13.213.45.2:8080/api/tournaments')
+    axios.get('/api/tournaments')
       .then(response => setTournaments(response.data))
       .catch(error => console.error('Error fetching tournaments:', error));
   }, []);
@@ -84,14 +84,14 @@ const TournamentPage = () => {
 
   const handleSave = () => {
     if (isEditing) {
-      axios.put(`http://13.213.45.2:8080/api/tournaments/${selectedTournament.id}`, formData)
+      axios.put(`/api/tournaments/${selectedTournament.id}`, formData)
         .then(() => {
           setTournaments(tournaments.map(t => t.id === selectedTournament.id ? formData : t));
           closeModal();
         })
         .catch(error => console.error('Error updating tournament:', error));
     } else {
-      axios.post('http://13.213.45.2:8080/api/tournaments', formData)
+      axios.post('/api/tournaments', formData)
         .then(response => {
           setTournaments([...tournaments, response.data]);
           closeModal();
@@ -103,7 +103,7 @@ const TournamentPage = () => {
   const handleDelete = (tournament) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this tournament?");
     if (confirmDelete) {
-      axios.delete(`http://13.213.45.2:8080/api/tournaments/${tournament.id}`)
+      axios.delete(`/api/tournaments/${tournament.id}`)
         .then(() => {
           setTournaments(tournaments.filter(t => t.id !== tournament.id));
           closeModal();
