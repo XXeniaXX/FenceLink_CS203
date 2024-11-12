@@ -57,7 +57,7 @@ const PlayerInfo = () => {
             localStorage.setItem('birthdate', birthdate);
 
             console.log('Player update successful');
-            navigate("/mainpage");
+            navigate("/playerhomepage");
         } else {
             const errorText = await response.text();
             alert('Player Update failed: ' + errorText); 

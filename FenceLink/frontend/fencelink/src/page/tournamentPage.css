@@ -6,36 +6,6 @@
   min-height: 100vh;
 }
 
-/* Navbar Styles */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  background-color: #192a56;
-  color: white;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-}
-
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 1rem;
-}
-
-.nav-links a {
-  color: white;
-  text-decoration: none;
-}
-
-.nav-links a:hover {
-  color: #fbc531;
-}
-
-.profile {
-  display: flex;
-  align-items: center;
-}
-
 /* Filter Section Styles */
 .filter-section {
   display: flex;
@@ -118,32 +88,33 @@ input[type="date"],
 
 /* Modal Styles */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  position: fixed !important;
+  inset: 0 !important; /* shorthand for top: 0; right: 0; bottom: 0; left: 0 */
+  background: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 5000 !important;
 }
 
 /* Modal Content */
 .modal {
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 500px; /* Set maximum width */
-  max-height: 80vh; /* Allow the modal to grow up to 80% of the viewport height */
-  overflow-y: auto; /* Enable vertical scrolling if content overflows */
-  text-align: left;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
+  position: relative !important;
+  background: #ffffff !important;
+  padding: 2rem !important;
+  border-radius: 12px !important;
+  width: 90% !important;
+  max-width: 500px !important;
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  text-align: center !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin: auto !important;
 }
+
+
 
 /* Modal Heading */
 .modal h2 {

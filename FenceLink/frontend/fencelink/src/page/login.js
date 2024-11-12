@@ -71,7 +71,7 @@ const Login = () => {
           if (data.userRole === 'admin') {
             navigate('/adminhomepage');
           } else {
-            navigate('/mainpage');
+            navigate('/playerhomepage');
           }
 
         } else {

@@ -34,6 +34,7 @@ const AdminNavBar = () => {
         <li><Link to="/tournament">TOURNAMENT</Link></li>
         <li><Link to="/results">RESULTS</Link></li>
         <li><Link to="/ranking">RANKING</Link></li>
+        <li><Link to="/manage-players">MANAGE PLAYERS</Link></li>
       </ul>
 
       {/* Profile Section with Dropdown */}
@@ -53,7 +54,6 @@ const AdminNavBar = () => {
         {/* Dropdown Menu */}
         {showDropdown && (
           <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}>
-            <Link to="/editprofile" className="dropdown-item">Edit Profile</Link>
             <button onClick={handleSignOut} className="dropdown-item">Sign Out</button>
           </div>
         )}
