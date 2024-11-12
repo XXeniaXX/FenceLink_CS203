@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.FenceLink.token.CognitoJWTValidator;
 import com.example.FenceLink.tournament.*;
-import com.example.FenceLink.user.UserDTO;
 
 import java.util.*;
 
