@@ -52,7 +52,7 @@ const AdminHomePage = () => {
 
         const fetchUserName = async () => {
             try {
-                const response = await fetch(`http://13.213.45.2:8080/api/users/${storedUserId}`);
+                const response = await fetch(`http://localhost:8080/api/users/${storedUserId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }

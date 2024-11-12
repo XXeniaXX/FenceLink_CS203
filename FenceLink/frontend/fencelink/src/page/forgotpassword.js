@@ -11,10 +11,9 @@ const ForgotPassword = () => {
     const [newPasswordValidation, setNewPasswordValidation] = useState('');
     const [matchPassword, setmatchPassword] = useState('');
     const [confirmationCodeError, setConfirmationCodeError] = useState('');
-    
     const [step, setStep] = useState(1);
     
-    
+
     async function handleResetPassword() {
       
         try {
@@ -45,6 +44,7 @@ const ForgotPassword = () => {
         }
       }
 
+
       async function handleConfirmResetPassword() {
         const storedUserId = localStorage.getItem('userId');
 
@@ -57,13 +57,15 @@ const ForgotPassword = () => {
         console.log('Password reset successful');
         console.log(storedUserId);
 
-        const response = await fetch(`http://localhost:8080/users/updatepassword/${storedUserId}`, {
+        const response = await fetch(`http://localhost:8080/api/users/updatepassword/${storedUserId}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ email, newPassword}),
+            body: JSON.stringify({ email, password: newPassword}),
           });
+
+          console.log("New password:", newPassword);
       
           if (response.ok) {
              

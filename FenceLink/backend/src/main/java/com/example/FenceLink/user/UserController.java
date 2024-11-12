@@ -75,6 +75,7 @@ public class UserController {
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User updated successfully");
             response.put("playerId", id); // Include the player ID
+            response.put("userId", id);
 
             // Return ResponseEntity with the type explicitly stated
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);

@@ -8,7 +8,8 @@ const NavBar = () => {
   const storedUserName = localStorage.getItem('name') // Fallback if userName is missing
 
   const handleSignOut = () => {
-    localStorage.clear(); // Clear localStorage for sign out
+    localStorage.removeItem('jwtToken');
+    sessionStorage.clear() // Clear localStorage for sign out
     navigate('/login'); // Redirect to login page
   };
 
