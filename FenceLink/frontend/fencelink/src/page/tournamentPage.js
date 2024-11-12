@@ -41,6 +41,7 @@ const TournamentPage = () => {
 
   const openModal = (tournament = null) => {
     setIsEditing(!!tournament);
+    console.log("Opening modal...");
     setFormData(tournament || {
       name: '',
       location: '',

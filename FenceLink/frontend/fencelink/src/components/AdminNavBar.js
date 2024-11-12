@@ -36,11 +36,8 @@ const AdminNavBar = () => {
         onMouseEnter={() => setShowDropdown(true)} // Show dropdown on hover
         onMouseLeave={() => setShowDropdown(false)} // Hide dropdown when leaving the section
       >
-        {/* Link to Profile Page */}
-        <Link to="/profilepage" className="profile-link">
-          <img src="./profileicon.png" alt="Profile" className="profile-pic" />
-          <span className="profile-name">Hi, Admin {storedUserName}</span>
-        </Link>
+        <img src="./profileicon.png" alt="Profile" className="profile-pic" />
+        <span className="profile-name">Hi, Admin {storedUserName}</span>
 
         {/* Dropdown Icon */}
         <span
@@ -53,7 +50,6 @@ const AdminNavBar = () => {
         {/* Dropdown Menu */}
         {showDropdown && (
             <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}>
-                <Link to="/editprofile" className="dropdown-item">Edit Profile</Link>
                 <button onClick={handleSignOut} className="dropdown-item">Sign Out</button>
             </div>
         )}
