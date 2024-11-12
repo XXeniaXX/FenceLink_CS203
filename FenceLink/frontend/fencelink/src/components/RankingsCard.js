@@ -2,6 +2,9 @@ import React from 'react';
 import './RankingsCard.css'; // Import the CSS file
 
 const RankingsCard = ({ rankingsData, onClose }) => {
+  // Sort the rankings data in ascending order of currentRank
+  const sortedRankings = [...rankingsData].sort((a, b) => a.currentRank - b.currentRank);
+
   return (
     <div className="rankings-card">
       <div className="rankings-card-header">
@@ -24,9 +27,9 @@ const RankingsCard = ({ rankingsData, onClose }) => {
             </tr>
           </thead>
           <tbody>
-            {rankingsData.map((rank, index) => (
+            {sortedRankings.map((rank) => (
               <tr key={rank.playerId}>
-                <td>{index + 1}</td>
+                <td>{rank.currentRank}</td> {/* Display the sorted rank */}
                 <td className={rank.eliminated ? 'eliminated' : ''}>
                   {rank.playerName ? rank.playerName : `Player ${rank.playerId}`}
                 </td>
@@ -42,5 +45,6 @@ const RankingsCard = ({ rankingsData, onClose }) => {
 };
 
 export default RankingsCard;
+
 
 

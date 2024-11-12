@@ -386,15 +386,52 @@ const MatchAdmin = () => {
   };
 
 
+  const fetchPlayerNamesForRankings = async (rankings) => {
+    try {
+      const uniquePlayerIds = new Set(rankings.map(rank => rank.playerId));
+      const names = {};
+  
+      await Promise.all(
+        Array.from(uniquePlayerIds).map(async (id) => {
+          try {
+            const response = await fetch(`http://localhost:8080/api/players/${id}`);
+            if (response.ok) {
+              const playerData = await response.json();
+              names[id] = playerData.name; // Assuming `name` is a field in the response
+            } else {
+              names[id] = `Player ${id}`; // Fallback value
+            }
+          } catch (error) {
+            console.error(`Error fetching player with ID ${id}:`, error);
+            names[id] = `Player ${id}`; // Fallback value in case of error
+          }
+        })
+      );
+  
+      return names;
+    } catch (error) {
+      console.error('Error fetching player names for rankings:', error);
+      return {};
+    }
+  };
+  
   const fetchCurrentRankings = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/match-rank/tournament/${tournamentId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+  
       const matchRanks = await response.json();
-      setRankingsData(matchRanks);
+      const playerNamesMap = await fetchPlayerNamesForRankings(matchRanks);
+  
+      // Attach player names to matchRanks
+      const matchRanksWithNames = matchRanks.map(rank => ({
+        ...rank,
+        playerName: playerNamesMap[rank.playerId] || `Player ${rank.playerId}`
+      }));
+  
+      setRankingsData(matchRanksWithNames);
       setShowRankingsCard(true); // Show the card
     } catch (error) {
       console.error('Error fetching match rankings:', error);
