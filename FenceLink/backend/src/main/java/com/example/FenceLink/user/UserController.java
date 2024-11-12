@@ -88,12 +88,16 @@ public class UserController {
 }
 
     @PutMapping("/updatepassword/{id}")
-    public ResponseEntity<String> updateUserPassword(@PathVariable Long id, @RequestBody UserDTO userDto) {
+    public ResponseEntity<Map<String, Object>> updateUserPassword(@PathVariable Long id, @RequestBody UserDTO userDto) {
+        Map<String, Object> response = new HashMap<>();
         try {
             userService.updateUserPassword(id, userDto);
-            return new ResponseEntity<>("User pasword updated successfully", HttpStatus.OK);
+            response.put("message", "User password updated successfully");
+            response.put("userId", id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            response.put("error", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 

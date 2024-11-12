@@ -14,6 +14,7 @@ const ForgotPassword = () => {
     
     const [step, setStep] = useState(1);
     
+    
     async function handleResetPassword() {
       
         try {
@@ -45,6 +46,8 @@ const ForgotPassword = () => {
       }
 
       async function handleConfirmResetPassword() {
+        const storedUserId = localStorage.getItem('userId');
+
         try {
           await confirmResetPassword({ 
             username: email, 
@@ -52,8 +55,9 @@ const ForgotPassword = () => {
             newPassword: newPassword
         });
         console.log('Password reset successful');
+        console.log(storedUserId);
 
-        const response = await fetch('http://localhost:8080/users/updatepassword', {
+        const response = await fetch(`http://localhost:8080/users/updatepassword/${storedUserId}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -108,8 +112,17 @@ const ForgotPassword = () => {
     return (
   <div>
     <nav className="nav">
-      <div className="site-title">FENCELINK</div>
-    </nav>
+        <img 
+          src="/fencelink.png" 
+          alt="FenceLink Logo" 
+          style={{
+              width: '210px',
+              height: '70px',
+              borderRadius: '50%',
+              objectFit: 'contain'
+          }} 
+        />
+      </nav>
     <div className="container">
       <h1 className="header">Forgot Password</h1>
       {step === 1 && (
