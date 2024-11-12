@@ -17,17 +17,20 @@ const RankingPage = () => {
     const [dialogOpen, setDialogOpen] = useState(false); // State to manage dialog open status
 
     // Fetch leaderboard data when filters or page change
+    const [totalPages, setTotalPages] = useState(0); // Total pages available
+
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
                 const response = await axios.get('/api/leaderboard/top', {
                     params: {
                         page: currentPage,
-                        gender: gender || undefined, // Only send if gender is selected
-                        country: country || undefined // Only send if country is selected
+                        gender: gender || undefined,
+                        country: country || undefined
                     }
                 });
-                setPlayers(response.data.content || response.data);
+                setPlayers(response.data.players); // Players data
+                setTotalPages(response.data.totalPages); // Set total pages
             } catch (error) {
                 console.error("Error fetching leaderboard data:", error);
             }
@@ -130,19 +133,17 @@ const RankingPage = () => {
             </div>
     
             {/* Pagination */}
-            {players.length > playersPerPage && (
-                <div className="pagination">
-                    {[...Array(5)].map((_, i) => (
-                        <button
-                            key={i}
-                            className={`pagination-button ${i === currentPage ? 'active' : ''}`}
-                            onClick={() => handlePageChange(i)}
-                        >
-                            {i + 1}
-                        </button>
-                    ))}
-                </div>
-            )}
+            <div className="pagination">
+                {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                        key={i}
+                        className={`pagination-button ${i === currentPage ? 'active' : ''}`}
+                        onClick={() => handlePageChange(i)}
+                    >
+                        {i + 1}
+                    </button>
+                ))}
+            </div>
 
             {/* Player Profile Dialog */}
             {selectedPlayer && (
