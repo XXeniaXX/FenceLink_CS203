@@ -22,7 +22,7 @@ const PlayerProfileDialog = ({ open, onClose, player }) => {
             if (!player) return;
 
             try {
-                const response = await axios.get('http://localhost:8080/api/players/all');
+                const response = await axios.get('http://13.213.45.2:8080/api/players/all');
                 const allPlayers = response.data;
                 allPlayers.sort((a, b) => b.points - a.points);
                 const playerRank = allPlayers.findIndex(p => p.id === player.id) + 1;
