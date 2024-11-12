@@ -1,9 +1,8 @@
 package com.example.FenceLink.user;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import com.example.FenceLink.security.PasswordUtil;
 import org.springframework.stereotype.Service;
-
 import com.example.FenceLink.player.*;
 
 
@@ -15,8 +14,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PlayerServiceImpl playerService;
-
-    //private BCryptPasswordEncoder passwordEncoder;
 
     public void checkUser(UserDTO userDto) throws IllegalArgumentException {
        
@@ -68,8 +65,8 @@ public class UserServiceImpl implements UserService {
     public User registerUser(UserDTO userDto) throws IllegalArgumentException {
         checkUser(userDto); 
 
-        //String hashedPassword = passwordEncoder.encode(userDto.getPassword());
-        String hashedPassword = userDto.getPassword();
+        // String hashedPassword = userDto.getPassword();
+        String hashedPassword = PasswordUtil.encodePassword(userDto.getPassword());
         
         //check if email already exists before saving
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
@@ -91,8 +88,8 @@ public class UserServiceImpl implements UserService {
     public User createAdmin(UserDTO userDto) throws IllegalArgumentException {
         checkUser(userDto); 
 
-        //String hashedPassword = passwordEncoder.encode(userDto.getPassword());
-        String hashedPassword = userDto.getPassword();
+        String hashedPassword = PasswordUtil.encodePassword(userDto.getPassword());
+        // String hashedPassword = userDto.getPassword();
         
         
         //check if email already exists before saving

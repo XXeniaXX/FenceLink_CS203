@@ -5,7 +5,7 @@ import './Navbar.css';
 const AdminNavBar = () => {
   const [showDropdown, setShowDropdown] = useState(false); // For profile dropdown visibility
   const navigate = useNavigate();
-  const storedUserName = localStorage.getItem('userName')
+  const storedUserName = localStorage.getItem('name')
 
   const handleSignOut = () => {
     localStorage.clear(); // Clear localStorage for sign out

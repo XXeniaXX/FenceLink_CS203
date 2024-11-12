@@ -58,7 +58,7 @@ const Login = () => {
         if (data.message === 'Token is valid') {
           // Store user information in localStorage
           localStorage.setItem('userId', data.userId);
-          localStorage.setItem('userName', data.username);
+          localStorage.setItem('name', data.username);
           localStorage.setItem('userRole', data.userRole);
   
           console.log('User ID:', data.userId);
