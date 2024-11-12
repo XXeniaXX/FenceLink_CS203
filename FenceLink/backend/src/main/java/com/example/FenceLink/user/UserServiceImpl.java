@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
 
         String role = "ROLE_PLAYER";
 
-        Player newPlayer = new Player(null, userDto.getUsername(), null, null, null, null, null, null, 0, new ArrayList<>(), null);
+        Player newPlayer = new Player(null, userDto.getUsername(), null, null, null, null, null, null, 100, new ArrayList<>(), null);
 
         User newUser = new User(null, userDto.getUsername(), userDto.getEmail(), hashedPassword, role, newPlayer);
 

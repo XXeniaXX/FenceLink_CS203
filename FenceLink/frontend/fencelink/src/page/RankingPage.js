@@ -57,8 +57,16 @@ const RankingPage = () => {
         setCurrentPage(page);
     };
 
-    const handleRowClick = (player) => {
-        setSelectedPlayer(player);
+    const handleRowClick = async (player) => {
+        try {
+            // Assuming you have an endpoint that fetches detailed data for a player by ID
+            const response = await axios.get(`/api/players/${player.id}`);
+            const detailedPlayer = response.data;
+            setSelectedPlayer(detailedPlayer); // Set detailed data as the selected player
+        } catch (error) {
+            console.error('Error fetching detailed player data:', error);
+            setSelectedPlayer(player); // Fallback to basic player data
+        }
         setDialogOpen(true);
     };
 

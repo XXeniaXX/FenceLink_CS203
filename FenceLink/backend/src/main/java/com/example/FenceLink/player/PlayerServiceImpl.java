@@ -49,11 +49,6 @@ public class PlayerServiceImpl implements PlayerService {
         if (age < 14) {
             throw new IllegalArgumentException("Player must be at least 14 years old!");
         }
-
-        // Points cannot be negative
-        if (player.getPoints() < 0) {
-            throw new IllegalArgumentException("Data Invalid: points cannot be negative!");
-        }
     }
 
     @Override
@@ -83,8 +78,8 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     @Transactional
     public Player insertPlayer(Player player) throws IllegalArgumentException {
-        // Points 0 since new player hasn't joined anything
-        player.setPoints(0);
+        // Default points 100
+        player.setPoints(100);
 
         checkPlayer(player);
 
