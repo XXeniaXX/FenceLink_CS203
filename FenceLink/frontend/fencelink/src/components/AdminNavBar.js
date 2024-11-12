@@ -8,7 +8,8 @@ const AdminNavBar = () => {
   const storedUserName = localStorage.getItem('name')
 
   const handleSignOut = () => {
-    localStorage.clear(); // Clear localStorage for sign out
+    localStorage.removeItem('jwtToken');
+    sessionStorage.clear(); // Clear localStorage for sign out
     navigate('/login'); // Redirect to login page
   };
 
