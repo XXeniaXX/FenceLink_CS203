@@ -47,12 +47,12 @@ function App() {
             <Route path="/mainpage" element={<Main />} />
             <Route path="/match/:tournamentId" element={<MatchUser />} />
             <Route path="/ranking" element={<RankingPage />} />
-            <Route path='/playerhomepage' element={<PlayerHomePage />} />
             <Route path="/results" element={<ResultPage />} />
             <Route path="/unauthorisedpage" element={<UnauthorizedPage />} />
             <Route path="/mainpage" element={<Main />} />
             <Route path="/usertournament" element={<UserTournamentPage/>} />
             <Route path="/profilepage" element={<ProfilePage />} />
+            <Route path="/playerhomepage" element={<PlayerHomePage />} />
             
             
             {/* Admin-only route */}

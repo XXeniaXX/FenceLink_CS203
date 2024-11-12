@@ -1,24 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
-import { signOut } from 'aws-amplify/auth';
 
 const NavBar = () => {
   const [showDropdown, setShowDropdown] = useState(false); // State to manage dropdown visibility
   const navigate = useNavigate();
   const storedUserName = localStorage.getItem('userName') || "User"; // Fallback if userName is missing
 
-  const handleSignOut = async () => {
-    try {
-      await signOut({ global: true });
-      console.log('User signed out successfully');
-
-      localStorage.removeItem('jwtToken');
-      sessionStorage.clear();
-      navigate('/login');
-    } catch (error) {
-      console.log('Error signing out: ', error);
-    }
+  const handleSignOut = () => {
+    localStorage.clear(); // Clear localStorage for sign out
+    navigate('/login'); // Redirect to login page
   };
 
   // Toggle dropdown visibility on click
@@ -28,7 +19,6 @@ const NavBar = () => {
 
   return (
     <nav className="nav">
-      
       <div className="logo-container">
         <img src="/fencelink.png" alt="Logo" className="logo" />
       </div>
@@ -62,11 +52,12 @@ const NavBar = () => {
 
         {/* Dropdown Menu */}
         {showDropdown && (
-          <div className="dropdown-menu">
-            <Link to="/editprofile" className="dropdown-item">Edit Profile</Link>
-            <button onClick={handleSignOut} className="dropdown-item">Sign Out</button>
-          </div>
+            <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}>
+                <Link to="/editprofile" className="dropdown-item">Edit Profile</Link>
+                <button onClick={handleSignOut} className="dropdown-item">Sign Out</button>
+            </div>
         )}
+
       </div>
     </nav>
   );

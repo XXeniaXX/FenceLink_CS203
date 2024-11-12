@@ -7,6 +7,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './playerHomepage.css';
 import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
+import playerTournamentCardImage from './assets/playertournamentcard.jpg';
+
 
 // Configure axios defaults
 axios.defaults.baseURL = 'http://localhost:8080';
@@ -106,6 +108,15 @@ const PlayerHomePage = () => {
 //           endDate: '2024-12-22',
 //         },
 //       },
+//       {
+//         tournament: {
+//           id: 3,
+//           name: 'National Open',
+//           location: 'Chicago',
+//           startDate: '2024-12-20',
+//           endDate: '2024-12-22',
+//         },
+//       },
 //     ];
 
 //     // Dummy data for available tournaments
@@ -149,13 +160,14 @@ const PlayerHomePage = () => {
 //     );
 //   }, []);
 
-  // // Handle Join tournament (dummy implementation)
-  // const handleJoin = (tournamentId) => {
-  //   setJoinedTournaments([...joinedTournaments, tournamentId]);
-  //   console.log(`Joined tournament with ID: ${tournamentId}`);
-  // };
+//   // Handle Join tournament (dummy implementation)
+//   const handleJoin = (tournamentId) => {
+//     setJoinedTournaments([...joinedTournaments, tournamentId]);
+//     console.log(`Joined tournament with ID: ${tournamentId}`);
+//   };
 
 // Helper function to normalize dates to midnight for comparison
+
 const normalizeDate = (date) => {
   const normalized = new Date(date);
   normalized.setHours(0, 0, 0, 0);
@@ -220,7 +232,7 @@ const normalizeDate = (date) => {
                 ))
               )}
               {upcomingTournaments.length > 3 && (
-                <Link to="/profilepage" className="view-more">View All</Link>
+                <Link to="/profilepage" className="view-all">View All</Link>
               )}
             </Col>
           </Row>
@@ -237,10 +249,14 @@ const normalizeDate = (date) => {
                 tournament ? (
                   <Col md={4} key={tournament.id}>
                     <Card className="mb-3 shadow-sm tournament-card">
+                      {/* Hardcoded image for all tournament cards */}
+                      <Card.Img variant="top" src={playerTournamentCardImage} alt="Tournament Image" />
                       <Card.Body>
                         <Card.Title className="join-tournament-name">{tournament.name}</Card.Title>
-                        <Card.Text>{tournament.location}</Card.Text>
-                        <Card.Text>{new Date(tournament.startDate).toLocaleDateString()} - {new Date(tournament.endDate).toLocaleDateString()}</Card.Text>
+                        <Card.Text>Location: {tournament.location}</Card.Text>
+                        <Card.Text>
+                          {new Date(tournament.startDate).toLocaleDateString()} - {new Date(tournament.endDate).toLocaleDateString()}
+                        </Card.Text>
                         <Button variant="primary" onClick={() => handleJoin(tournament.id)}>Join</Button>
                       </Card.Body>
                     </Card>
