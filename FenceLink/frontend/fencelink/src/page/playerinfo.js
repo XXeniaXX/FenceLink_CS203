@@ -36,7 +36,7 @@ const PlayerInfo = () => {
             return;
         }
 
-        const response = await fetch(`http://localhost:8080/api/players/${storedPlayerId}`, {
+        const response = await fetch(`http://13.213.45.2:8080/api/players/${storedPlayerId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

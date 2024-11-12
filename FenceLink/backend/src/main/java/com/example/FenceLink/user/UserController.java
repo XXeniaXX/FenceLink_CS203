@@ -22,7 +22,7 @@ import java.net.MalformedURLException;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://fencelink-frontend.s3-website-ap-southeast-1.amazonaws.com")
 public class UserController {
 
     @Autowired

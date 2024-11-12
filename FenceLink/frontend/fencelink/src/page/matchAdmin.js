@@ -58,7 +58,7 @@ const MatchAdmin = () => {
     
     const fetchPlayerIds = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/players/${tournamentId}/get-all-players`);
+        const response = await fetch(`http://13.213.45.2:8080/api/players/${tournamentId}/get-all-players`);
         const playerIds = await response.json();
         const playerCount = playerIds.length;
         setPlayerCount(playerCount);
@@ -96,7 +96,7 @@ const MatchAdmin = () => {
   useEffect(() => {
     const fetchTournamentName = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/tournaments/${tournamentId}`);
+        const response = await fetch(`http://13.213.45.2:8080/api/tournaments/${tournamentId}`);
         const data = await response.json();
         setTournamentName(data.name || 'Unknown Tournament');
       } catch (error) {
@@ -111,7 +111,7 @@ const MatchAdmin = () => {
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/matches/tournament/${tournamentId}`);
+        const response = await fetch(`http://13.213.45.2:8080/api/matches/tournament/${tournamentId}`);
         const data = await response.json();
         setMatches(data);
         setFilteredMatches(data);
@@ -125,7 +125,7 @@ const MatchAdmin = () => {
           await Promise.all(
             Array.from(uniquePlayerIds).map(async (id) => {
               try {
-                const response = await fetch(`http://localhost:8080/api/players/${id}`);
+                const response = await fetch(`http://13.213.45.2:8080/api/players/${id}`);
                 if (response.ok) {
                   const playerData = await response.json();
                   names[id] = playerData.name;
@@ -191,7 +191,7 @@ const MatchAdmin = () => {
         }
   
         // Make the network request to update scores
-        response = await fetch(`http://localhost:8080/api/matches/${matchId}/results?player1Points=${editValues.player1points}&player2Points=${editValues.player2points}`, {
+        response = await fetch(`http://13.213.45.2:8080/api/matches/${matchId}/results?player1Points=${editValues.player1points}&player2Points=${editValues.player2points}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
         });
@@ -201,7 +201,7 @@ const MatchAdmin = () => {
         if (editValues.startTime) updatedFields.startTime = `${editValues.startTime}:00`;
         if (editValues.endTime) updatedFields.endTime = `${editValues.endTime}:00`;
   
-        response = await fetch(`http://localhost:8080/api/matches/${matchId}`, {
+        response = await fetch(`http://13.213.45.2:8080/api/matches/${matchId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedFields),
@@ -243,7 +243,7 @@ const MatchAdmin = () => {
 
   const refetchMatches = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/matches/tournament/${tournamentId}`);
+      const response = await fetch(`http://13.213.45.2:8080/api/matches/tournament/${tournamentId}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch matches. Status: ${response.status}`);
       }
@@ -263,7 +263,7 @@ const MatchAdmin = () => {
       await Promise.all(
         Array.from(uniquePlayerIds).map(async (id) => {
           try {
-            const response = await fetch(`http://localhost:8080/api/players/${id}`);
+            const response = await fetch(`http://13.213.45.2:8080/api/players/${id}`);
             if (response.ok) {
               const playerData = await response.json();
               names[id] = playerData.name; // Assuming `name` is a field in the response
@@ -292,7 +292,7 @@ const MatchAdmin = () => {
     setIsGenerateClicked(true);
   
     try {
-      const response = await fetch(`http://localhost:8080/api/matches/generate/${tournamentId}`, {
+      const response = await fetch(`http://13.213.45.2:8080/api/matches/generate/${tournamentId}`, {
         method: 'POST',
       });
       if (!response.ok) {
@@ -316,7 +316,7 @@ const MatchAdmin = () => {
     setIsGenerateSLClicked(true);
   
     try {
-      const response = await fetch(`http://localhost:8080/api/matches/generate-seeding?tournamentId=${tournamentId}`, {
+      const response = await fetch(`http://13.213.45.2:8080/api/matches/generate-seeding?tournamentId=${tournamentId}`, {
         method: 'POST',
       });
       if (!response.ok) {
@@ -343,7 +343,7 @@ const MatchAdmin = () => {
     setIsGenerateDEClicked(true);
   
     try {
-      const response = await fetch(`http://localhost:8080/api/matches/generate-de-matches/${tournamentId}`, {
+      const response = await fetch(`http://13.213.45.2:8080/api/matches/generate-de-matches/${tournamentId}`, {
         method: 'POST',
       });
       if (!response.ok) {
@@ -366,7 +366,7 @@ const MatchAdmin = () => {
   
   const promoteNextMatches = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/matches/promote-players/${tournamentId}`, {
+      const response = await fetch(`http://13.213.45.2:8080/api/matches/promote-players/${tournamentId}`, {
         method: 'POST',
       });
       if (!response.ok) {
@@ -394,7 +394,7 @@ const MatchAdmin = () => {
       await Promise.all(
         Array.from(uniquePlayerIds).map(async (id) => {
           try {
-            const response = await fetch(`http://localhost:8080/api/players/${id}`);
+            const response = await fetch(`http://13.213.45.2:8080/api/players/${id}`);
             if (response.ok) {
               const playerData = await response.json();
               names[id] = playerData.name; // Assuming `name` is a field in the response
@@ -417,7 +417,7 @@ const MatchAdmin = () => {
   
   const fetchCurrentRankings = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/match-rank/tournament/${tournamentId}`);
+      const response = await fetch(`http://13.213.45.2:8080/api/match-rank/tournament/${tournamentId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }

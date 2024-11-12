@@ -82,7 +82,7 @@ const AdminHomePage = () => {
             console.log(storedPlayerId);
 
             try {
-                const response = await axios.get(`http://localhost:8080/api/tournaments/upcomingtournaments`);
+                const response = await axios.get(`http://13.213.45.2:8080/api/tournaments/upcomingtournaments`);
                 setTournaments(response.data);
             } catch (err) {
                 setError("Failed to fetch tournaments");

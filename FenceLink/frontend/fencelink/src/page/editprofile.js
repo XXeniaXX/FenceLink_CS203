@@ -27,7 +27,7 @@ const EditProfile = () => {
         }
 
         const fetchPlayerData = async () => {
-            const response = await fetch(`http://localhost:8080/api/players/${storedPlayerId}`);
+            const response = await fetch(`http://13.213.45.2:8080/api/players/${storedPlayerId}`);
             if (response.ok) {
                 const data = await response.json();
                 setName(data.name || '');
@@ -65,7 +65,7 @@ const EditProfile = () => {
         if (bio) updatePayload.bio = bio;
         if (user_id) updatePayload.user = { id: storedUserId };
 
-        const response = await fetch(`http://localhost:8080/api/players/${storedPlayerId}`, {
+        const response = await fetch(`http://13.213.45.2:8080/api/players/${storedPlayerId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

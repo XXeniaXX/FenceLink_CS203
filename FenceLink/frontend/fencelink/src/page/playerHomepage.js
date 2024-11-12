@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import playerTournamentCardImage from './assets/playertournamentcard.jpg';
 
 // Configure axios defaults
-axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = 'http://13.213.45.2:8080';
 
 const PlayerHomePage = () => {
   const [player, setPlayer] = useState(null);
