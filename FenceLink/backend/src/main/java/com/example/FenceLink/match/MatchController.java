@@ -18,12 +18,12 @@ import java.util.Map;
 public class MatchController {
 
     private final MatchService matchService;
-    private final TournamentService tournamentService; // Ensure this is declared
+    private final TournamentService tournamentService; 
 
     @Autowired
     public MatchController(MatchService matchService, TournamentService tournamentService) {
         this.matchService = matchService;
-        this.tournamentService = tournamentService; // Ensure this is injected
+        this.tournamentService = tournamentService; 
     }
 
     @GetMapping
@@ -110,7 +110,6 @@ public class MatchController {
             throw new IllegalArgumentException("Tournament not found with ID: " + tournamentId);
         }
 
-        // Call the method to generate seeding matches
         matchService.generateSLMatches(tournament);
     }
 
@@ -122,7 +121,6 @@ public class MatchController {
             return ResponseEntity.badRequest().body("Invalid tournament ID");
         }
 
-        // Call the service method to generate DE matches
         matchService.generateDEMatches(tournament);
         return ResponseEntity.ok("DE matches generated successfully");
     }
@@ -130,13 +128,11 @@ public class MatchController {
     @PostMapping("/promote-players/{tournamentId}")
     public ResponseEntity<String> promotePlayersToNextRound(@PathVariable Long tournamentId) {
         try {
-            // Fetch the Tournament object by ID
             Tournament tournament = tournamentService.getTournamentById(tournamentId);
             if (tournament == null) {
                 return ResponseEntity.badRequest().body("Invalid tournament ID");
             }
 
-            // Call the service method to promote players
             List<Long> winners = matchService.promotePlayersToNextRound(tournament);
 
             return ResponseEntity.ok("Players promoted successfully. Winners: " + winners);
