@@ -14,7 +14,6 @@ const OtpCheck = () => {
   const [password, setPassword] = useState('');
   const [confirmationCode, setConfirmationCode] = useState(''); // State to hold OTP
   const [errorMessage, setErrorMessage] = useState(''); // State to hold errors
-  const [timeLeft, setTimeLeft] = useState(300);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');

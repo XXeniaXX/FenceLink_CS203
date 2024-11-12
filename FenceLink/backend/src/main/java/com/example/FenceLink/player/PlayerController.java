@@ -66,6 +66,7 @@ public class PlayerController {
             // Prepare response with additional details
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Player updated successfully");
+            response.put("name", updatedPlayer.getName());
             response.put("age", age);
             response.put("country", updatedPlayer.getCountry());
             response.put("location", updatedPlayer.getLocation());

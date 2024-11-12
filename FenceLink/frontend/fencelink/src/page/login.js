@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { signIn, fetchAuthSession} from 'aws-amplify/auth';
 import { signOut } from 'aws-amplify/auth';
 import './login.css'; // Import the CSS file
-import PlainBar from '../components/AdminNavBar';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -59,7 +58,7 @@ const Login = () => {
         if (data.message === 'Token is valid') {
           // Store user information in localStorage
           localStorage.setItem('userId', data.userId);
-          localStorage.setItem('username', data.username);
+          localStorage.setItem('userName', data.username);
           localStorage.setItem('userRole', data.userRole);
   
           console.log('User ID:', data.userId);
@@ -71,7 +70,7 @@ const Login = () => {
           if (data.userRole === 'admin') {
             navigate('/adminhomepage');
           } else {
-            navigate('/mainpage');
+            navigate('/playerhomepage');
           }
 
         } else {
@@ -89,7 +88,9 @@ const Login = () => {
       
     } catch (error) {
       console.error('Login failed:', error);
+      await handleSignOut();
       alert('Login failed: ' + error.message);
+
     }
   };
   
@@ -117,6 +118,7 @@ const Login = () => {
       return response; // Return the response to be processed by handleLogin
     } catch (error) {
       console.error('Token validation failed:', error);
+      await handleSignOut();
       return null;
     }
   }

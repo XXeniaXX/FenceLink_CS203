@@ -5,7 +5,7 @@ import './Navbar.css';
 const NavBar = () => {
   const [showDropdown, setShowDropdown] = useState(false); // State to manage dropdown visibility
   const navigate = useNavigate();
-  const storedUserName = localStorage.getItem('userName') || "User"; // Fallback if userName is missing
+  const storedUserName = localStorage.getItem('name') // Fallback if userName is missing
 
   const handleSignOut = () => {
     localStorage.clear(); // Clear localStorage for sign out

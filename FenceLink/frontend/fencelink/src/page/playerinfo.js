@@ -47,7 +47,7 @@ const PlayerInfo = () => {
         if (response.ok) {
             const playerData = await response.json();
 
-            localStorage.setItem("age", playerData.age);
+            localStorage.setItem("name", playerData.name);
             localStorage.setItem("location", playerData.location);
             localStorage.setItem("country", playerData.country);
             localStorage.setItem("age", playerData.age);
@@ -57,7 +57,7 @@ const PlayerInfo = () => {
             localStorage.setItem('birthdate', birthdate);
 
             console.log('Player update successful');
-            navigate("/mainpage");
+            navigate("/playerhomepage");
         } else {
             const errorText = await response.text();
             alert('Player Update failed: ' + errorText); 
@@ -67,7 +67,18 @@ const PlayerInfo = () => {
 
     return (
     <div>
-        <PlainBar/>
+        <nav className="nav">
+        <img 
+          src="/fencelink.png" 
+          alt="FenceLink Logo" 
+          style={{
+              width: '210px',
+              height: '70px',
+              borderRadius: '50%',
+              objectFit: 'contain'
+          }} 
+        />
+      </nav>
         <div className="container">
             <h1 className="header">Player Information</h1>
             <form className="form2" onSubmit={(e) => { e.preventDefault(); handlePlayerUpdate(); }}>

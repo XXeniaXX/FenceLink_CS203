@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
 const AdminNavBar = () => {
-  const [showDropdown, setShowDropdown] = useState(false); // State to manage dropdown visibility
+  const [showDropdown, setShowDropdown] = useState(false); // For profile dropdown visibility
   const navigate = useNavigate();
-  const storedUserName = localStorage.getItem('userName') || "Admin"; // Fallback if userName is missing
+  const storedUserName = localStorage.getItem('userName')
 
   const handleSignOut = () => {
     localStorage.clear(); // Clear localStorage for sign out
@@ -20,14 +20,21 @@ const AdminNavBar = () => {
   return (
     <nav className="nav">
       <div className="logo-container">
-        <img src="/fencelink.png" alt="Logo" className="logo" />
+        <img src="/fencelink.png" alt="Logo" className="logo" style={{
+          width: '210px',
+          height: '70px',
+          borderRadius: '50%',
+          objectFit: 'contain'
+        }} />
       </div>
 
+      {/* Navigation Links */}
       <ul className="nav-links">
         <li><Link to="/adminhomepage">HOME</Link></li>
         <li><Link to="/tournament">TOURNAMENT</Link></li>
         <li><Link to="/results">RESULTS</Link></li>
         <li><Link to="/ranking">RANKING</Link></li>
+        <li><Link to="/manage-players">MANAGE PLAYERS</Link></li>
       </ul>
 
       {/* Profile Section with Dropdown */}
@@ -37,9 +44,8 @@ const AdminNavBar = () => {
         onMouseLeave={() => setShowDropdown(false)} // Hide dropdown when leaving the section
       >
         <img src="./profileicon.png" alt="Profile" className="profile-pic" />
-        <span className="profile-name">Hi, Admin {storedUserName}</span>
-
         {/* Dropdown Icon */}
+        <li className="nav-links">Hi, Admin {storedUserName}</li>
         <span
           className={`dropdown-icon ${showDropdown ? 'rotate' : ''}`}
           onClick={toggleDropdown} // Toggle dropdown on click
@@ -49,11 +55,10 @@ const AdminNavBar = () => {
 
         {/* Dropdown Menu */}
         {showDropdown && (
-            <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}>
-                <button onClick={handleSignOut} className="dropdown-item">Sign Out</button>
-            </div>
+          <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}>
+            <button onClick={handleSignOut} className="dropdown-item">Sign Out</button>
+          </div>
         )}
-
       </div>
     </nav>
   );

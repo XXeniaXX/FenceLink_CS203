@@ -10,19 +10,11 @@ import profileicon from './assets/profileicon.png';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
-    const storedUserName = localStorage.getItem('userName');
+    const storedUserName = localStorage.getItem('name');
     const storedAge = localStorage.getItem('age');
     const storedLocation = localStorage.getItem('location');
     const storedCountry = localStorage.getItem('country');
     const storedBio = localStorage.getItem('bio');
-
-    const [profileImage, setProfileImage] = useState(null);
-
-    const handleImageChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-        setProfileImage(URL.createObjectURL(e.target.files[0]));
-        }
-    };
 
         return (
             <div>
