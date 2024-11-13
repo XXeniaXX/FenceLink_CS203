@@ -138,10 +138,11 @@ public class UserServiceImpl implements UserService {
         if (existingUser == null) {
             throw new IllegalArgumentException("User not found!");
         }
+        String hashedPassword = PasswordUtil.encodePassword(userDto.getPassword());
 
         checkPassword(userDto);
 
-        existingUser.setPassword(userDto.getPassword());
+        existingUser.setPassword(hashedPassword);
 
         return userRepository.save(existingUser);
     }
