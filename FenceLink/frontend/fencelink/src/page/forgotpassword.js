@@ -57,7 +57,7 @@ const ForgotPassword = () => {
         console.log('Password reset successful');
         console.log(storedUserId);
 
-        const response = await fetch(`http://13.213.45.2:8080/api/users/updatepassword/${storedUserId}`, {
+        const response = await fetch(`http://47.129.36.1:8080/api/users/updatepassword/${storedUserId}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',

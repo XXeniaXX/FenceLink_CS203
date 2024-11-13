@@ -52,7 +52,7 @@ const AdminHomePage = () => {
 
         const fetchUserName = async () => {
             try {
-                const response = await fetch(`http://13.213.45.2:8080/api/users/${storedUserId}`);
+                const response = await fetch(`http://47.129.36.1:8080/api/users/${storedUserId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -82,7 +82,7 @@ const AdminHomePage = () => {
             console.log(storedPlayerId);
 
             try {
-                const response = await axios.get(`http://13.213.45.2:8080/api/tournaments/upcomingtournaments`);
+                const response = await axios.get(`http://47.129.36.1:8080/api/tournaments/upcomingtournaments`);
                 setTournaments(response.data);
             } catch (err) {
                 setError("Failed to fetch tournaments");

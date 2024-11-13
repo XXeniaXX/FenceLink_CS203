@@ -65,7 +65,7 @@ const OtpCheck = () => {
 
   
   const handleRegistration = async () => {
-    const response = await fetch('http://13.213.45.2:8080/api/users/register', {
+    const response = await fetch('http://47.129.36.1:8080/api/users/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

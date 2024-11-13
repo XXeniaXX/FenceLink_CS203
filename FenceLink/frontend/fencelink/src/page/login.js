@@ -97,7 +97,7 @@ const Login = () => {
 
   async function validateTokenOnLogin(token) {
     try {
-      const response = await fetch('http://13.213.45.2:8080/api/auth/validate-token', {
+      const response = await fetch('http://47.129.36.1:8080/api/auth/validate-token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -35,7 +35,7 @@ const ResultPage = () => {
     useEffect(() => {
         const fetchCompletedTournaments = async () => {
             try {
-                const response = await axios.get('http://13.213.45.2:8080/api/tournaments');
+                const response = await axios.get('http://47.129.36.1:8080/api/tournaments');
                 const sortedData = response.data.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
                 setTournaments(sortedData);
             } catch (err) {
@@ -55,13 +55,13 @@ const ResultPage = () => {
 
     const fetchWinners = async (tournamentId) => {
         try {
-            const response = await axios.get(`http://13.213.45.2:8080/api/matches/${tournamentId}/winners`);
+            const response = await axios.get(`http://47.129.36.1:8080/api/matches/${tournamentId}/winners`);
             const playerIds = Object.values(response.data);
 
             const playerNamesResponse = await Promise.all(
                 playerIds.map(async (id) => {
                     try {
-                        const playerResponse = await axios.get(`http://13.213.45.2:8080/api/players/${id}`);
+                        const playerResponse = await axios.get(`http://47.129.36.1:8080/api/players/${id}`);
                         return { id, name: playerResponse.data.name, ...playerResponse.data };
                     } catch (error) {
                         console.error(`Error fetching player with ID ${id}:`, error);
