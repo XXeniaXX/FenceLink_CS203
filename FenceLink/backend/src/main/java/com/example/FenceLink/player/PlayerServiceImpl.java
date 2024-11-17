@@ -16,8 +16,6 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import com.example.FenceLink.user.*;
 
-
-
 @Service
 public class PlayerServiceImpl implements PlayerService {
 
@@ -27,7 +25,6 @@ public class PlayerServiceImpl implements PlayerService {
     @Autowired
     private UserRepository userRepository;
 
-    //new for join table
     @Autowired
     private TournamentRepository tournamentRepository;
 
@@ -38,10 +35,11 @@ public class PlayerServiceImpl implements PlayerService {
             throw new IllegalArgumentException("Name cannot be empty!");
         }
 
+        // Initializing player's age at present time
         LocalDate currentDate = LocalDate.now();
         int age = Period.between(player.getBirthdate(), currentDate).getYears();
 
-        // Birthdate should not be in the future, should be >= 14?
+        // Birthdate should not be in the future, should be >= 14
         if (player.getBirthdate().isAfter(currentDate)) {
             throw new IllegalArgumentException("Birthdate cannot be in the future!");
         }
@@ -50,7 +48,7 @@ public class PlayerServiceImpl implements PlayerService {
             throw new IllegalArgumentException("Player must be at least 14 years old!");
         }
     }
-
+    
     @Override
     public List<Player> findAll() {
         return playerRepository.findAll();
@@ -67,6 +65,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .orElseThrow(() -> new NoSuchElementException("Player not found for userId: " + userId));
     }
 
+    // Calculate player's age
     @Override
     public int calculateAge(LocalDate birthdate) {
         if (birthdate == null) {
@@ -75,19 +74,23 @@ public class PlayerServiceImpl implements PlayerService {
         return Period.between(birthdate, LocalDate.now()).getYears();
     }
 
+    // Insert player
     @Override
     @Transactional
     public Player insertPlayer(Player player) throws IllegalArgumentException {
-        // Default points 100
+        // Default ELO points set to 100 for new players
         player.setPoints(100);
 
+        // Check for the validity of player's information
         checkPlayer(player);
 
+        // Build player based on the details
         Player.PlayerBuilder playerBuilder = Player.builder()
                 .name(player.getName())
                 .birthdate(player.getBirthdate())
                 .points(player.getPoints());
 
+        // Set details if available
         if (player.getGender() != null) {
             playerBuilder.bio(player.getGender());
         }
@@ -112,13 +115,15 @@ public class PlayerServiceImpl implements PlayerService {
             playerBuilder.tournamentsRegistered(player.getTournamentsRegistered());
         }
 
+        // Build player
         playerBuilder.build();
 
+        // Save player
         playerRepository.saveAndFlush(player);
         return player;
     }
 
-    // Admin only
+    // Update player's credentials
     @Override
     @Transactional
     public Player updatePlayer(Long id, Player updatedPlayer) throws IllegalArgumentException {
@@ -147,12 +152,12 @@ public class PlayerServiceImpl implements PlayerService {
         // Save the updated player
         playerRepository.saveAndFlush(existingPlayer);
 
-        // Return the updated existingPlayer, not updatedPlayer
+        // Return the updated existingPlayer
         return existingPlayer;
     }
 
 
-    // Admin only
+    // Delete a player by player's ID
     @Override
     @Transactional
     public void deletePlayerById(Long id) throws IllegalArgumentException {
@@ -163,6 +168,7 @@ public class PlayerServiceImpl implements PlayerService {
         playerRepository.deletePlayerById(id);
     }
 
+    // Method to check if player exists
     public boolean playerExists(Long id) throws IllegalArgumentException {
         return playerRepository.findById(id).isPresent();
     }
@@ -173,11 +179,12 @@ public class PlayerServiceImpl implements PlayerService {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> 
             new IllegalArgumentException("Player with ID " + playerId + " not found!")
         );
+
         Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> 
             new IllegalArgumentException("Tournament with ID " + tournamentId + " not found!")
         );
 
-        // check if player already registered for the tournament
+        // Check if player already registered for the tournament
         if (player.getTournamentsRegistered().contains(tournament)) {
             throw new IllegalArgumentException("Player already registered for the tournament!");
         }
@@ -213,7 +220,7 @@ public class PlayerServiceImpl implements PlayerService {
         // If all checks pass, register the player and update the tournament's vacancy
         player.getTournamentsRegistered().add(tournament);
         playerRepository.save(player);  // Save updated player
-        tournament.setVacancy(tournament.getVacancy() - 1);//update vacancy
+        tournament.setVacancy(tournament.getVacancy() - 1);// Update vacancy
         tournamentRepository.save(tournament);  // Save updated tournament
         
         // Return success message
@@ -227,6 +234,7 @@ public class PlayerServiceImpl implements PlayerService {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> 
             new IllegalArgumentException("Player with ID " + playerId + " not found!")
         );
+
         Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> 
             new IllegalArgumentException("Tournament with ID " + tournamentId + " not found!")
         );
@@ -302,11 +310,9 @@ public class PlayerServiceImpl implements PlayerService {
                     boolean hasClash = hasClashingTournament(player, tournament);
                     String clashMessage = hasClash ? "This tournament clashes with another tournament you are registered for." : null;
                     return new UpcomingTournamentResponse(tournament, clashMessage);
-                    }) // returns clash message abt whether player have a registered clashing tournament
+                    }) // Returns clash message if player has another registered clashing tournament
                 .collect(Collectors.toList());
     }
-
-    
 
     // Method for a Player to get upcoming tournaments that they have registered for
     @Override
@@ -323,6 +329,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .collect(Collectors.toList());
     }
 
+    // Find player's previously registered tournaments
     @Override
     public List<Tournament> findPastRegisteredTournaments(Long playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> 
@@ -337,7 +344,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .collect(Collectors.toList());
     }
 
-    //get player's id who has register for a specific tournament
+    // Get player's ID who has register for a specific tournament
     public List<Long> getRegisteredPlayerIds(Long tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
             .orElseThrow(() -> new IllegalArgumentException("Tournament with ID " + tournamentId + " not found!"));
@@ -378,6 +385,7 @@ public class PlayerServiceImpl implements PlayerService {
         );
     }
 
+    // Get a list of all countries
     public List<String> getAllCountries() {
         return playerRepository.findDistinctCountries();
     }

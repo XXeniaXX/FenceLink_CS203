@@ -17,5 +17,4 @@ public interface PlayerService {
     List<Tournament> findUpcomingRegisteredTournaments(Long playerId);
     List<Tournament> findPastRegisteredTournaments(Long playerId);
     int calculateAge(LocalDate birthdate);
-    
 }
