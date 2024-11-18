@@ -27,7 +27,7 @@ const ManagePlayerPage = () => {
         // Fetch all players
         const fetchPlayers = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/players/all');
+                const response = await fetch('http://localhost:8080/api/players');
                 if (response.ok) {
                     const data = await response.json();
                     setPlayers(data);
@@ -165,7 +165,6 @@ const ManagePlayerPage = () => {
 };
 
 export default ManagePlayerPage;
-
 
 
 

@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.FenceLink.token.CognitoJWTValidator;
 import com.example.FenceLink.tournament.*;
-import com.example.FenceLink.user.UserDTO;
 
 import java.util.*;
 
@@ -20,9 +19,8 @@ public class PlayerController {
 
 
     // Get all players
-    @GetMapping("/all")
+    @GetMapping
     public List<Player> getAllPlayers() {
-        System.out.println("hii");
         return playerService.findAll();
     }
 
@@ -36,6 +34,7 @@ public class PlayerController {
         return new ResponseEntity<>(player, HttpStatus.OK);
     }
 
+    // Get associated player by user ID
     @GetMapping("/user/{userId}")
     public ResponseEntity<Player> getPlayerByUserId(@PathVariable Long userId) {
         Player player = playerService.findByUserId(userId);
@@ -54,6 +53,7 @@ public class PlayerController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    // Update the player's details
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updatePlayer(@PathVariable Long id, @RequestBody Player player) {
         player.setId(id);  // Ensure player ID is set
@@ -119,7 +119,7 @@ public class PlayerController {
         }
     }
 
-    // Player view a list of upcoming tournaments they can register for
+    // Get list of upcoming tournaments a player can register for
     @GetMapping("/{playerId}/upcoming-tournaments")
     public ResponseEntity<List<UpcomingTournamentResponse>> viewUpcomingTournaments(@PathVariable Long playerId) {
         Player player = playerService.findById(playerId);
@@ -142,6 +142,7 @@ public class PlayerController {
         }
     }
 
+    // Get player's past tournaments they've registered for
     @GetMapping("/{id}/past-tournaments")
     public ResponseEntity<List<Tournament>> getPastRegisteredTournaments(@PathVariable Long id) {
         try {
@@ -152,13 +153,14 @@ public class PlayerController {
         }
     }
 
-    //get player's id who has register for a specific tournament
+    // Get player's id who has register for a specific tournament
     @GetMapping("/{tournamentId}/get-all-players")
     public ResponseEntity<List<Long>> getRegisteredPlayerIds(@PathVariable Long tournamentId) {
         List<Long> playerIds = playerService.getRegisteredPlayerIds(tournamentId);
         return new ResponseEntity<>(playerIds, HttpStatus.OK);
     }
 
+    // Get all countries
     @GetMapping("/countries")
     public List<String> getAllCountries() {
         return playerService.getAllCountries();

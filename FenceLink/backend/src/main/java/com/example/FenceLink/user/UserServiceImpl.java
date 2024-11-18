@@ -65,15 +65,13 @@ public class UserServiceImpl implements UserService {
     public User registerUser(UserDTO userDto) throws IllegalArgumentException {
         checkUser(userDto); 
 
-        // String hashedPassword = userDto.getPassword();
         String hashedPassword = PasswordUtil.encodePassword(userDto.getPassword());
         
-        //check if email already exists before saving
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email is already in use!");
         }
 
-        String role = "ROLE_PLAYER";
+        String role = "ROLE_PLAYER"; // Default role for new users
 
         Player newPlayer = new Player(null, userDto.getUsername(), null, null, null, null, null, null, 100, new ArrayList<>(), null);
 
@@ -88,11 +86,8 @@ public class UserServiceImpl implements UserService {
     public User createAdmin(UserDTO userDto) throws IllegalArgumentException {
         checkUser(userDto); 
 
-        String hashedPassword = PasswordUtil.encodePassword(userDto.getPassword());
-        // String hashedPassword = userDto.getPassword();
+        String hashedPassword = PasswordUtil.encodePassword(userDto.getPassword());        
         
-        
-        //check if email already exists before saving
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email is already in use!");
         }
@@ -109,20 +104,6 @@ public class UserServiceImpl implements UserService {
         if (existingUser == null) {
             throw new IllegalArgumentException("User not found!");
         }
-
-        // Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        // String username = null;
-
-        // if (principal instanceof UserDetails) {
-        //     username = ((UserDetails) principal).getUsername();
-        // } else {
-        //     username = principal.toString();
-        // }
-
-        // // Ensure the authenticated user is authorized to update the user
-        // if (!existingUser.getUsername().equals(username)) {
-        //     throw new AccessDeniedException("Unauthorized to update this user!");
-        // }
 
         checkUser(userDto);
 
@@ -147,7 +128,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteUserById(Long id) throws IllegalArgumentException {
         if (!userExists(id)) {
             throw new IllegalArgumentException("User not found!");
@@ -161,9 +141,9 @@ public class UserServiceImpl implements UserService {
             // Check if this user has an associated player
             Player associatedPlayer = user.getPlayer();
             if (associatedPlayer != null) {
-                playerService.deletePlayerById(associatedPlayer.getId()); // Delete player first
+                playerService.deletePlayerById(associatedPlayer.getId()); 
             }
-            userRepository.deleteById(userId); // Now delete user
+            userRepository.deleteById(userId); 
         }
     }
     

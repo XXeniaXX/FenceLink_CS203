@@ -2,13 +2,12 @@ import React, { useEffect,useState } from 'react';
 import { signUp } from 'aws-amplify/auth';
 import { Link, useNavigate } from "react-router-dom";
 import './login.css';
-import './otp.css'; // Import the CSS file
+import './otp.css'; 
 import PlainBar from '../components/AdminNavBar';
 
 const Registration = () => {
   const navigate = useNavigate();
   
-  // State variables to hold username and password
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

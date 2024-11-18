@@ -6,19 +6,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.UserPrincipal;
-
 import com.example.FenceLink.token.CognitoJWTValidator;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-
 
 @RestController
 @RequestMapping("/api/users")
@@ -57,8 +45,9 @@ public class UserController {
         User savedUser = userService.registerUser(userDTO);
         Long playerId = savedUser.getPlayer() != null ? savedUser.getPlayer().getId() : null;
         Long userId = savedUser.getId();
-        String userRole = "player";
+        String userRole = "player";// Default role is "player"
 
+        //saved player and user information for frontend use
         Map<String, Object> response = new HashMap<>();
         response.put("playerId", playerId);
         response.put("userId", userId); 
@@ -72,23 +61,22 @@ public class UserController {
         try {
             userService.updateUser(id, userDto);
             
+            //saved player and user information for frontend use
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User updated successfully");
-            response.put("playerId", id); // Include the player ID
+            response.put("playerId", id); 
             response.put("userId", id);
 
-            // Return ResponseEntity with the type explicitly stated
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
 
-            // Return ResponseEntity with the type explicitly stated
             return new ResponseEntity<Map<String, Object>>(errorResponse, HttpStatus.BAD_REQUEST);
         }
 }
 
-    @PutMapping("/updatepassword/{id}")
+    @PutMapping("/password/{id}")
     public ResponseEntity<Map<String, Object>> updateUserPassword(@PathVariable Long id, @RequestBody UserDTO userDto) {
         Map<String, Object> response = new HashMap<>();
         try {
@@ -103,7 +91,7 @@ public class UserController {
     }
 
      // Add new Admin
-     @PostMapping("/createadmin")
+     @PostMapping("/admins")
      @ResponseStatus(HttpStatus.CREATED)
      public ResponseEntity<User> addAdmin(@RequestBody UserDTO userDTO, @RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "").trim();
@@ -116,15 +104,6 @@ public class UserController {
         }
 
      }
-
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-    //     if (!userService.userExists(id)) {
-    //         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    //     }
-    //     userService.deleteUserById(id);
-    //     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    // }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserWithPlayer(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader) {

@@ -21,6 +21,7 @@ public class LeaderboardController {
             @RequestParam(required = false) String gender,
             @RequestParam(required = false) String country) {
         
-        return playerService.getTopPlayersPage(page, 20, gender, country); // 20 players per page
+        // Display maximum 20 players per page
+        return playerService.getTopPlayersPage(page, 20, gender, country);
     }
 }

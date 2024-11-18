@@ -2,7 +2,6 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './page/login';
 import Registration from './page/registration';
 import OtpCheck from './page/otpcheck';
-import Main from './page/mainpage';
 import ForgotPassword from './page/forgotpassword';
 import PlayerInfo from './page/playerinfo';
 import ProfilePage from './page/profilepage';
@@ -44,12 +43,10 @@ function App() {
             <Route path="/upcomingtournaments" element={<UpcomingTournaments />} />
             <Route path="/register" element={<Registration />} />
             <Route path="/otpcheck" element={<OtpCheck />} />
-            <Route path="/mainpage" element={<Main />} />
             <Route path="/match/:tournamentId" element={<MatchUser />} />
             <Route path="/ranking" element={<RankingPage />} />
             <Route path="/results" element={<ResultPage />} />
             <Route path="/unauthorisedpage" element={<UnauthorizedPage />} />
-            <Route path="/mainpage" element={<Main />} />
             <Route path="/usertournament" element={<UserTournamentPage/>} />
             <Route path="/profilepage" element={<ProfilePage />} />
             <Route path="/playerhomepage" element={<PlayerHomePage />} />

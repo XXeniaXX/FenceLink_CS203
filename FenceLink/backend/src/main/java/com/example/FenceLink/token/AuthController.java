@@ -50,6 +50,7 @@ public class AuthController {
         String jwtToken = requestBody.get("token");
 
         if (jwtToken == null || jwtToken.isEmpty()) {
+
             // Return a JSON response for missing token
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", "Token is missing in the request body");
@@ -58,6 +59,7 @@ public class AuthController {
 
         String validationMessage = CognitoJWTValidator.validateToken(jwtToken);
         if (!"Token is valid".equals(validationMessage)) {
+
             // Return a JSON response for invalid token
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", "Invalid token");
@@ -69,8 +71,7 @@ public class AuthController {
         String userRole = roles != null && roles.contains("admin") ? "admin" : "player";
         String email = decodedJWT.getClaim("email").asString();
 
-        // Fetch user details from the database
-        User user = userService.findByEmail(email); // Use a service method to fetch the use
+        User user = userService.findByEmail(email); 
         Long playerId = user.getPlayer() != null ? user.getPlayer().getId() : null;
         
 

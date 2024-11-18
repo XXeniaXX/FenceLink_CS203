@@ -1,5 +1,6 @@
 package com.example.FenceLink.player;
 
+// Player object for Leaderboard
 public class PlayerDTO {
     private Long id;
     private String name;

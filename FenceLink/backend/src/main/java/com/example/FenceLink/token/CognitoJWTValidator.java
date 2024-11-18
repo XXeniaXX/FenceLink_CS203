@@ -69,7 +69,11 @@ public class CognitoJWTValidator {
     private static RSAPublicKey getCognitoPublicKey(String kid) {
         try {
             RestTemplate restTemplate = new RestTemplate();
+
+            // Fetch the JSON Web Key Set (JWKS) from the Cognito URL and map it to the JWKS class.
             JWKS jwks = restTemplate.getForObject(COGNITO_JWKS_URL, JWKS.class);
+
+            // Check if the JWKS is not null and iterate over the keys to find a matching key ID (kid).
             if (jwks != null) {
                 for (JWK jwk : jwks.getKeys()) {
                     if (jwk.getKid().equals(kid)) {

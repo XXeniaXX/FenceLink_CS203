@@ -25,22 +25,6 @@ const AdminHomePage = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const storedUserName = localStorage.getItem('userName');
 
-    const toggleDropdown = () => {
-        setDropdownOpen(!dropdownOpen);
-    };
-
-    const handleSignOut = async () => {
-        try {
-            await signOut({ global: true });
-            console.log('User signed out successfully');
-
-            localStorage.removeItem('jwtToken');
-            sessionStorage.clear();
-            navigate('/login');
-        } catch (error) {
-            console.log('Error signing out: ', error);
-        }
-    };
 
     useEffect(() => {
         const storedUserId = localStorage.getItem('userId');

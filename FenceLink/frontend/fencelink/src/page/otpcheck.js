@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import OtpInput from "otp-input-react";
 import './otp.css'
 import './login.css'; 
-import PlainBar from '../components/AdminNavBar';
 
 const OtpCheck = () => {
   const navigate = useNavigate();
@@ -12,8 +11,8 @@ const OtpCheck = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmationCode, setConfirmationCode] = useState(''); // State to hold OTP
-  const [errorMessage, setErrorMessage] = useState(''); // State to hold errors
+  const [confirmationCode, setConfirmationCode] = useState(''); 
+  const [errorMessage, setErrorMessage] = useState(''); 
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -22,19 +21,19 @@ const OtpCheck = () => {
     if (storedUsername) {
       setUsername(storedUsername); 
     } else {
-      console.log('No Username found in local storage.'); // Debug log
+      console.log('No Username found in local storage.'); 
     }
 
     if (storedEmail) {
       setEmail(storedEmail); 
     } else {
-      console.log('No Email found in local storage.'); // Debug log
+      console.log('No Email found in local storage.'); 
     }
 
     if (storedPassword) {
       setPassword(storedPassword); 
     } else {
-      console.log('No Password found in local storage.'); // Debug log
+      console.log('No Password found in local storage.'); 
     }
   }, []);
  
@@ -84,7 +83,6 @@ const OtpCheck = () => {
       navigate("/playerinfo");
 
     } else {
-      // Handle error
       const errorText = await response.text();
       alert('Registration failed: ' + errorText); 
       console.error('Registration failed');
