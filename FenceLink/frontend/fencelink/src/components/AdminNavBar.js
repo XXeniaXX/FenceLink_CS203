@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
+import { signOut } from 'aws-amplify/auth';
+
 
 const AdminNavBar = () => {
   const [showDropdown, setShowDropdown] = useState(false); // For profile dropdown visibility
   const navigate = useNavigate();
   const storedUserName = localStorage.getItem('name')
 
-  const handleSignOut = () => {
-    localStorage.removeItem('jwtToken');
-    sessionStorage.clear(); // Clear localStorage for sign out
-    navigate('/login'); // Redirect to login page
+  const handleSignOut = async() => {
+    try {
+      await signOut({ global: true });
+      console.log('User signed out successfully');
+
+      localStorage.removeItem('jwtToken');
+      sessionStorage.clear();
+      navigate('/login');
+    } catch (error) {
+      console.log('Error signing out: ', error);
+    }
   };
+
 
   // Toggle dropdown visibility on click
   const toggleDropdown = () => {

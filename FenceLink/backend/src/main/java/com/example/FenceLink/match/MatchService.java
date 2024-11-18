@@ -507,8 +507,8 @@ public class MatchService {
 
             if (lastMatches.size() >= 2) {
                 // Assuming matches are sorted by matchId in descending order
-                Match goldSilverMatch = lastMatches.get(0);
-                Match bronzeMatch = lastMatches.get(1);
+                Match goldSilverMatch = lastMatches.get(1);
+                Match bronzeMatch = lastMatches.get(0);
 
                 // Determine the winners and losers
                 Long goldWinnerId = goldSilverMatch.getWinner();
