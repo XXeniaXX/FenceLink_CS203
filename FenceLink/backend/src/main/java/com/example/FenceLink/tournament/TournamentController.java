@@ -12,16 +12,20 @@ import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/tournaments")
+@CrossOrigin(origins = "http://localhost:3000")
 public class TournamentController {
 
     @Autowired
     private TournamentService tournamentService;
 
+
+    //Gets All Tournaments 
     @GetMapping
     public List<Tournament> getAllTournaments() {
         return tournamentService.getAllTournaments();
     }
 
+    //Gets all upcoming tournaments 
     @GetMapping("/upcomingtournaments")
     public List<Tournament> getAllUpcomingTournaments() {
         LocalDate today = LocalDate.now();
@@ -31,6 +35,7 @@ public class TournamentController {
                                 .collect(Collectors.toList());
     }
 
+    //Get a tournament by its ID 
     @GetMapping("/{id}")
     public ResponseEntity<Tournament> getTournamentById(@PathVariable Long id) {
         Tournament tournament = tournamentService.getTournamentById(id);
@@ -41,12 +46,15 @@ public class TournamentController {
         }
     }
 
+    //Add new tournament 
     @PostMapping
     public ResponseEntity<Tournament> addTournament(@RequestBody Tournament tournament) {
         Tournament createdTournament = tournamentService.addTournament(tournament);
         return new ResponseEntity<>(createdTournament, HttpStatus.CREATED);
     }
 
+
+    //Update a tournament based on its ID 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateTournament(@PathVariable Long id, @RequestBody Tournament tournament) {
         if (tournamentService.getTournamentById(id) != null) {
@@ -58,6 +66,7 @@ public class TournamentController {
         }
     }
 
+    //delete a tournament bases on its ID 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTournament(@PathVariable Long id) {
         if (tournamentService.getTournamentById(id) != null) {
@@ -68,6 +77,7 @@ public class TournamentController {
         }
     }
 
+    //Searches for tournaments based on optional filter citerias 
     @GetMapping("/search")
     public ResponseEntity<?> searchTournaments(
         @RequestParam(required = false) String name,
