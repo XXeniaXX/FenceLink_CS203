@@ -85,7 +85,8 @@ public class MatchService {
     public void deleteMatch(Long matchId) {
         matchRepository.deleteById(matchId);
     }
-    //matching system
+
+
     public void generateMatches(Long tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
             .orElseThrow(() -> new RuntimeException("Tournament not found"));
