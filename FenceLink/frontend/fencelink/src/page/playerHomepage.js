@@ -37,8 +37,8 @@ const PlayerHomePage = () => {
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
-        const upcomingResponse = await axios.get(`/api/players/${playerId}/upcoming-registered-tournaments`);
-        const availableResponse = await axios.get(`/api/players/${playerId}/upcoming-tournaments`);
+        const upcomingResponse = await axios.get(`/api/players/${playerId}/tournaments/upcoming`);
+        const availableResponse = await axios.get(`/api/players/${playerId}/tournaments/available`);
 
         setUpcomingTournaments(upcomingResponse.data);
         setAvailableTournaments(availableResponse.data);
@@ -92,7 +92,7 @@ const PlayerHomePage = () => {
             </Col>
             <Col md={8}>
               {upcomingTournaments.length === 0 ? (
-                <p>No upcoming tournaments registered.</p>
+                <p>No upcoming registered tournaments.</p>
               ) : (
                 upcomingTournaments.slice(0, 3).map((tournament) => (
                   tournament ? (

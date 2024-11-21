@@ -35,7 +35,7 @@ const UpcomingTournaments = ({ playerId }) => {
             console.log(storedPlayerId);
 
             try {
-                const response = await axios.get(`http://localhost:8080/api/players/${storedPlayerId}/upcoming-registered-tournaments`);
+                const response = await axios.get(`http://localhost:8080/api/players/${storedPlayerId}/tournaments/upcoming`);
                 setTournaments(response.data);
             } catch (err) {
                 setError("Failed to fetch tournaments");

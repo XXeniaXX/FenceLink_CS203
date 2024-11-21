@@ -201,19 +201,16 @@ public class PlayerServiceImpl implements PlayerService {
             throw new IllegalArgumentException("No vacancies left for " + tournament.getName() + "!");
         }
 
-        // Calculate the player's age based on their birthdate
-        Period age = Period.between(player.getBirthdate(), currentDate);
+        // Calculate the player's age
+        int playerAge = Period.between(player.getBirthdate(), currentDate).getYears();
 
         // Check if the player's age fits the tournament's age group
-        String ageGroup = tournament.getAgeGroup(); // Assuming the age group is stored in the tournament object
-        if ((ageGroup.equalsIgnoreCase("Youth") && age.getYears() >= 18) || 
-        (ageGroup.equalsIgnoreCase("Adult") && age.getYears() < 18)) {
+        if (!isPlayerEligibleForAgeGroup(playerAge, tournament.getAgeGroup())) {
             throw new IllegalArgumentException("Player's age does not meet the tournament's age requirement!");
         }
 
-        // Check if the player's gender matches the tournament's gender type or if the tournament is "Mixed"
-        if (!tournament.getGenderType().equalsIgnoreCase("Mixed") && 
-        !tournament.getGenderType().equalsIgnoreCase(player.getGender())) {
+        // Check if the player's gender matches the tournament's gender type
+        if (!isPlayerEligibleForGender(player, tournament.getGenderType())) {
             throw new IllegalArgumentException("Player's gender does not match the tournament's gender requirement!");
         }
 
@@ -258,7 +255,7 @@ public class PlayerServiceImpl implements PlayerService {
     // Method to check if a player is eligible for the tournament based on gender
     private boolean isPlayerEligibleForGender(Player player, String genderType) {
         // If the tournament is "Mixed", any player can participate
-        if (genderType.equals("Mixed")) {
+        if (genderType.equalsIgnoreCase("Mixed")) {
             return true;
         }
         // Otherwise, the player must match the gender type of the tournament
@@ -267,10 +264,10 @@ public class PlayerServiceImpl implements PlayerService {
 
     // Method to check if player's age fits into the tournament's age group
     private boolean isPlayerEligibleForAgeGroup(int playerAge, String ageGroup) {
-        switch (ageGroup) {
-            case "Youth":
+        switch (ageGroup.toLowerCase()) { // to ignore case
+            case "youth":
                 return playerAge < 18;
-            case "Adult":
+            case "adult":
                 return playerAge >= 18;
             default:
                 return true;  // If no specific age group, assume eligible
@@ -303,8 +300,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .filter(tournament -> tournament.getRegistrationDate().isAfter(today) && 
                                       !registeredTournaments.contains(tournament) &&
                                       isPlayerEligibleForGender(player, tournament.getGenderType()) &&
-                                      isPlayerEligibleForAgeGroup(playerAge, tournament.getAgeGroup()) //&&
-                                      //player.getFencingWeapon().equals(tournament.getCategory())
+                                      isPlayerEligibleForAgeGroup(playerAge, tournament.getAgeGroup())
                                       )
                 .map(tournament -> {
                     boolean hasClash = hasClashingTournament(player, tournament);

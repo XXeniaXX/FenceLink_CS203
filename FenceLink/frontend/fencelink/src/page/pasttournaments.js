@@ -38,7 +38,7 @@ const PastTournaments = () => {
             console.log(storedPlayerId);
 
             try {
-                const response = await axios.get(`http://localhost:8080/api/players/${storedPlayerId}/past-tournaments`);
+                const response = await axios.get(`http://localhost:8080/api/players/${storedPlayerId}/tournaments/past`);
                 setTournaments(response.data);
             } catch (err) {
                 setError("Failed to fetch tournaments");

@@ -98,7 +98,7 @@ public class PlayerController {
     }
 
     // Register a player for a tournament
-    @PostMapping("/{playerId}/register/{tournamentId}")
+    @PostMapping("/{playerId}/tournaments/{tournamentId}")
     public ResponseEntity<String> registerForTournament(@PathVariable Long playerId, @PathVariable Long tournamentId) {
         try {
             String successMessage = playerService.registerPlayerForTournament(playerId, tournamentId);
@@ -109,7 +109,7 @@ public class PlayerController {
     }
 
     // Withdraw a player from a tournament
-    @DeleteMapping("/{playerId}/withdraw/{tournamentId}")
+    @DeleteMapping("/{playerId}/tournaments/{tournamentId}")
     public ResponseEntity<String> withdrawFromTournament(@PathVariable Long playerId, @PathVariable Long tournamentId) {
         try {
             String successMessage = playerService.withdrawPlayerFromTournament(playerId, tournamentId);
@@ -120,7 +120,7 @@ public class PlayerController {
     }
 
     // Get list of upcoming tournaments a player can register for
-    @GetMapping("/{playerId}/upcoming-tournaments")
+    @GetMapping("/{playerId}/tournaments/available")
     public ResponseEntity<List<UpcomingTournamentResponse>> viewUpcomingTournaments(@PathVariable Long playerId) {
         Player player = playerService.findById(playerId);
         if (player == null) {
@@ -132,7 +132,7 @@ public class PlayerController {
     }
 
     // Get player's registered upcoming tournaments
-    @GetMapping("/{playerId}/upcoming-registered-tournaments")
+    @GetMapping("/{playerId}/tournaments/upcoming")
     public ResponseEntity<List<Tournament>> getUpcomingRegisteredTournaments(@PathVariable Long playerId) {
         try {
             List<Tournament> upcomingTournaments = playerService.findUpcomingRegisteredTournaments(playerId);
@@ -143,10 +143,10 @@ public class PlayerController {
     }
 
     // Get player's past tournaments they've registered for
-    @GetMapping("/{id}/past-tournaments")
-    public ResponseEntity<List<Tournament>> getPastRegisteredTournaments(@PathVariable Long id) {
+    @GetMapping("/{playerId}/tournaments/past")
+    public ResponseEntity<List<Tournament>> getPastRegisteredTournaments(@PathVariable Long playerId) {
         try {
-            List<Tournament> pastTournaments = playerService.findPastRegisteredTournaments(id);
+            List<Tournament> pastTournaments = playerService.findPastRegisteredTournaments(playerId);
             return new ResponseEntity<>(pastTournaments, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Player not found

@@ -30,7 +30,7 @@ const UserTournamentPage = () => {
 
     // Fetch the player's registered tournaments
     if (playerId) {
-      axios.get(`/api/players/${playerId}/upcoming-registered-tournaments`)
+      axios.get(`/api/players/${playerId}/tournaments/upcoming`)
         .then(response => setRegisteredTournaments(response.data))
         .catch(error => console.error('Error fetching registered tournaments:', error));
     }
@@ -87,7 +87,7 @@ const UserTournamentPage = () => {
     e.stopPropagation();
 
 
-    axios.post(`/api/players/${playerId}/register/${tournamentId}`)
+    axios.post(`/api/players/${playerId}/tournaments/${tournamentId}`)
       .then(response => {
         setTournaments(prevTournaments =>
           prevTournaments.map(tournament =>
@@ -109,7 +109,7 @@ const UserTournamentPage = () => {
     e.stopPropagation();
     const confirmWithdraw = window.confirm("Are you sure you want to withdraw?");
     if (confirmWithdraw) {
-      axios.delete(`/api/players/${playerId}/withdraw/${tournamentId}`)
+      axios.delete(`/api/players/${playerId}/tournaments/${tournamentId}`)
         .then(response => {
           setTournaments(prevTournaments =>
             prevTournaments.map(tournament =>
